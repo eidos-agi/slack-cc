@@ -87,15 +87,19 @@ After processing a transcript, extract:
 - **SEO planning**: 90-day plans written for both greenmarkwaste.com and htdisposal.com. No baseline audit done yet.
 
 ### What's Blocked
-- **All data connections**: Need API credentials from Alex (Sage, HubSpot, Paylocity), Robert (Fleetio), and Michael (Navusoft, WAM, 3rd Eye)
-- **AIC Secure Request**: Credential transfer tool not yet live — prerequisite for receiving credentials
+- **Sage connection**: Alex provisioning Daniel a user account → Daniel creates read-only API key
+- **HubSpot connection**: Need API access from Alex/Michael
 - **3rd Eye**: Complete unknown — no API docs, no vendor contact, can't even evaluate
-- **WAM**: Confirmed no API. Need DB access or CSV exports from Michael.
+- **WAM**: Confirmed no API, but Michael says Hometown transitioning to Navusoft "over the next couple months" — may not need WAM integration at all
 
-### Pending Decisions (for leadership)
-1. Which two data sources to connect first? (Recommended: Sage + HubSpot)
-2. Is Daniel the tech lead at Greenmark, or is there someone else?
-3. Do Comerica and Expensify already flow through Sage Intacct? (Determines if they need separate connectors)
+### Decisions Made (Feb 19 call)
+1. **First two data sources: Sage Intacct + HubSpot** — confirmed by Michael and Alex
+2. **Michael is de facto tech lead** at Greenmark — manages IT and software
+3. **Expensify already flows through Sage** — no separate connector needed. **Comerica does NOT** — decision tabled, Alex leaning toward flowing through Sage ("let Sage be the Rosetta Stone")
+4. **Greenmark billing fully separate from AIC** — Railway, GitHub, all infrastructure
+5. **API keys are read-only** — no agent writes to Sage. Human-in-the-loop for all entries.
+6. **Communication via email + Teams** — not Wrike
+7. **Both websites built on Webflow** — SEO is "low hanging fruit, top of the list"
 
 ## Vendor Systems at a Glance
 

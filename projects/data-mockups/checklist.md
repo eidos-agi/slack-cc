@@ -31,6 +31,15 @@ Three distinct styles for the team to react to:
 ## Key Insight from Call
 Michael said: "Dashboards first, AI agent second. Most people are used to seeing Excel charts." Alex has a detailed GL-level financial model in Excel. The financial mockup intentionally mirrors that spreadsheet aesthetic.
 
+## New Feature Request (Feb 19 call)
+- [ ] **Customer + prospect map page** — separate page in Cerebro, NOT embedded in existing dashboards
+  - Data source: HubSpot (customers, prospects, deals)
+  - Color-coded by deal pipeline stage
+  - Michael: "The sales guys drive around a lot... being able to throw addresses down on a map"
+  - Alex: "Plan my week for me, yo" — route/meeting planning from map
+  - Sales reps should see only their customers/leads (permissioned)
+  - Blocked on: HubSpot data connection
+
 ## Next Steps
 - [ ] Send mockups to Michael + Alex for feedback ("which one do you like?")
 - [ ] Schedule follow-up meeting to walk through

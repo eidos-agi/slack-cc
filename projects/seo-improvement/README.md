@@ -63,8 +63,14 @@ Same parent company, separate brands, different markets. SEO strategies are para
 | Keywords in top 3 / top 10 / top 20 | Monthly | Ahrefs/Semrush |
 | Domain authority / domain rating | Monthly | Ahrefs |
 
+## Key Detail from Feb 19 Call
+- Both sites built on **Webflow** (confirmed by Michael)
+- AIC's website also on Webflow
+- Claude sidebar can log into Webflow and make changes directly
+- Michael: "This is low hanging fruit. That shouldn't take too long. That should be kind of at the top of the list."
+
 ## Blockers
 
 - [ ] Need access to existing GA/GSC accounts (if any) — ask Alex
-- [ ] Need to confirm who manages the websites currently — hosting, CMS, DNS
+- [ ] Need Webflow login for both sites — ask Michael
 - [ ] Need GBP login credentials for both brands
