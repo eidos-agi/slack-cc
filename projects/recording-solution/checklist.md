@@ -16,9 +16,10 @@ Teams recordings have no transcripts. Only Collin Bird had a Fireflies account f
 - [ ] Implement chosen solution before next meeting
 
 ## Processing Transcripts (Diarize Skill)
-- [ ] Build `/diarize` skill — [scope document](diarize-skill-scope.md)
-  - [ ] Phase 1: Core extraction (Fireflies text format, MVP)
+- [x] Build `/diarize` skill — [scope document](diarize-skill-scope.md)
+  - [x] Phase 1: Core extraction (Fireflies text format, MVP) — **tested, iterated, shipped**
   - [ ] Phase 2: Multi-format support (SRT, VTT)
   - [ ] Phase 3: Action item routing to project checklists
   - [ ] Phase 4: Quality scoring and feedback loop
-- [ ] Test against Feb 19 transcript as regression baseline
+- [x] Test against Feb 19 transcript as regression baseline — 11/11 decisions, 13/14 action items, 6/6 features
+- [x] Fix gaps: speaker attribution audit, external context prompt, project state check

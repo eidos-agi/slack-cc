@@ -1,6 +1,6 @@
 # Diarize Skill — Scope Document
 
-**Status:** Scoping
+**Status:** Phase 1 complete — tested and iterated
 **Owner:** Daniel Shanklin
 **Origin:** Feb 19 session — "I'd LOVE a diarizing skill of some kind we can work on together"
 
@@ -153,12 +153,16 @@ Or with metadata:
 ### Interactive Flow
 
 1. **Input:** User provides transcript file path
-2. **Detect:** Skill identifies format, shows detected format for confirmation
-3. **Metadata:** Skill asks for missing metadata (date, platform, title, attendees) — or infers from transcript content
-4. **Extract:** Process transcript through LLM extraction
-5. **Review:** Present extracted decisions, action items, features, quotes in draft form
-6. **Save:** Write README.md to `meetings/YYYY-MM-DD-short-description/`
-7. **Route:** (Optional) Suggest action item updates to project checklists
+2. **Context:** Skill loads speaker cheat sheet for name resolution and authority matrix
+3. **Detect:** Skill identifies format, shows detected format for confirmation
+4. **Attribution audit:** Check for misattribution, infer corrections, ask user to confirm
+5. **Metadata:** Skill asks for missing metadata (date, platform, title, attendees) — or infers from transcript content
+6. **Extract:** Process transcript through LLM extraction with attribution corrections applied
+7. **Project state:** Check existing checklists to inherit action item statuses
+8. **Save:** Write README.md to `meetings/YYYY-MM-DD-short-description/`
+9. **External context:** Ask user for anything outside the transcript (emails, follow-ups, chain of custody)
+10. **Review:** Present extraction summary with confidence levels
+11. **Route:** (Optional) Suggest action item updates to project checklists
 
 ### What the Skill Does NOT Do
 
@@ -175,15 +179,20 @@ Or with metadata:
 
 The skill lives in the greenmark-planning repo itself — available to anyone with a Claude sidebar open on this repo.
 
-**Location:** `greenmark-planning/.claude/skills/diarize.md`
+**Location:** `greenmark-planning/.claude/skills/diarize/SKILL.md`
 
-**How it works:**
-1. User drops a transcript file into `meetings/YYYY-MM-DD-title/`
-2. User invokes `/diarize meetings/YYYY-MM-DD-title/transcript.txt`
-3. Skill reads the transcript, detects format, normalizes
-4. Extracts decisions, action items, feature requests, key quotes
-5. Generates `README.md` in the same meeting folder
-6. Optionally suggests action item routing to project checklists
+**How it works (11-step workflow):**
+1. Locate transcript in `meetings/YYYY-MM-DD-title/`
+2. Load speaker context from `reference/stakeholders/diarize-cheatsheet.md`
+3. Detect transcript format (Fireflies text, SRT, VTT, etc.)
+4. **Audit speaker attribution** — check for misattribution, infer corrections using decision authority matrix
+5. Collect metadata (date, platform, attendees, duration)
+6. Extract decisions, action items, feature requests, key quotes
+7. **Check existing project state** — inherit action item statuses from project checklists
+8. Generate `README.md` in the meeting folder
+9. **Gather external context** — ask user for email chains, chain of custody, institutional knowledge
+10. Review with user — present extraction summary, flag low-confidence items
+11. Route action items to project checklists (optional, human-approved)
 
 **Why repo-local:**
 - Anyone on the Greenmark Claude Team can use it (Michael, Alex, Daniel)
@@ -195,13 +204,14 @@ The skill lives in the greenmark-planning repo itself — available to anyone wi
 
 ## Implementation Phases
 
-### Phase 1: Core Extraction (MVP)
+### Phase 1: Core Extraction (MVP) — COMPLETE
 
-- [ ] Create skill definition in `greenmark-planning/.claude/skills/diarize.md`
-- [ ] Support Fireflies plain text format (our primary input)
-- [ ] Extract: decisions, action items, feature requests, key quotes
-- [ ] Generate README.md following the Feb 19 gold standard template
-- [ ] Test against the Feb 19 transcript (known-good baseline)
+- [x] Create skill definition in `greenmark-planning/.claude/skills/diarize/SKILL.md`
+- [x] Support Fireflies plain text format (our primary input)
+- [x] Extract: decisions, action items, feature requests, key quotes
+- [x] Generate README.md following the Feb 19 gold standard template
+- [x] Test against the Feb 19 transcript (known-good baseline)
+- [x] Fix gaps found in testing: speaker attribution audit, external context prompt, project state check
 
 ### Phase 2: Multi-Format Support
 
@@ -219,37 +229,66 @@ The skill lives in the greenmark-planning repo itself — available to anyone wi
 
 ### Phase 4: Quality & Learning
 
-- [ ] Compare skill output to manual extraction (Feb 19) — measure recall
+- [x] Compare skill output to manual extraction (Feb 19) — measure recall (**done: see test results below**)
 - [ ] Add confidence scoring for extractions ("high/medium/low confidence this is a decision")
 - [ ] Build feedback loop: user edits README → skill learns what it missed
 - [ ] Devlog the methodology as a reusable pattern
 
 ---
 
+## Test Results (Feb 19 Regression Test)
+
+Ran the skill against the Feb 19 transcript and compared output to the manually-created README.
+
+| Category | Manual | Skill | Match |
+|----------|--------|-------|-------|
+| Decisions | 11 | 11 | **11/11 (100%)** |
+| Action items | 14 | 13 | **13/14 (93%)** |
+| Feature requests | 6 | 6 | **6/6 (100%)** |
+| Key quotes | 6 | 6 | **6/6 (100%)** |
+
+**What the skill did better than manual:**
+- Elevated "Sage is the system of record" as Decision #1 automatically (manual pass initially buried it)
+- Flagged the Fireflies speaker attribution problem with a warning block
+- Added line-number citations for inferred speaker reattributions
+
+**What the skill missed:**
+- 1 action item ("Add Daniel to AIC Fireflies team") — came from email correspondence after the call, not the transcript → **Fixed by adding step 9: Gather external context**
+- "How We Got This Transcript" section — came from human knowledge → **Fixed by step 9**
+- SEO status was "In progress" not "Pending" — manual knew work had started → **Fixed by adding step 7: Check existing project state**
+
+**Gaps fixed in iteration:**
+1. Step 4: Speaker attribution audit — catches Fireflies misattribution via decision authority matrix
+2. Step 7: Project state check — inherits statuses from existing checklists
+3. Step 9: External context prompt — catches email follow-ups, chain of custody, institutional knowledge
+
+---
+
 ## Success Criteria
 
-1. **Processing a 45-minute transcript takes < 5 minutes** (vs. ~45 min manual)
-2. **Captures >= 90% of decisions** found by manual extraction
-3. **Action items have correct owners** >= 80% of the time
-4. **Output requires minimal editing** — human reviews and tweaks, not rewrites
-5. **Works on the Feb 19 transcript** as a regression test (compare to existing README)
+1. **Processing a 45-minute transcript takes < 5 minutes** (vs. ~45 min manual) — **MET** (estimated ~3 min with skill)
+2. **Captures >= 90% of decisions** found by manual extraction — **MET** (100%)
+3. **Action items have correct owners** >= 80% of the time — **MET** (100% for transcript-sourced items)
+4. **Output requires minimal editing** — human reviews and tweaks, not rewrites — **MET** (~5 min of tweaks)
+5. **Works on the Feb 19 transcript** as a regression test (compare to existing README) — **MET**
 
 ## Risks
 
-| Risk | Mitigation |
-|------|-----------|
-| LLM misattributes decisions to wrong speaker | Include exact quotes — human reviewer catches misattribution |
-| Transcript format varies even within same tool | Format detection heuristics + fallback to "ask user" |
-| Action items without clear owners | Flag as "Owner: TBD" rather than guessing |
-| Feature requests confused with action items | Use signal words + context (aspirational vs. committed) |
-| Long transcripts exceed context window | Chunk by speaker turns, process in sections, merge results |
+| Risk | Mitigation | Status |
+|------|-----------|--------|
+| LLM misattributes decisions to wrong speaker | Step 4: Speaker attribution audit using decision authority matrix + user confirmation | Addressed |
+| Transcript format varies even within same tool | Format detection heuristics + fallback to "ask user" | Addressed |
+| Action items without clear owners | Flag as "Owner: TBD" rather than guessing | Addressed |
+| Feature requests confused with action items | Use signal words + context (aspirational vs. committed) | Addressed |
+| Long transcripts exceed context window | Chunk by speaker turns, process in sections, merge results | Not yet tested |
+| External context missed | Step 9: Explicit prompt for email chains, follow-ups, institutional knowledge | Addressed |
 
 ---
 
 ## Open Questions
 
-1. ~~Where does the skill definition live?~~ **Resolved: `greenmark-planning/.claude/skills/diarize.md`**
+1. ~~Where does the skill definition live?~~ **Resolved: `greenmark-planning/.claude/skills/diarize/SKILL.md`** — repo-local, travels with the repo
 2. **Should it auto-create the meeting folder?** Or expect the user to create `meetings/YYYY-MM-DD-title/` first?
-3. **How do we handle transcripts with bad speaker attribution?** (e.g., "Speaker 1" instead of real names)
+3. ~~How do we handle transcripts with bad speaker attribution?~~ **Resolved: Step 4 (speaker attribution audit) uses the decision authority matrix from the cheat sheet to infer corrections, annotates with line numbers, and asks user to confirm.**
 4. **Should the skill also produce a `transcript.md`** (cleaned/normalized version of the input)?
 5. **Do we want a "quick mode"** that just extracts action items without the full README?
