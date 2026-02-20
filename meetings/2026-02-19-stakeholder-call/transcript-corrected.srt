@@ -1,0 +1,5981 @@
+
+Meeting created at: 19th Feb, 2026 - 4:30 PM1
+00:00:49,530 --> 00:00:49,810
+Daniel Shanklin: Good day.
+
+2
+00:00:49,810 --> 00:00:53,540
+Daniel Shanklin: Everybody doing all right.
+
+3
+00:00:53,620 --> 00:00:54,260
+Daniel Shanklin: Thank you.
+
+4
+00:00:55,380 --> 00:00:57,220
+Daniel Shanklin: All right, is everybody here?
+
+5
+00:00:57,940 --> 00:00:58,340
+Daniel Shanklin: We.
+
+6
+00:00:58,740 --> 00:00:59,380
+Michael D Nguyen: We are.
+
+7
+00:00:59,540 --> 00:01:01,860
+Daniel Shanklin: Got a course, got a quorum.
+
+8
+00:01:01,860 --> 00:01:02,420
+Daniel Shanklin: Okay.
+
+9
+00:01:03,860 --> 00:01:08,340
+Daniel Shanklin: Do you have any questions that you wanted to start with or you want me to present where we are?
+
+10
+00:01:08,900 --> 00:01:19,710
+Michael D Nguyen: Yeah, I think maybe before we kind of go over that, can we take kind of like one big step back and talk about just kind of like the.
+
+11
+00:01:20,430 --> 00:01:23,670
+Michael D Nguyen: Kind of the tech stack and how we're going about that?
+
+12
+00:01:23,670 --> 00:01:25,390
+Michael D Nguyen: Like I saw, you know, like, we're gonna.
+
+13
+00:01:25,550 --> 00:01:28,030
+Michael D Nguyen: It sounds like we're going to be using a postgraph database.
+
+14
+00:01:28,350 --> 00:01:32,510
+Michael D Nguyen: You know, our just kind of walking through kind of all those, you know, layers.
+
+15
+00:01:32,510 --> 00:01:32,750
+Michael D Nguyen: Right.
+
+16
+00:01:32,750 --> 00:01:46,200
+Michael D Nguyen: Like, are we going to be, you know, are we gonna have to spin up our own instance of aws, things like that, like, and like, how much are we going to be kind of sharing some of those resources with aic and if.
+
+17
+00:01:46,200 --> 00:01:52,520
+Michael D Nguyen: If we should be right, kind of from trying to keep kind of, you know, things like separate?
+
+18
+00:01:53,080 --> 00:01:54,880
+Daniel Shanklin: Sure, yeah.
+
+19
+00:01:54,880 --> 00:01:57,480
+Daniel Shanklin: Let me share my screen because I think it's the best way to do it.
+
+20
+00:01:58,040 --> 00:02:00,400
+Daniel Shanklin: There are a lot of different ways to host servers online.
+
+21
+00:02:00,400 --> 00:02:01,080
+Daniel Shanklin: Obviously.
+
+22
+00:02:01,880 --> 00:02:09,919
+Daniel Shanklin: The one we've chosen is a system called Railway, and they allow you to basically create little mini tools all over the place.
+
+23
+00:02:09,919 --> 00:02:12,409
+Daniel Shanklin: And, and so what these are called, these are projects.
+
+24
+00:02:12,569 --> 00:02:14,809
+Daniel Shanklin: These are all the different little mini projects we have going on.
+
+25
+00:02:14,969 --> 00:02:17,489
+Daniel Shanklin: But I created a project called Green Marketway Solutions.
+
+26
+00:02:17,489 --> 00:02:18,929
+Daniel Shanklin: I did that for a specific reason.
+
+27
+00:02:18,929 --> 00:02:26,368
+Daniel Shanklin: If you ever want this to be moved into the company yourself, you can take it, the project and everything that's inside of it.
+
+28
+00:02:26,368 --> 00:02:28,809
+Daniel Shanklin: And now the billing is on Greenmark directly.
+
+29
+00:02:29,049 --> 00:02:35,129
+Daniel Shanklin: But it's a good place to start because once you have project, then you can have inside of it just like AWS services.
+
+30
+00:02:36,020 --> 00:02:39,980
+Daniel Shanklin: Each of these services then connects to a GitHub, right.
+
+31
+00:02:39,980 --> 00:02:43,140
+Daniel Shanklin: Where the code is defined for that object.
+
+32
+00:02:43,300 --> 00:02:48,100
+Daniel Shanklin: So if I'm pulling data, then obviously I gotta have a database.
+
+33
+00:02:48,100 --> 00:02:50,100
+Daniel Shanklin: So that's going to be one of your objects over here.
+
+34
+00:02:50,340 --> 00:02:57,380
+Daniel Shanklin: And then a different object would be the actual, like, mini computer that goes out and grabs it and then pulls it back in on a schedule.
+
+35
+00:02:57,540 --> 00:02:59,700
+Daniel Shanklin: Any questions so far about the Railway?
+
+36
+00:03:01,870 --> 00:03:06,670
+Michael D Nguyen: So in layman's terms, what exactly is real?
+
+37
+00:03:07,630 --> 00:03:08,750
+Michael D Nguyen: It's not a database.
+
+38
+00:03:08,750 --> 00:03:09,070
+Michael D Nguyen: Right.
+
+39
+00:03:11,710 --> 00:03:12,910
+Michael D Nguyen: What exactly is it?
+
+40
+00:03:13,310 --> 00:03:14,110
+Daniel Shanklin: It would be.
+
+41
+00:03:16,190 --> 00:03:17,310
+Daniel Shanklin: Yeah, it's a good question.
+
+42
+00:03:17,390 --> 00:03:21,790
+Daniel Shanklin: It would be like a Dr. Horton neighborhood, and then the thousands of homes.
+
+43
+00:03:22,030 --> 00:03:26,670
+Daniel Shanklin: So these would be the streets, and then these would be the homes that are inside of them.
+
+44
+00:03:26,670 --> 00:03:30,900
+Daniel Shanklin: And so Railway manages the whole neighborhood of your infrastructure and the billing.
+
+45
+00:03:30,900 --> 00:03:35,140
+Daniel Shanklin: And one of the great Things you want about it is they got a.
+
+46
+00:03:35,540 --> 00:03:36,980
+Daniel Shanklin: The neighborhood has a watchman.
+
+47
+00:03:37,380 --> 00:03:40,500
+Daniel Shanklin: So I can tell you if there's like anybody who's trying to break in things like that.
+
+48
+00:03:40,500 --> 00:03:40,820
+Michael D Nguyen: Yeah.
+
+49
+00:03:40,820 --> 00:03:44,500
+Daniel Shanklin: To get observability statistics into what's going on in the neighborhood.
+
+50
+00:03:45,140 --> 00:03:48,420
+Daniel Shanklin: It's really no different than aws.
+
+51
+00:03:49,380 --> 00:03:54,590
+Daniel Shanklin: And the best way to put that would be that each of these is actually not a home, it's a mobile home.
+
+52
+00:03:55,950 --> 00:04:00,990
+Daniel Shanklin: So this little thing right here, you can move it to AWS next week, tomorrow, whenever you need to.
+
+53
+00:04:01,230 --> 00:04:07,070
+Daniel Shanklin: Because it gets its code and its infrastructure is all just kind of like a portable device.
+
+54
+00:04:07,070 --> 00:04:08,670
+Daniel Shanklin: We call it a Docker container.
+
+55
+00:04:08,750 --> 00:04:10,910
+Daniel Shanklin: So you can move that to a different system.
+
+56
+00:04:11,310 --> 00:04:18,709
+Daniel Shanklin: I love Railway because it's very easy to deploy and it doesn't involve all the complexities that AWS puts upon people.
+
+57
+00:04:18,709 --> 00:04:25,220
+Daniel Shanklin: AWS is a really smart system, but they also were built for these like giant tech companies that have to manage big things.
+
+58
+00:04:25,460 --> 00:04:29,060
+Daniel Shanklin: It ends up being harder than managing a smaller thing in Railway.
+
+59
+00:04:29,060 --> 00:04:37,220
+Daniel Shanklin: But all that said, if you have a strong preference for aws, we take these same containers, mobile homes, we move it over there and it works on that side as well.
+
+60
+00:04:38,260 --> 00:04:39,540
+Michael D Nguyen: I don't have a preference really.
+
+61
+00:04:39,540 --> 00:04:40,740
+Michael D Nguyen: I was just trying to kind of understand.
+
+62
+00:04:40,980 --> 00:04:45,060
+Michael D Nguyen: So like, if it's similar to aws, like this is where our compute kind of happens.
+
+63
+00:04:45,060 --> 00:04:46,420
+Michael D Nguyen: Like this is where like our.
+
+64
+00:04:46,420 --> 00:04:48,980
+Michael D Nguyen: Our day, our actual data gets pulled into.
+
+65
+00:04:50,030 --> 00:04:50,510
+Daniel Shanklin: That's right.
+
+66
+00:04:50,670 --> 00:04:51,790
+Michael D Nguyen: From our systems.
+
+67
+00:04:52,110 --> 00:04:52,470
+Michael D Nguyen: Okay.
+
+68
+00:04:52,470 --> 00:04:52,950
+Daniel Shanklin: Exactly.
+
+69
+00:04:52,950 --> 00:04:56,590
+Michael D Nguyen: Makes it gives us cool.
+
+70
+00:04:56,590 --> 00:04:59,790
+Daniel Shanklin: It gives us another advantage of one security layer.
+
+71
+00:04:59,870 --> 00:05:04,630
+Daniel Shanklin: So I'm building an AI powered chief Information Security Officer.
+
+72
+00:05:04,630 --> 00:05:18,780
+Daniel Shanklin: I was actually just working on him and his job is to crawl around and look at these things for bugs, holes and things that we probably shouldn't have done that way, by having it all in the same place, it does give me the advantage of not having to rewrite it to work on two different neighborhoods, so to speak.
+
+73
+00:05:19,100 --> 00:05:19,820
+Daniel Shanklin: There we go.
+
+74
+00:05:23,500 --> 00:05:24,460
+Michael D Nguyen: And so are we.
+
+75
+00:05:24,700 --> 00:05:31,900
+Michael D Nguyen: Is Greenmark on its own billing platform for this at this point or is it included in aic?
+
+76
+00:05:32,380 --> 00:05:33,260
+Daniel Shanklin: It's a good question.
+
+77
+00:05:33,420 --> 00:05:38,980
+Daniel Shanklin: So as of right now, the way I did it was I actually kind of split it up.
+
+78
+00:05:38,980 --> 00:05:40,700
+Daniel Shanklin: And I'll explain why I Split it up.
+
+79
+00:05:43,190 --> 00:05:43,830
+Daniel Shanklin: GitHub.
+
+80
+00:05:44,870 --> 00:05:48,710
+Daniel Shanklin: These are all the organizations that I personally are involved in or manage.
+
+81
+00:05:49,110 --> 00:05:56,230
+Daniel Shanklin: And I said this is the perfect time to get started and have your own org with your own code and everything else.
+
+82
+00:05:56,230 --> 00:05:58,109
+Daniel Shanklin: So these are projects that you could work on.
+
+83
+00:05:58,109 --> 00:06:04,390
+Daniel Shanklin: This is like where the code would actually live, you know, like a data bot or weekly updates that I send out, that's completely separate.
+
+84
+00:06:04,870 --> 00:06:09,920
+Daniel Shanklin: I love doing that this way so that there's never like a, oh, crap, we got to move it.
+
+85
+00:06:10,000 --> 00:06:13,040
+Daniel Shanklin: Because in my experience, when you have to move, this takes a month.
+
+86
+00:06:13,840 --> 00:06:14,240
+Daniel Shanklin: Right.
+
+87
+00:06:14,480 --> 00:06:17,520
+Daniel Shanklin: It's hard to move code, but it's easy to move infrastructure.
+
+88
+00:06:17,520 --> 00:06:19,040
+Daniel Shanklin: It's actually the opposite.
+
+89
+00:06:19,680 --> 00:06:21,920
+Daniel Shanklin: Railway, on the other hand, is currently shared.
+
+90
+00:06:22,080 --> 00:06:22,600
+Daniel Shanklin: And that's.
+
+91
+00:06:22,600 --> 00:06:27,200
+Daniel Shanklin: So I didn't have to ask you all for a credit card and sign up for a new Railway account.
+
+92
+00:06:27,440 --> 00:06:31,280
+Daniel Shanklin: If you want to take the leap and do that now, it's a great time to do it.
+
+93
+00:06:31,360 --> 00:06:35,360
+Daniel Shanklin: And then what we would do is take this project here and just move it over.
+
+94
+00:06:35,360 --> 00:06:42,320
+Daniel Shanklin: I come over to Settings, come over here to like, transfer, and just move it over to a different organization, and then that's it.
+
+95
+00:06:43,840 --> 00:06:44,920
+Daniel Shanklin: What else can I tell you?
+
+96
+00:06:44,920 --> 00:06:47,920
+Daniel Shanklin: There, there will be a lot of other, like, smaller kind of bills, I guess.
+
+97
+00:06:47,920 --> 00:06:48,960
+Daniel Shanklin: You, I shouldn't say a lot.
+
+98
+00:06:48,960 --> 00:06:49,719
+Daniel Shanklin: Maybe a couple.
+
+99
+00:06:49,719 --> 00:06:53,360
+Daniel Shanklin: Like, if you decide you want a cloud account, you're already paying for that.
+
+100
+00:06:54,960 --> 00:06:57,000
+Daniel Shanklin: But, oh, one last thing.
+
+101
+00:06:57,000 --> 00:06:58,800
+Daniel Shanklin: There's another reason I like to use Railway.
+
+102
+00:06:59,000 --> 00:07:04,600
+Daniel Shanklin: You get one bill for all of your tech, so you don't have like 10 different things that you're paying for.
+
+103
+00:07:04,840 --> 00:07:05,800
+Daniel Shanklin: Hope that helps.
+
+104
+00:07:07,080 --> 00:07:16,960
+Daniel Shanklin: I'll make sure that I put in our notes, I diagram out what's shared and what is individual responsibility of Greenmark as cfo.
+
+105
+00:07:16,960 --> 00:07:17,720
+Daniel Shanklin: Do you have a preference?
+
+106
+00:07:17,880 --> 00:07:20,360
+Daniel Shanklin: Would you like to see all of it build under your company?
+
+107
+00:07:21,320 --> 00:07:37,070
+Michael D Nguyen: I mean, I, I think, like, Collins input might be valuable too, but if we're kind of, and you said it in some of your emails and notes, like, you know, just in the vein of, you know, Green Bart being, you know, its own completely kind of standalone entity.
+
+108
+00:07:37,390 --> 00:07:37,790
+Michael D Nguyen: Right.
+
+109
+00:07:38,190 --> 00:07:42,470
+Michael D Nguyen: And kind of how we're building GitHub out and the separate cloud accounts.
+
+110
+00:07:42,470 --> 00:07:45,790
+Michael D Nguyen: I mean, I think it makes sense to kind of keep it in that track.
+
+111
+00:07:45,950 --> 00:07:49,870
+Michael D Nguyen: But, you know, yeah, I, I, I,
+
+112
+00:07:50,190 --> 00:07:52,830
+Michael D Nguyen: I say it does, and it has.
+
+113
+00:07:53,490 --> 00:07:53,690
+Daniel Shanklin: It.
+
+114
+00:07:53,690 --> 00:07:56,410
+Michael D Nguyen: I think it has to do with like, control groups.
+
+115
+00:07:56,410 --> 00:07:56,690
+Michael D Nguyen: Right.
+
+116
+00:07:56,690 --> 00:08:05,090
+Michael D Nguyen: Like, we want, you know, like the way we set up Greenmark was like it was in a separate control group from kind of Jetta and aic.
+
+117
+00:08:05,730 --> 00:08:12,610
+Michael D Nguyen: So, like, that's how, that's why we could, you know, from benefits to things like that, even though, like, it's, you know, technically a subsidiary.
+
+118
+00:08:12,610 --> 00:08:18,450
+Michael D Nguyen: But we didn't want to, you know, we wanted the flexibility to be able to peel things off.
+
+119
+00:08:19,020 --> 00:08:24,860
+Michael D Nguyen: And so I think from that vein, like all this, it should be, it probably should be Separate.
+
+120
+00:08:27,580 --> 00:08:28,620
+Michael D Nguyen: It should be separate.
+
+121
+00:08:28,620 --> 00:08:37,580
+Michael D Nguyen: And then, you know, whatever info that we need, you know, can flow from this instance kind of into AIC to kind of feed AICS kind of databases.
+
+122
+00:08:38,620 --> 00:08:44,260
+Daniel Shanklin: Yeah, I think we could probably, if I may think of it like we do the office, which is.
+
+123
+00:08:44,260 --> 00:08:50,690
+Daniel Shanklin: You got all the separate billing, but sometimes in an extraordinary case, you might, Michael, have an office in the 25th floor.
+
+124
+00:08:50,840 --> 00:08:53,160
+Daniel Shanklin: We don't call that like a, you know, a shared bill.
+
+125
+00:08:53,640 --> 00:08:58,040
+Daniel Shanklin: So I. I can't think of any single thing right now that shouldn't be peeled off.
+
+126
+00:08:58,040 --> 00:09:00,920
+Daniel Shanklin: But if we do peel off railway, you have to get a Pro account.
+
+127
+00:09:01,560 --> 00:09:05,000
+Daniel Shanklin: It's 20 bucks a month, and then you get $20 of credits.
+
+128
+00:09:05,240 --> 00:09:06,120
+Daniel Shanklin: That's the way it works.
+
+129
+00:09:06,120 --> 00:09:07,640
+Daniel Shanklin: So you get a minimum spend.
+
+130
+00:09:08,200 --> 00:09:08,680
+Michael D Nguyen: Yeah.
+
+131
+00:09:09,720 --> 00:09:13,480
+Michael D Nguyen: And so how does it work to where, like you said, like, all the rest of the.
+
+132
+00:09:13,960 --> 00:09:16,640
+Michael D Nguyen: The tech stack gets kind of build through railway.
+
+133
+00:09:16,640 --> 00:09:17,880
+Michael D Nguyen: Like, how does that kind of.
+
+134
+00:09:18,870 --> 00:09:20,230
+Michael D Nguyen: So like any, you know,
+
+135
+00:09:21,990 --> 00:09:22,950
+Daniel Shanklin: like, how do you actually.
+
+136
+00:09:23,270 --> 00:09:25,630
+Daniel Shanklin: How do you see all the different things that are going on in there?
+
+137
+00:09:25,630 --> 00:09:26,790
+Daniel Shanklin: The tech stack, Is that right?
+
+138
+00:09:27,510 --> 00:09:28,630
+Michael D Nguyen: Yeah, that and just like.
+
+139
+00:09:28,630 --> 00:09:31,830
+Michael D Nguyen: Do they just have like, deals with like, you know, say, like, you say we.
+
+140
+00:09:31,910 --> 00:09:44,240
+Michael D Nguyen: There's like a ETL or an ELT tool that is off the shelf that we want to use like, that you can, you basically quote, unquote, buy it through railway instead of like going to each separate kind of thing.
+
+141
+00:09:44,640 --> 00:09:45,400
+Daniel Shanklin: You got it.
+
+142
+00:09:45,400 --> 00:09:57,440
+Daniel Shanklin: And Docker image, if y' all ever heard of like a virtual machine where you can like, log into a computer remotely and then, yes, you know, hosted Docker is like a much smaller version of that where they.
+
+143
+00:09:57,440 --> 00:10:03,680
+Daniel Shanklin: Somebody figured out a way to make you a mini computer, but it's actually like even that shared across the same os.
+
+144
+00:10:03,680 --> 00:10:05,200
+Daniel Shanklin: So you can think of it more like a little program.
+
+145
+00:10:05,440 --> 00:10:07,360
+Daniel Shanklin: They're siloed, they're secure, everybody.
+
+146
+00:10:07,600 --> 00:10:09,360
+Daniel Shanklin: This is a very common stack.
+
+147
+00:10:10,010 --> 00:10:14,890
+Daniel Shanklin: But every little ETL tool or something that you build is a Docker image.
+
+148
+00:10:15,210 --> 00:10:19,450
+Daniel Shanklin: An image describes like, I am a database, I am a program.
+
+149
+00:10:19,930 --> 00:10:22,250
+Daniel Shanklin: And then it has like, you know, who's allowed to use it.
+
+150
+00:10:22,410 --> 00:10:29,850
+Daniel Shanklin: And once you go into GitHub and you define all those rules about that image, you know, I know I'm a database, and I need to be this size.
+
+151
+00:10:30,090 --> 00:10:32,690
+Daniel Shanklin: Once you put in a railway rule, it's like, oh, I know what to build you.
+
+152
+00:10:32,690 --> 00:10:36,010
+Daniel Shanklin: And they just stick it up in the cloud, and then you end up with this.
+
+153
+00:10:36,890 --> 00:10:41,130
+Daniel Shanklin: So as an example, this is the Cerebro site itself, right.
+
+154
+00:10:41,610 --> 00:10:43,930
+Daniel Shanklin: That you could go to and you could go Visit it.
+
+155
+00:10:44,170 --> 00:10:44,730
+Daniel Shanklin: Let's see.
+
+156
+00:10:46,410 --> 00:10:46,850
+Daniel Shanklin: Yeah.
+
+157
+00:10:46,850 --> 00:10:47,930
+Daniel Shanklin: So you can log into that.
+
+158
+00:10:48,010 --> 00:10:48,650
+Daniel Shanklin: That's a website.
+
+159
+00:10:48,650 --> 00:10:50,410
+Daniel Shanklin: It's running as a docker container.
+
+160
+00:10:50,730 --> 00:10:52,730
+Daniel Shanklin: However, the QA site is different.
+
+161
+00:10:54,010 --> 00:10:57,290
+Daniel Shanklin: I talked about this previously on a call, but I'll mention it again.
+
+162
+00:10:58,250 --> 00:11:06,730
+Daniel Shanklin: For me, QA is as big, if not bigger, than the actual product itself, because it's the thing that checks to make sure everything works right.
+
+163
+00:11:06,730 --> 00:11:08,810
+Daniel Shanklin: It's like you're doing all the reconciliation work.
+
+164
+00:11:09,370 --> 00:11:15,050
+Daniel Shanklin: So you can imagine, like, reconciliation for an accountant is typically a bigger spreadsheet than just the balance sheet.
+
+165
+00:11:16,010 --> 00:11:19,170
+Daniel Shanklin: So I love to start them as separate docker containers.
+
+166
+00:11:19,170 --> 00:11:24,490
+Daniel Shanklin: So that way Daniel can work on QA without ever having to release a code change that changes what you're looking at.
+
+167
+00:11:24,650 --> 00:11:25,370
+Daniel Shanklin: That helps.
+
+168
+00:11:26,010 --> 00:11:26,490
+Daniel Shanklin: Cool.
+
+169
+00:11:27,930 --> 00:11:30,410
+Daniel Shanklin: Any question I didn't answer about the docker part.
+
+170
+00:11:30,730 --> 00:11:32,570
+Daniel Shanklin: There's so much here we're scratching the surface, but.
+
+171
+00:11:32,640 --> 00:11:37,120
+Daniel Shanklin: But I feel like that's a good mental model for how these things build up.
+
+172
+00:11:37,840 --> 00:11:38,320
+Michael D Nguyen: Yeah.
+
+173
+00:11:38,720 --> 00:11:46,400
+Michael D Nguyen: And so we're choosing postgres to set on top of railway, kind of as a database.
+
+174
+00:11:47,120 --> 00:11:47,560
+Daniel Shanklin: Yeah.
+
+175
+00:11:47,560 --> 00:11:49,440
+Daniel Shanklin: You know, that would be.
+
+176
+00:11:50,880 --> 00:11:52,400
+Daniel Shanklin: I'm not even going to quivocate on this.
+
+177
+00:11:52,400 --> 00:11:53,440
+Daniel Shanklin: It would be my preference.
+
+178
+00:11:53,920 --> 00:11:58,240
+Michael D Nguyen: If you don't have one, I have no preference.
+
+179
+00:11:58,320 --> 00:12:01,200
+Michael D Nguyen: And snowflakes, the only other thing that I've ever used.
+
+180
+00:12:01,280 --> 00:12:04,080
+Michael D Nguyen: And, you know, it was pretty lightly at best, so.
+
+181
+00:12:04,640 --> 00:12:06,480
+Daniel Shanklin: Okay, got it.
+
+182
+00:12:08,160 --> 00:12:08,720
+Daniel Shanklin: Yep.
+
+183
+00:12:08,720 --> 00:12:13,840
+Daniel Shanklin: So one postgres, and the way I build stuff is on a plugin architecture.
+
+184
+00:12:13,840 --> 00:12:15,680
+Daniel Shanklin: So I wish I had a diagram here, but you can.
+
+185
+00:12:15,680 --> 00:12:21,440
+Daniel Shanklin: If you're looking at my screen, imagine for a moment that this is the central hub and we'll put Cerebra at the top so you can see that.
+
+186
+00:12:21,920 --> 00:12:25,520
+Daniel Shanklin: And now imagine that each of your data providers, they're like a little plugins.
+
+187
+00:12:25,760 --> 00:12:34,430
+Daniel Shanklin: Now, they're actually all going to be in the same container, but inside of the container there would be another chart just like this, and we would write one per data provider.
+
+188
+00:12:34,590 --> 00:12:44,270
+Daniel Shanklin: And so our job is just to figure out how to make that thing go out, grab things, check it, pull it in, and then they all move into the same postgres and we split them up.
+
+189
+00:12:44,270 --> 00:12:48,150
+Daniel Shanklin: And the QA system's job is to look at that kind of stuff.
+
+190
+00:12:48,150 --> 00:12:51,310
+Daniel Shanklin: And it has probably like 500,000 checks that it's going to run.
+
+191
+00:12:51,710 --> 00:12:57,310
+Daniel Shanklin: And when I was cutting my teeth on building these, it would have taken six months to build this.
+
+192
+00:12:57,310 --> 00:13:02,240
+Daniel Shanklin: But it's now a day today because you just have to know what you're trying to build.
+
+193
+00:13:02,320 --> 00:13:06,400
+Daniel Shanklin: So those phone calls you gave the docs, that was Incredible.
+
+194
+00:13:06,400 --> 00:13:12,080
+Daniel Shanklin: Because I can take that transcript and basically ask it like, go build something that's to this spec.
+
+195
+00:13:13,120 --> 00:13:16,960
+Daniel Shanklin: As we have more phone calls, I'll take that recording and we'll just redo the spec.
+
+196
+00:13:17,760 --> 00:13:18,400
+Daniel Shanklin: Okay.
+
+197
+00:13:19,120 --> 00:13:21,320
+Daniel Shanklin: So that's infrastructure wise how I do it.
+
+198
+00:13:21,320 --> 00:13:22,240
+Daniel Shanklin: What's it going to cost?
+
+199
+00:13:22,720 --> 00:13:24,720
+Daniel Shanklin: They charge by cpu.
+
+200
+00:13:25,340 --> 00:13:29,180
+Daniel Shanklin: So like how much compute, how much storage you use.
+
+201
+00:13:29,420 --> 00:13:34,220
+Daniel Shanklin: And then sometimes nobody really ever gets this bill, but they do a bandwidth bill.
+
+202
+00:13:35,100 --> 00:13:35,660
+Daniel Shanklin: It's.
+
+203
+00:13:35,900 --> 00:13:37,620
+Daniel Shanklin: You don't have to calculate all this stuff.
+
+204
+00:13:37,620 --> 00:13:40,540
+Daniel Shanklin: And let me tell you, it's like literally probably 20 or 30 bucks a month.
+
+205
+00:13:40,859 --> 00:13:49,420
+Daniel Shanklin: Where it becomes a huge deal is if you had Internet of things devices sending video after video and we had to store all that's when it would be a conversation.
+
+206
+00:13:50,790 --> 00:13:51,110
+Daniel Shanklin: Yeah.
+
+207
+00:13:52,230 --> 00:14:01,590
+Michael D Nguyen: And then so then the next kind of layer and in the stack, like to get data kind of into the database.
+
+208
+00:14:01,590 --> 00:14:02,390
+Michael D Nguyen: Like are we.
+
+209
+00:14:02,870 --> 00:14:07,190
+Michael D Nguyen: Is the plan to build our own connectors or have you found kind of some.
+
+210
+00:14:07,270 --> 00:14:10,390
+Michael D Nguyen: And I might be cutting into kind of your little email here.
+
+211
+00:14:10,390 --> 00:14:13,190
+Michael D Nguyen: Have we found off the shelf stuff that you think is suitable?
+
+212
+00:14:13,910 --> 00:14:15,030
+Daniel Shanklin: It's a good question.
+
+213
+00:14:15,750 --> 00:14:22,990
+Daniel Shanklin: I had this chat earlier this week with like three different AIs because I was like, what should we do now?
+
+214
+00:14:23,070 --> 00:14:27,870
+Daniel Shanklin: In the old days you used Dagster was really common.
+
+215
+00:14:29,310 --> 00:14:31,950
+Daniel Shanklin: This was a modern data orchestration.
+
+216
+00:14:32,430 --> 00:14:34,030
+Daniel Shanklin: Pretty cool tool, moves everything.
+
+217
+00:14:35,710 --> 00:14:36,790
+Daniel Shanklin: I'm still a big fan.
+
+218
+00:14:36,790 --> 00:14:40,510
+Daniel Shanklin: And it's open source and it's a Docker container, so you can put that in the railway.
+
+219
+00:14:41,390 --> 00:14:43,230
+Daniel Shanklin: Different one would be like airflow.
+
+220
+00:14:43,710 --> 00:14:45,710
+Daniel Shanklin: There's all these different companies that have come up with these.
+
+221
+00:14:45,710 --> 00:14:46,030
+Daniel Shanklin: Right.
+
+222
+00:14:46,670 --> 00:15:00,270
+Daniel Shanklin: But all three of them, all three AI is settled on the idea that like, if you just ask me to build a simple pipeline, we can test it first, make sure it works, and within a day we'll know if it's doing everything you need and more.
+
+223
+00:15:00,430 --> 00:15:01,230
+Daniel Shanklin: If it's not.
+
+224
+00:15:01,550 --> 00:15:06,750
+Daniel Shanklin: I'll help you move it into Dagster, which is like a bigger thing and its biggest pitch for that.
+
+225
+00:15:06,750 --> 00:15:08,270
+Daniel Shanklin: All three of them said the same thing.
+
+226
+00:15:09,160 --> 00:15:11,800
+Daniel Shanklin: It shows you how much trust I have in AI on the architecture stuff.
+
+227
+00:15:11,880 --> 00:15:15,480
+Daniel Shanklin: All three of them said, humans don't manage this anymore.
+
+228
+00:15:15,480 --> 00:15:15,960
+Daniel Shanklin: I do.
+
+229
+00:15:16,280 --> 00:15:23,000
+Daniel Shanklin: So like the dashboard for, you know, control is not a major overriding concern.
+
+230
+00:15:23,240 --> 00:15:28,000
+Daniel Shanklin: If you choose Dagster, you'll probably end up with more bloat than if I just did it for you.
+
+231
+00:15:28,000 --> 00:15:30,120
+Daniel Shanklin: And I thought that's kind of interesting.
+
+232
+00:15:31,080 --> 00:15:32,760
+Daniel Shanklin: I don't have a strong preference.
+
+233
+00:15:32,840 --> 00:15:35,720
+Daniel Shanklin: I will tell you that pre AI, I would have sold you on Dexter.
+
+234
+00:15:35,720 --> 00:15:38,440
+Daniel Shanklin: And now I'm probably saying, what if we just.
+
+235
+00:15:38,760 --> 00:15:39,880
+Daniel Shanklin: What if we don't do that?
+
+236
+00:15:39,880 --> 00:15:43,960
+Daniel Shanklin: What if we just have it write some basic Python scripts and then see if it works?
+
+237
+00:15:44,920 --> 00:15:45,720
+Daniel Shanklin: Any thoughts?
+
+238
+00:15:48,680 --> 00:15:50,440
+Michael D Nguyen: AI is going to destroy us.
+
+239
+00:15:50,840 --> 00:15:52,280
+Michael D Nguyen: That's my only thought.
+
+240
+00:15:52,760 --> 00:15:53,720
+Daniel Shanklin: It's crazy.
+
+241
+00:15:53,960 --> 00:15:54,360
+Daniel Shanklin: It's.
+
+242
+00:15:54,360 --> 00:15:55,080
+Daniel Shanklin: It's wild.
+
+243
+00:15:55,480 --> 00:16:06,570
+Daniel Shanklin: But I also, ironically, I don't think it's wrong, because its whole point was that I can orchestrate the tooling without the overhead of a system that was intended to manage this.
+
+244
+00:16:07,290 --> 00:16:07,690
+Michael D Nguyen: Right.
+
+245
+00:16:08,330 --> 00:16:09,850
+Daniel Shanklin: Also worth mentioning that we do.
+
+246
+00:16:09,850 --> 00:16:12,530
+Daniel Shanklin: We did the same thing for Sable and Meridian, and they do work.
+
+247
+00:16:12,530 --> 00:16:13,690
+Daniel Shanklin: I mean, it's pretty wild.
+
+248
+00:16:14,170 --> 00:16:17,050
+Daniel Shanklin: So cost.
+
+249
+00:16:17,370 --> 00:16:18,610
+Daniel Shanklin: The cost of being wrong.
+
+250
+00:16:18,610 --> 00:16:21,850
+Daniel Shanklin: It's a two days of Daniel's time to move it, you know?
+
+251
+00:16:21,930 --> 00:16:22,410
+Michael D Nguyen: Yeah.
+
+252
+00:16:23,050 --> 00:16:34,740
+Michael D Nguyen: And my guess, too, is, like, you know, the same way that you can use AI to kind of build these simple connectors and not have the overhead of, like, an entire other system.
+
+253
+00:16:35,460 --> 00:16:35,980
+Michael D Nguyen: It can.
+
+254
+00:16:35,980 --> 00:16:38,500
+Michael D Nguyen: If there's any errors and stuff, it can fix itself.
+
+255
+00:16:39,620 --> 00:16:40,180
+Daniel Shanklin: It's not.
+
+256
+00:16:40,180 --> 00:16:42,340
+Daniel Shanklin: It's not unheard of, and it's not untrue.
+
+257
+00:16:43,620 --> 00:16:45,180
+Daniel Shanklin: I know you'll read a lot on LinkedIn about.
+
+258
+00:16:45,180 --> 00:16:45,740
+Daniel Shanklin: That's not true.
+
+259
+00:16:45,740 --> 00:16:46,620
+Daniel Shanklin: It actually is true.
+
+260
+00:16:46,620 --> 00:16:49,220
+Daniel Shanklin: Like, the people at the front of this are doing that.
+
+261
+00:16:49,220 --> 00:16:50,220
+Daniel Shanklin: So pretty.
+
+262
+00:16:50,220 --> 00:16:50,620
+Michael D Nguyen: Yeah.
+
+263
+00:16:50,620 --> 00:16:51,140
+Daniel Shanklin: Okay.
+
+264
+00:16:53,310 --> 00:16:53,710
+Michael D Nguyen: Okay.
+
+265
+00:16:54,590 --> 00:17:00,830
+Daniel Shanklin: So I'll just spend 30 seconds explaining what I already did so that, you know, like, why is there so much code already?
+
+266
+00:17:00,990 --> 00:17:06,829
+Daniel Shanklin: Well, you gave me a long list, and I thought, I wonder how hard each of these is even going to be to do.
+
+267
+00:17:06,990 --> 00:17:08,190
+Daniel Shanklin: We don't know the answer to that.
+
+268
+00:17:08,190 --> 00:17:15,710
+Daniel Shanklin: So I said, just go do some research for me and go figure out all the different things that we might need to pull from, like, Navisoft or Fleet or whatever.
+
+269
+00:17:15,950 --> 00:17:29,160
+Daniel Shanklin: So I did the research and pulled the docs in, and then I said, now I want you to actually go make up data, like fake data from the CRM, the Fleet system, from Navisoft, and say, so your job is to literally go make it up.
+
+270
+00:17:29,400 --> 00:17:32,920
+Daniel Shanklin: So I wrote a script that makes up an entire fake company.
+
+271
+00:17:33,400 --> 00:17:39,840
+Daniel Shanklin: And then I said, now I want you to review that and see what you think about, like, what you've pulled in and what the problems are.
+
+272
+00:17:39,840 --> 00:17:44,920
+Daniel Shanklin: And so wrote me a long list of, like, hey, this is everything that I think is going to break or cause problems as we do integration.
+
+273
+00:17:45,330 --> 00:17:50,770
+Daniel Shanklin: So literally, I put it through a video game to play the real thing to see what was going on.
+
+274
+00:17:50,770 --> 00:17:52,970
+Daniel Shanklin: And by the way, this is exactly how they train robots, Right?
+
+275
+00:17:52,970 --> 00:17:56,290
+Daniel Shanklin: They put them in a thing and then they just like, let them touch around.
+
+276
+00:17:56,290 --> 00:17:59,730
+Daniel Shanklin: So I don't want you to think that any of the work done has done any integration.
+
+277
+00:17:59,730 --> 00:18:07,810
+Daniel Shanklin: It was all about giving it enough information and research so that when we get to Navisoft and plug in the key, it's like, I know what to do.
+
+278
+00:18:09,010 --> 00:18:11,730
+Michael D Nguyen: And Daniel, just so I can follow along kind of with the.
+
+279
+00:18:11,880 --> 00:18:12,800
+Michael D Nguyen: With the pronouns.
+
+280
+00:18:12,800 --> 00:18:18,040
+Michael D Nguyen: And when you say it, are you saying like, Claude code, you asked to do that, or like, what's it.
+
+281
+00:18:18,040 --> 00:18:19,040
+Michael D Nguyen: That's right, yeah.
+
+282
+00:18:19,040 --> 00:18:19,680
+Daniel Shanklin: It's a good question.
+
+283
+00:18:19,680 --> 00:18:20,520
+Daniel Shanklin: Claude code.
+
+284
+00:18:20,680 --> 00:18:26,440
+Daniel Shanklin: So this little guy right here, each one of these is kind of doing different stuff, right?
+
+285
+00:18:27,160 --> 00:18:36,840
+Daniel Shanklin: But I've got all these different ones, and they actually write code directly to my computer and they change the code and then they do what's called a commit process.
+
+286
+00:18:36,840 --> 00:18:42,320
+Daniel Shanklin: It's like they just flag it as like, I'm done, and then it gives me a chance to review it.
+
+287
+00:18:42,560 --> 00:18:45,840
+Daniel Shanklin: And once that's done, it then pushes it up here.
+
+288
+00:18:46,320 --> 00:18:49,440
+Daniel Shanklin: And so when we look here, this is a list of 12 commits.
+
+289
+00:18:49,440 --> 00:18:52,960
+Daniel Shanklin: It's 12 different times that AI made a change to the data process.
+
+290
+00:18:53,520 --> 00:18:57,320
+Daniel Shanklin: And any one of these I click, I can go back and see what it changed as well.
+
+291
+00:18:57,320 --> 00:18:59,440
+Daniel Shanklin: So total observability into what it's doing.
+
+292
+00:18:59,440 --> 00:19:00,720
+Daniel Shanklin: I think that's fantastic.
+
+293
+00:19:00,960 --> 00:19:08,570
+Daniel Shanklin: But the process is go to CODe, ask it for something, have it build it, put it into GitHub, and then it ended up going to the website.
+
+294
+00:19:08,730 --> 00:19:10,810
+Daniel Shanklin: There's more detail behind that, but that's.
+
+295
+00:19:10,810 --> 00:19:12,810
+Daniel Shanklin: That's really how the pipeline works.
+
+296
+00:19:13,370 --> 00:19:14,010
+Daniel Shanklin: Is that all?
+
+297
+00:19:14,330 --> 00:19:14,890
+Daniel Shanklin: Go ahead.
+
+298
+00:19:15,290 --> 00:19:17,210
+Michael D Nguyen: GitHub, like, at a high level, it's just.
+
+299
+00:19:17,450 --> 00:19:18,010
+Michael D Nguyen: It's a.
+
+300
+00:19:18,010 --> 00:19:22,330
+Michael D Nguyen: It's a staging area, it's a doc, a place to store documentation and code.
+
+301
+00:19:22,650 --> 00:19:28,490
+Michael D Nguyen: And from there it gets pushed to wherever, you know, to railway or wherever it needs to go.
+
+302
+00:19:28,490 --> 00:19:30,010
+Michael D Nguyen: Is that kind of how to think about it?
+
+303
+00:19:30,450 --> 00:19:31,810
+Daniel Shanklin: That's exactly how to think about it.
+
+304
+00:19:31,810 --> 00:19:34,770
+Daniel Shanklin: It also has something that we use called actions.
+
+305
+00:19:34,770 --> 00:19:36,530
+Daniel Shanklin: I'm going to show you why that's important.
+
+306
+00:19:39,010 --> 00:19:49,090
+Daniel Shanklin: So I'm going to go over to AIC holdings and then we'll go to look at ciso, Chief Information Security Officer and why actions are important.
+
+307
+00:19:49,810 --> 00:19:54,850
+Daniel Shanklin: When you write code, you obviously have to test it, and that's my job to make sure that happens.
+
+308
+00:19:55,010 --> 00:19:57,730
+Daniel Shanklin: But you also sometimes want to be able to run things.
+
+309
+00:19:59,160 --> 00:20:00,600
+Daniel Shanklin: Oh, I just received code.
+
+310
+00:20:00,840 --> 00:20:01,960
+Daniel Shanklin: What should I do next?
+
+311
+00:20:02,280 --> 00:20:06,360
+Daniel Shanklin: A review agent should look at it, a security agent or this guy or that guy.
+
+312
+00:20:06,360 --> 00:20:09,400
+Daniel Shanklin: And each of them can look at this thing and then check it for results.
+
+313
+00:20:09,800 --> 00:20:15,240
+Daniel Shanklin: And Then if they find a mistake or a problem, they'll literally stick it here on the issues board.
+
+314
+00:20:15,480 --> 00:20:16,120
+Daniel Shanklin: Look at that.
+
+315
+00:20:16,200 --> 00:20:18,120
+Daniel Shanklin: They already made one for me earlier today.
+
+316
+00:20:18,120 --> 00:20:18,880
+Daniel Shanklin: Policy review.
+
+317
+00:20:18,880 --> 00:20:20,200
+Daniel Shanklin: Daniel, you can take a look.
+
+318
+00:20:20,920 --> 00:20:21,800
+Daniel Shanklin: It's incredible.
+
+319
+00:20:22,120 --> 00:20:31,910
+Daniel Shanklin: But GitHub not only holds the code, it also holds these little automations that make my job so much easier or anybody who's managing.
+
+320
+00:20:32,230 --> 00:20:35,910
+Daniel Shanklin: And if that's not good enough, probably my favorite part of the whole thing.
+
+321
+00:20:35,910 --> 00:20:37,510
+Daniel Shanklin: Let's go to your organization.
+
+322
+00:20:42,470 --> 00:20:45,670
+Daniel Shanklin: Go into Greenmark, go into repositories.
+
+323
+00:20:45,670 --> 00:20:51,480
+Daniel Shanklin: We're going to start with the very first one I created which was kickoff 2020 26.
+
+324
+00:20:51,960 --> 00:20:53,480
+Daniel Shanklin: I asked Claude code.
+
+325
+00:20:54,520 --> 00:20:55,880
+Daniel Shanklin: We had a kickoff call.
+
+326
+00:20:56,280 --> 00:21:01,880
+Daniel Shanklin: So I need you to create a folder structure for me with readme files and all this other stuff.
+
+327
+00:21:01,880 --> 00:21:04,360
+Daniel Shanklin: And I want you to describe what happened during that meeting.
+
+328
+00:21:04,440 --> 00:21:06,120
+Daniel Shanklin: So like it creates projects.
+
+329
+00:21:07,480 --> 00:21:11,440
+Daniel Shanklin: It actually basically just oh, initial research, company profile.
+
+330
+00:21:11,440 --> 00:21:14,520
+Daniel Shanklin: So it went up and looked up who's green mark and why do they matter?
+
+331
+00:21:14,840 --> 00:21:15,800
+Daniel Shanklin: Is all of this correct?
+
+332
+00:21:15,800 --> 00:21:17,330
+Daniel Shanklin: I'm not 100% sure, gentlemen.
+
+333
+00:21:17,640 --> 00:21:18,600
+Daniel Shanklin: I really couldn't say.
+
+334
+00:21:19,560 --> 00:21:24,760
+Daniel Shanklin: But I know that it did a pretty darn good job of taking what we said raw and then turning it into these.
+
+335
+00:21:25,160 --> 00:21:31,880
+Daniel Shanklin: So GitHub allows us to have these check ins where we run things through.
+
+336
+00:21:32,040 --> 00:21:36,040
+Daniel Shanklin: They change files, they update calendars or just generally files.
+
+337
+00:21:36,200 --> 00:21:37,800
+Daniel Shanklin: And then we get to watch that change.
+
+338
+00:21:38,120 --> 00:21:44,280
+Daniel Shanklin: If anybody ever came a year from now is like, hey, I want to buy Green Mart and I think you guys are worth a 10.
+
+339
+00:21:45,020 --> 00:21:47,340
+Daniel Shanklin: But how do I know how your systems work?
+
+340
+00:21:47,500 --> 00:21:49,900
+Daniel Shanklin: There's literally a log of everything you ever did.
+
+341
+00:21:49,900 --> 00:21:50,860
+Daniel Shanklin: It's all in here.
+
+342
+00:21:51,020 --> 00:21:52,060
+Daniel Shanklin: That's pretty cool too.
+
+343
+00:21:52,540 --> 00:21:53,420
+Daniel Shanklin: I'll stop there.
+
+344
+00:21:54,220 --> 00:22:01,140
+Michael D Nguyen: So in the code that sits kind of in GitHub is kind of like the source of truth that you then push out.
+
+345
+00:22:01,140 --> 00:22:02,140
+Michael D Nguyen: Does it then go.
+
+346
+00:22:02,460 --> 00:22:03,900
+Michael D Nguyen: Does it go to Railway?
+
+347
+00:22:04,140 --> 00:22:09,260
+Michael D Nguyen: Is that kind of the primary place that it goes to or where else did the code get pushed out to?
+
+348
+00:22:09,740 --> 00:22:10,620
+Daniel Shanklin: That's a great question.
+
+349
+00:22:11,090 --> 00:22:15,890
+Daniel Shanklin: I can't think of anywhere that it would go to other than Railway at present.
+
+350
+00:22:16,050 --> 00:22:16,850
+Daniel Shanklin: That's really the.
+
+351
+00:22:17,410 --> 00:22:19,290
+Daniel Shanklin: You might send it out to an agent.
+
+352
+00:22:19,290 --> 00:22:24,450
+Daniel Shanklin: If you, let's say you paid like $30 a month to for some AI, this is going to happen by the way.
+
+353
+00:22:24,770 --> 00:22:29,810
+Daniel Shanklin: We're going to get to this point where instead of hiring a Daniel, you hire a $30 a month AI who reviews your code.
+
+354
+00:22:29,810 --> 00:22:30,130
+Daniel Shanklin: Right.
+
+355
+00:22:30,290 --> 00:22:31,970
+Daniel Shanklin: So you could potentially send it there.
+
+356
+00:22:32,290 --> 00:22:32,650
+Daniel Shanklin: Here.
+
+357
+00:22:32,650 --> 00:22:36,370
+Daniel Shanklin: You'll notice that when I set up the Railway I did it by hand because I was Just being quick.
+
+358
+00:22:36,710 --> 00:22:41,590
+Daniel Shanklin: But if I go connect, I could actually connect it out directly to the GitHub.
+
+359
+00:22:41,750 --> 00:22:45,030
+Daniel Shanklin: It now watches for changes in the code and pushes them through.
+
+360
+00:22:45,590 --> 00:22:52,230
+Daniel Shanklin: To which your next question might be, what do we do if there's a code change that breaks the website?
+
+361
+00:22:53,190 --> 00:22:56,230
+Daniel Shanklin: What we do for that is GitHub allows us to.
+
+362
+00:22:56,230 --> 00:22:57,950
+Daniel Shanklin: Let's go to the data daemon here.
+
+363
+00:22:57,950 --> 00:22:59,590
+Daniel Shanklin: This is like the data thing.
+
+364
+00:23:00,070 --> 00:23:01,990
+Daniel Shanklin: It allows us to have what we call branches.
+
+365
+00:23:02,280 --> 00:23:03,800
+Daniel Shanklin: There are different versions of the code.
+
+366
+00:23:03,800 --> 00:23:05,920
+Daniel Shanklin: Right now we only have one master.
+
+367
+00:23:05,920 --> 00:23:06,920
+Daniel Shanklin: That's production.
+
+368
+00:23:06,920 --> 00:23:07,600
+Daniel Shanklin: That's the only.
+
+369
+00:23:07,600 --> 00:23:09,000
+Daniel Shanklin: That's the big kahuna.
+
+370
+00:23:09,480 --> 00:23:12,440
+Daniel Shanklin: Don't mess with it unless you know what you're doing kind of thing.
+
+371
+00:23:12,440 --> 00:23:16,440
+Daniel Shanklin: At Facebook, only people who make a million dollars a year are even allowed touch that.
+
+372
+00:23:16,440 --> 00:23:16,840
+Daniel Shanklin: Right?
+
+373
+00:23:17,000 --> 00:23:21,640
+Daniel Shanklin: But then you got junior people underneath who can work on what we call a dev branch.
+
+374
+00:23:21,640 --> 00:23:25,960
+Daniel Shanklin: It's like a separate version of the code and they can fiddle around and play with stuff.
+
+375
+00:23:25,960 --> 00:23:31,310
+Daniel Shanklin: And once they've got it to where they go and they have it tested, they'll send it up to a manager and they'll say, are you.
+
+376
+00:23:31,310 --> 00:23:37,630
+Daniel Shanklin: Can I please put this into, you know, facebook.com and the manager is going to go look through all of those changes.
+
+377
+00:23:37,790 --> 00:23:42,590
+Daniel Shanklin: They're going to look through the commit message and they're going to say, it seems like you added a bunch of stuff here.
+
+378
+00:23:42,590 --> 00:23:43,750
+Daniel Shanklin: Let's see if I agree with it.
+
+379
+00:23:43,750 --> 00:23:45,070
+Daniel Shanklin: They could even literally click on it.
+
+380
+00:23:45,070 --> 00:23:46,350
+Daniel Shanklin: But like, I disagree with that.
+
+381
+00:23:46,430 --> 00:23:48,910
+Daniel Shanklin: We don't do that anymore because we don't write code by hand.
+
+382
+00:23:48,910 --> 00:23:52,190
+Daniel Shanklin: But that is generally why this tool is so important.
+
+383
+00:23:52,430 --> 00:23:54,030
+Daniel Shanklin: It's a visibility platform.
+
+384
+00:23:55,160 --> 00:23:57,240
+Daniel Shanklin: Going back, circling to the beginning question.
+
+385
+00:23:57,560 --> 00:24:00,520
+Daniel Shanklin: The only way code should leave here is to go to Railway.
+
+386
+00:24:00,520 --> 00:24:08,440
+Daniel Shanklin: Or if you guys personally wanted to go into Claude, add the connector and then say, where are we on this project?
+
+387
+00:24:08,520 --> 00:24:09,560
+Daniel Shanklin: You could do that too.
+
+388
+00:24:10,520 --> 00:24:11,120
+Michael D Nguyen: Gotcha.
+
+389
+00:24:11,120 --> 00:24:15,640
+Michael D Nguyen: So where would we connect it and put Claude kind of into all of this process?
+
+390
+00:24:15,720 --> 00:24:17,160
+Michael D Nguyen: Like, where would that sit?
+
+391
+00:24:18,040 --> 00:24:20,040
+Daniel Shanklin: Yeah, let's do a different browser.
+
+392
+00:24:24,760 --> 00:24:28,040
+Daniel Shanklin: So I'm going to open this up here.
+
+393
+00:24:34,120 --> 00:24:35,200
+Daniel Shanklin: If you feel lost.
+
+394
+00:24:35,200 --> 00:24:39,240
+Daniel Shanklin: I was just on a call with Colin with a guy and I was lost on their AI thing.
+
+395
+00:24:42,040 --> 00:24:42,360
+Daniel Shanklin: So.
+
+396
+00:24:42,360 --> 00:24:48,250
+Daniel Shanklin: All right, if you pull this up into Chrome, which is what I have here, this is a.
+
+397
+00:24:48,970 --> 00:24:50,970
+Daniel Shanklin: The same thing I was showing you on the other browser.
+
+398
+00:24:50,970 --> 00:25:00,650
+Daniel Shanklin: But if I click on the Chrome add in, I could actually go over here and it actually literally recognizes that it's GitHub and says, like, what's going on here?
+
+399
+00:25:00,730 --> 00:25:03,850
+Daniel Shanklin: Summarize recent PR activity which puts up a prompt.
+
+400
+00:25:04,570 --> 00:25:08,330
+Daniel Shanklin: And because it's in the sidebar, it has the right to read the website.
+
+401
+00:25:08,810 --> 00:25:11,410
+Daniel Shanklin: So it comes up with a plan on how it's going to do that.
+
+402
+00:25:11,410 --> 00:25:19,390
+Daniel Shanklin: Well, I'll go here, I'll click, take a screenshot, and it's going to navigate this thing and basically look through and answer my question.
+
+403
+00:25:19,870 --> 00:25:23,670
+Daniel Shanklin: So if you are like, I don't understand what railway is, give me a plain English.
+
+404
+00:25:23,670 --> 00:25:26,590
+Daniel Shanklin: It would literally go research it and then explain it.
+
+405
+00:25:28,030 --> 00:25:33,350
+Daniel Shanklin: If I sound like I know what I'm doing, it's only because for the last two years, I've basically been able to ask it all that stuff.
+
+406
+00:25:33,350 --> 00:25:35,390
+Daniel Shanklin: You know, it's just really amazing.
+
+407
+00:25:35,390 --> 00:25:41,560
+Daniel Shanklin: And you can extend this capability here that I'm giving you to, not just GitHub, but anything.
+
+408
+00:25:41,640 --> 00:25:48,080
+Daniel Shanklin: You can be on the Cerebra website and be like, you know, give me a.
+
+409
+00:25:48,080 --> 00:25:52,480
+Daniel Shanklin: Give me a rundown of, you know, how much revenues up or down over the last six months.
+
+410
+00:25:52,480 --> 00:25:58,760
+Daniel Shanklin: And you might think that's an easy question to answer, but an AI might poke at it through from a few different lenses, and that's pretty cool, too.
+
+411
+00:25:58,920 --> 00:26:05,520
+Michael D Nguyen: So does this Claude, like, you know, because Cerebro is all internal data, right?
+
+412
+00:26:05,520 --> 00:26:06,080
+Michael D Nguyen: Like, it's.
+
+413
+00:26:06,080 --> 00:26:14,490
+Michael D Nguyen: It's taken some pretty sensitive data and just a Claude, you know, extension on a browser can do that.
+
+414
+00:26:14,570 --> 00:26:16,970
+Michael D Nguyen: Like, does it not need to tie into kind of our.
+
+415
+00:26:17,370 --> 00:26:19,530
+Michael D Nguyen: Kind of our data, you know, or like.
+
+416
+00:26:19,530 --> 00:26:19,930
+Daniel Shanklin: Right.
+
+417
+00:26:20,410 --> 00:26:21,130
+Daniel Shanklin: No, it's.
+
+418
+00:26:21,130 --> 00:26:23,050
+Daniel Shanklin: Yeah, so that's an interesting one.
+
+419
+00:26:23,530 --> 00:26:26,810
+Daniel Shanklin: It can only look at what it sees on the screen.
+
+420
+00:26:27,210 --> 00:26:29,850
+Daniel Shanklin: So if it's not here, it won't be able to assess it.
+
+421
+00:26:30,490 --> 00:26:32,970
+Daniel Shanklin: Okay, so then what happens is, as an.
+
+422
+00:26:33,050 --> 00:26:39,850
+Daniel Shanklin: As engineers, what we try to do is build the website with enough data that it could actually, you know, make a good calculation.
+
+423
+00:26:39,930 --> 00:26:42,890
+Daniel Shanklin: The old days, you would just, you know, spit out like a chart picture.
+
+424
+00:26:43,130 --> 00:26:45,050
+Daniel Shanklin: And now we say, well, maybe that's not good enough.
+
+425
+00:26:45,050 --> 00:26:49,130
+Daniel Shanklin: Maybe I should have a table below the chart so that it can read it and tell me what's going on.
+
+426
+00:26:49,770 --> 00:26:50,210
+Michael D Nguyen: Yeah.
+
+427
+00:26:50,210 --> 00:26:50,730
+Michael D Nguyen: So then.
+
+428
+00:26:51,530 --> 00:26:59,770
+Michael D Nguyen: So if we wanted kind of like something that could, we could ask, like, very detailed questions about, you know, the financials.
+
+429
+00:26:59,770 --> 00:27:02,090
+Michael D Nguyen: Like, we would have to build our own agent that.
+
+430
+00:27:02,090 --> 00:27:10,500
+Michael D Nguyen: That kind of sits within kind of our data or else, like, you know, Claude is only, like you said, is only able to read on what it sees.
+
+431
+00:27:11,460 --> 00:27:12,340
+Michael D Nguyen: So, like, if we.
+
+432
+00:27:12,340 --> 00:27:24,500
+Michael D Nguyen: And I'm kind of fast forwarding but, like, say everything's finished, and instead of, like, flipping through kind of all of the dashboards you wanted to be able to ask kind of the agent, hey, you know, what was my year over year growth?
+
+433
+00:27:24,500 --> 00:27:33,720
+Michael D Nguyen: Or, you know, what were my truck hours at this location at this time, would we have to build a separate agent that sits kind of with it inside a railway?
+
+434
+00:27:35,400 --> 00:27:37,520
+Daniel Shanklin: You do, you would.
+
+435
+00:27:37,520 --> 00:27:38,840
+Daniel Shanklin: Let me show you what that looks like.
+
+436
+00:27:40,360 --> 00:27:42,760
+Daniel Shanklin: So almost everything in.
+
+437
+00:27:43,640 --> 00:27:47,400
+Daniel Shanklin: Let me pull up a diagram so everybody can see this three layer architecture.
+
+438
+00:27:47,400 --> 00:28:00,030
+Daniel Shanklin: Almost everything that we build certainly here and kind of in the web at large, is done in what we call a three layer architecture where you have a database where you store the raw things, then you have a server that it could talk to.
+
+439
+00:28:00,030 --> 00:28:06,070
+Daniel Shanklin: This would be like APIs, you know, or it could be the little railway application and then you have what it's presented on.
+
+440
+00:28:06,070 --> 00:28:06,390
+Daniel Shanklin: Right.
+
+441
+00:28:06,790 --> 00:28:09,910
+Daniel Shanklin: And I bring this up because I'm going to show you at aic,
+
+442
+00:28:11,750 --> 00:28:12,030
+Michael D Nguyen: we.
+
+443
+00:28:12,030 --> 00:28:14,470
+Daniel Shanklin: have bots and this one's a safe bot that I can do.
+
+444
+00:28:14,470 --> 00:28:17,030
+Daniel Shanklin: I can show this one without showing any proprietary information.
+
+445
+00:28:17,590 --> 00:28:22,430
+Daniel Shanklin: But I literally said to it in Slack, hey, what's the price of Apple?
+
+446
+00:28:22,430 --> 00:28:26,470
+Daniel Shanklin: And it came back, so why Slack instead of just building our own?
+
+447
+00:28:27,110 --> 00:28:33,590
+Daniel Shanklin: And it's because Daniel can become good at this and let Slack manage this tier.
+
+448
+00:28:33,670 --> 00:28:34,030
+Daniel Shanklin: Right.
+
+449
+00:28:34,030 --> 00:28:40,630
+Daniel Shanklin: I don't have to build the chat interface, I can just build the AI logic.
+
+450
+00:28:40,950 --> 00:28:42,310
+Daniel Shanklin: Can you build this in a website?
+
+451
+00:28:42,310 --> 00:28:43,670
+Daniel Shanklin: I absolutely think you can.
+
+452
+00:28:44,070 --> 00:28:49,510
+Daniel Shanklin: But for a team like our size that's trying to scale, there's a huge benefit to possibly just doing it in teams.
+
+453
+00:28:49,510 --> 00:28:49,990
+Daniel Shanklin: Or Slack.
+
+454
+00:28:51,120 --> 00:28:53,520
+Michael D Nguyen: Yeah, I think you use teams.
+
+455
+00:28:53,520 --> 00:28:55,120
+Michael D Nguyen: So yeah, like that was kind of.
+
+456
+00:28:55,120 --> 00:28:58,160
+Michael D Nguyen: My next question is, could you, instead of Slack, could you do teams?
+
+457
+00:28:59,760 --> 00:29:00,320
+Daniel Shanklin: Yep.
+
+458
+00:29:00,720 --> 00:29:06,440
+Daniel Shanklin: So since we're on tech talk here, no reason not to show y'.
+
+459
+00:29:06,440 --> 00:29:06,640
+Daniel Shanklin: All.
+
+460
+00:29:06,960 --> 00:29:10,160
+Daniel Shanklin: The Microsoft Graph API is how you do all that.
+
+461
+00:29:10,480 --> 00:29:14,800
+Daniel Shanklin: They came up with like their own little hub for how to talk to things.
+
+462
+00:29:14,800 --> 00:29:15,400
+Daniel Shanklin: Oh, my God.
+
+463
+00:29:15,400 --> 00:29:17,510
+Daniel Shanklin: I wouldn't, I wouldn't bother reading it because it's too long.
+
+464
+00:29:18,220 --> 00:29:19,420
+Daniel Shanklin: I thought I'd get a nice image.
+
+465
+00:29:19,660 --> 00:29:25,580
+Daniel Shanklin: The Graph API is this central thing there it is where you get entrance into.
+
+466
+00:29:26,460 --> 00:29:28,940
+Daniel Shanklin: Let's say you're a teams person.
+
+467
+00:29:29,180 --> 00:29:30,380
+Daniel Shanklin: What's cool about teams?
+
+468
+00:29:30,380 --> 00:29:33,020
+Daniel Shanklin: You're already inside the walled garden.
+
+469
+00:29:33,020 --> 00:29:34,140
+Daniel Shanklin: You've already passed security.
+
+470
+00:29:34,860 --> 00:29:42,140
+Daniel Shanklin: So like any data that's going on would either pass between this thing and railway or between this thing and your teams.
+
+471
+00:29:42,460 --> 00:29:44,420
+Daniel Shanklin: It reduces your attack surface.
+
+472
+00:29:44,420 --> 00:29:44,580
+Daniel Shanklin: Right.
+
+473
+00:29:44,580 --> 00:29:46,060
+Daniel Shanklin: There's so many fewer things to look at.
+
+474
+00:29:46,300 --> 00:29:50,030
+Daniel Shanklin: But Graph is really cool because it could hook into like OneDrive.
+
+475
+00:29:50,030 --> 00:29:52,550
+Daniel Shanklin: It could hook into just about anything.
+
+476
+00:29:52,790 --> 00:30:04,910
+Daniel Shanklin: But you have to be a Microsoft user pretty heavily to do this at aic, we kind of made the choice that, like, since we use M files and a couple other technologies that are not really Microsoft focused, that we did.
+
+477
+00:30:04,910 --> 00:30:07,910
+Daniel Shanklin: Instead of making Microsoft the central hub, we'd make our own.
+
+478
+00:30:08,150 --> 00:30:10,550
+Daniel Shanklin: But that's a different conversation for y', all, you know?
+
+479
+00:30:11,190 --> 00:30:13,040
+Michael D Nguyen: Yeah, gotcha.
+
+480
+00:30:13,040 --> 00:30:13,600
+Michael D Nguyen: Okay.
+
+481
+00:30:13,680 --> 00:30:16,720
+Michael D Nguyen: And then the last piece of the infrastructure, you know, kind of that.
+
+482
+00:30:16,880 --> 00:30:18,680
+Michael D Nguyen: That presentation layer you're talking about.
+
+483
+00:30:18,680 --> 00:30:26,880
+Michael D Nguyen: So the actual user interface like that is just basically a website, you know, that pulls kind of the data.
+
+484
+00:30:26,880 --> 00:30:28,840
+Michael D Nguyen: So it's just pretty.
+
+485
+00:30:28,840 --> 00:30:33,360
+Michael D Nguyen: Pretty simple HTML or whatever you built it kind of with.
+
+486
+00:30:33,680 --> 00:30:35,080
+Daniel Shanklin: Okay, yeah.
+
+487
+00:30:35,080 --> 00:30:41,010
+Daniel Shanklin: And if were to even look at it, like, I don't know, Cerebro, I think it works.
+
+488
+00:30:41,010 --> 00:30:41,610
+Daniel Shanklin: Here we go.
+
+489
+00:30:42,330 --> 00:30:44,330
+Daniel Shanklin: It looks fancy, but it's actually not.
+
+490
+00:30:44,330 --> 00:30:47,890
+Daniel Shanklin: It's just a kind of an AI barf, you know?
+
+491
+00:30:47,890 --> 00:30:48,410
+Daniel Shanklin: Yeah.
+
+492
+00:30:50,090 --> 00:30:58,250
+Daniel Shanklin: So there's nothing about this that's particularly special or interesting, but it is kind of like a way we could circle things to be like, oh, I like that, or I don't like that, you know, that kind of thing.
+
+493
+00:31:00,170 --> 00:31:04,220
+Daniel Shanklin: And talking about interface, this is a chat interface where.
+
+494
+00:31:04,290 --> 00:31:05,570
+Daniel Shanklin: Why don't I love to build them?
+
+495
+00:31:05,570 --> 00:31:06,690
+Daniel Shanklin: Because you have to maintain them.
+
+496
+00:31:06,690 --> 00:31:11,330
+Daniel Shanklin: And there's just like, yeah, this thing could actually end up being more code than all the rest of it put together.
+
+497
+00:31:11,410 --> 00:31:11,810
+Michael D Nguyen: Sure.
+
+498
+00:31:13,010 --> 00:31:23,170
+Daniel Shanklin: But if you guys, for example, you like, hey, I need to add some bookmarks to the site, or I want, you know, I want central visibility, whatever that thing is, we can do that.
+
+499
+00:31:23,890 --> 00:31:27,530
+Daniel Shanklin: And going back, excuse me, I feel like I'm jumping over, but this is an important one.
+
+500
+00:31:27,530 --> 00:31:29,450
+Daniel Shanklin: I didn't want to skip Cerebro.
+
+501
+00:31:29,450 --> 00:31:30,050
+Daniel Shanklin: Mcp.
+
+502
+00:31:31,170 --> 00:31:34,370
+Daniel Shanklin: Colin knows really well about this MCP concept because we've been talking about it a lot.
+
+503
+00:31:34,850 --> 00:31:36,290
+Daniel Shanklin: He's done some research on it, too.
+
+504
+00:31:38,130 --> 00:31:40,810
+Daniel Shanklin: Anthropic came up with the thing to replace API.
+
+505
+00:31:40,810 --> 00:31:43,730
+Daniel Shanklin: And it's an API for AIs, and that's what this is.
+
+506
+00:31:44,050 --> 00:31:51,570
+Daniel Shanklin: So going back to our little diagram, imagine if instead of this being a website, it was literally an AI, Right.
+
+507
+00:31:52,690 --> 00:31:56,210
+Daniel Shanklin: The thing that bridges that is what we call mcp.
+
+508
+00:31:56,720 --> 00:31:58,800
+Daniel Shanklin: And that's why I put a page up here so you can read about it.
+
+509
+00:31:59,120 --> 00:32:07,520
+Daniel Shanklin: And it's this idea that no matter where your AI lives, it could be on your phone, could be on your Slack app, could be in teams, or it could be in your own personal chat, or it could even be here.
+
+510
+00:32:07,760 --> 00:32:12,640
+Daniel Shanklin: Wherever that AI lives, when it wants to talk to your data, it has to go through that Little middleware.
+
+511
+00:32:12,640 --> 00:32:14,320
+Daniel Shanklin: And this is the thing that enables that.
+
+512
+00:32:14,560 --> 00:32:24,320
+Daniel Shanklin: This is going to change the world because it's what allows you right now to go into, say, OpenAI and add a plugin.
+
+513
+00:32:24,420 --> 00:32:29,860
+Daniel Shanklin: If you've ever seen this feature of an AI where they're like, oh, I want to connect direct to my data, it's just an mcp.
+
+514
+00:32:29,940 --> 00:32:37,780
+Daniel Shanklin: They figured out a way to let an AI talk to the source data without having to negotiate six months of API contracts and God knows what else.
+
+515
+00:32:37,780 --> 00:32:39,460
+Daniel Shanklin: So very cool stuff.
+
+516
+00:32:39,780 --> 00:32:54,170
+Daniel Shanklin: I wouldn't start there, but it could be an amazing place to go because if we build first the data hub, right, and the logic tier, the business requirements, then you could actually make.
+
+517
+00:32:54,170 --> 00:32:57,850
+Daniel Shanklin: Build a Cerebro MCP directly into cod.
+
+518
+00:32:57,930 --> 00:32:59,250
+Daniel Shanklin: We're not talking the sidebar.
+
+519
+00:32:59,250 --> 00:33:03,530
+Daniel Shanklin: I mean, literally go to the main Claude and it just interacts with it.
+
+520
+00:33:04,250 --> 00:33:04,570
+Daniel Shanklin: So.
+
+521
+00:33:04,570 --> 00:33:06,010
+Daniel Shanklin: What a time to be alive.
+
+522
+00:33:07,130 --> 00:33:08,970
+Daniel Shanklin: Alex, did you ever think you'd live to see all this?
+
+523
+00:33:11,530 --> 00:33:12,490
+Alex Kaye: I don't know, man.
+
+524
+00:33:14,890 --> 00:33:15,690
+Daniel Shanklin: It's wild.
+
+525
+00:33:16,270 --> 00:33:18,830
+Alex Kaye: If AI can attack Venezuela, nothing's put.
+
+526
+00:33:18,830 --> 00:33:21,150
+Alex Kaye: Everything's possible, come along for the ride.
+
+527
+00:33:24,670 --> 00:33:30,110
+Daniel Shanklin: And I, we're also going to have fake speed where you'll see me do this and you'll be like, wow, that went fast.
+
+528
+00:33:30,110 --> 00:33:32,750
+Daniel Shanklin: And then there'll be some other thing and I'll be like, that's going to take a week.
+
+529
+00:33:33,310 --> 00:33:33,910
+Daniel Shanklin: And we'll.
+
+530
+00:33:33,910 --> 00:33:35,670
+Daniel Shanklin: We'll just have to see as we go what the.
+
+531
+00:33:35,670 --> 00:33:36,590
+Daniel Shanklin: What those things are.
+
+532
+00:33:36,990 --> 00:33:37,470
+Daniel Shanklin: Yeah.
+
+533
+00:33:37,790 --> 00:33:40,510
+Michael D Nguyen: So my last question, kind of on, like the.
+
+534
+00:33:40,670 --> 00:33:41,870
+Michael D Nguyen: Net stack, you know,
+
+535
+00:33:43,950 --> 00:33:44,590
+Daniel Shanklin: you know, there,
+
+536
+00:33:45,150 --> 00:33:53,870
+Michael D Nguyen: there will be kind of like, you know, you'll have the user interface, the web, kind of log it in kind of on any web browser, you know, is it.
+
+537
+00:33:54,350 --> 00:33:56,030
+Michael D Nguyen: It's going to be mobile compatible.
+
+538
+00:33:56,030 --> 00:33:58,790
+Michael D Nguyen: I think you saw, like, I think you sent something kind of on that.
+
+539
+00:33:58,790 --> 00:33:59,550
+Michael D Nguyen: Like, is that.
+
+540
+00:33:59,870 --> 00:34:02,510
+Michael D Nguyen: Is that something that we could make like a web app for?
+
+541
+00:34:02,510 --> 00:34:04,430
+Michael D Nguyen: Or is that something where you just.
+
+542
+00:34:04,430 --> 00:34:08,199
+Michael D Nguyen: You just need a browser to log in to.
+
+543
+00:34:08,440 --> 00:34:09,239
+Michael D Nguyen: To use it?
+
+544
+00:34:10,840 --> 00:34:11,840
+Daniel Shanklin: So I think you're.
+
+545
+00:34:11,840 --> 00:34:17,000
+Daniel Shanklin: You're asking me if we should make this into possibly a mobile app, is that right?
+
+546
+00:34:17,400 --> 00:34:18,360
+Michael D Nguyen: Yeah, exactly.
+
+547
+00:34:18,600 --> 00:34:22,840
+Daniel Shanklin: Okay, so I'll show you what it looks like if we can actually just kind of like demo it real quick.
+
+548
+00:34:22,840 --> 00:34:24,840
+Daniel Shanklin: I. I told it, make it mobile friendly.
+
+549
+00:34:25,400 --> 00:34:26,400
+Daniel Shanklin: That used to take a year.
+
+550
+00:34:26,400 --> 00:34:29,880
+Daniel Shanklin: Now you just tell it, yeah, make it mobile friendly.
+
+551
+00:34:30,440 --> 00:34:31,159
+Daniel Shanklin: So funny.
+
+552
+00:34:31,719 --> 00:34:32,520
+Daniel Shanklin: But there you go.
+
+553
+00:34:32,520 --> 00:34:33,980
+Daniel Shanklin: That's what it would look like on.
+
+554
+00:34:34,049 --> 00:34:36,049
+Daniel Shanklin: On mobile, which is pretty cool.
+
+555
+00:34:36,529 --> 00:34:45,489
+Daniel Shanklin: Now, where it gets a little cooler is they figured out a way to take the code for this and essentially bake it into an app.
+
+556
+00:34:46,049 --> 00:34:52,208
+Daniel Shanklin: So the same way I showed you that you have GitHub actions, there's an action for shipping this as an app.
+
+557
+00:34:52,609 --> 00:34:57,169
+Daniel Shanklin: We would have to go through a very rudimentary process with.
+
+558
+00:34:58,289 --> 00:35:02,470
+Daniel Shanklin: Excuse me, with Apple, to get you approved to put an app on the store.
+
+559
+00:35:02,550 --> 00:35:09,430
+Daniel Shanklin: That don't mean everybody gets access to it, because obviously you have to log in, but it does mean that's the process for getting it into the store.
+
+560
+00:35:10,390 --> 00:35:15,110
+Daniel Shanklin: And then you have to pay $200 a year to maintain an Apple account.
+
+561
+00:35:15,830 --> 00:35:16,470
+Daniel Shanklin: They do.
+
+562
+00:35:16,470 --> 00:35:20,430
+Daniel Shanklin: They charge that money as kind of a gatekeep to make sure that this app store stays clean.
+
+563
+00:35:20,430 --> 00:35:21,270
+Daniel Shanklin: If, like, junk.
+
+564
+00:35:21,990 --> 00:35:22,470
+Michael D Nguyen: Yeah.
+
+565
+00:35:23,750 --> 00:35:35,100
+Daniel Shanklin: If you don't need that, the other thing you can do is you can take this once we have it up, and you can basically pin it to your home screen on your iPhone and just open it up.
+
+566
+00:35:35,340 --> 00:35:37,940
+Daniel Shanklin: But me personally, I actually do love apps.
+
+567
+00:35:37,940 --> 00:35:39,700
+Daniel Shanklin: And I'll tell you why I love them.
+
+568
+00:35:39,700 --> 00:35:52,150
+Daniel Shanklin: Because when you have an app, you could literally build a camera tool for, like, finance, where someone just opens it and they're like, oh, they click it, take a picture, and that receipt is.
+
+569
+00:35:52,230 --> 00:35:53,550
+Daniel Shanklin: Is just jammed in.
+
+570
+00:35:53,550 --> 00:35:56,070
+Daniel Shanklin: And then next thing you know, AI's like, oh, that's a.
+
+571
+00:35:56,070 --> 00:35:57,230
+Daniel Shanklin: That's a QuickBooks receipt.
+
+572
+00:35:57,230 --> 00:35:59,030
+Daniel Shanklin: Or that's, you know, for this thing, I'll stick it over here.
+
+573
+00:35:59,030 --> 00:35:59,830
+Daniel Shanklin: What do you want to do?
+
+574
+00:35:59,830 --> 00:36:01,350
+Daniel Shanklin: And we could work on stuff like that.
+
+575
+00:36:01,510 --> 00:36:05,830
+Daniel Shanklin: You can't easily do that when it's just a web site on the mobile.
+
+576
+00:36:06,630 --> 00:36:07,350
+Michael D Nguyen: Gotcha.
+
+577
+00:36:08,310 --> 00:36:16,350
+Michael D Nguyen: This is a little bit of a tangent, but speaking of kind of like websites, Claude, did you use, like, quad code?
+
+578
+00:36:16,350 --> 00:36:20,920
+Michael D Nguyen: Like, is it able to optimize, like, a website from like a.
+
+579
+00:36:20,920 --> 00:36:29,360
+Michael D Nguyen: You know, from like a kind of loading speed to even, like, kind of like keywords and like, stuff like that?
+
+580
+00:36:29,680 --> 00:36:32,160
+Daniel Shanklin: Oh, yeah, I. I do love stuff like that.
+
+581
+00:36:32,160 --> 00:36:35,840
+Michael D Nguyen: Like se, like SEO, because, like, that's something, you know, for.
+
+582
+00:36:36,400 --> 00:36:40,040
+Michael D Nguyen: I think, for all the websites like Greenmark.
+
+583
+00:36:40,040 --> 00:36:44,560
+Michael D Nguyen: And I would even say aics, you know, doesn't load that quickly kind of either.
+
+584
+00:36:44,880 --> 00:36:48,480
+Michael D Nguyen: And Hometowns, because I think they're all built on.
+
+585
+00:36:49,280 --> 00:36:51,560
+Michael D Nguyen: I can't remember what AIC's website's built on.
+
+586
+00:36:51,560 --> 00:36:55,200
+Michael D Nguyen: It might be Webflow as well, but all of ours are built on Webflow.
+
+587
+00:36:57,520 --> 00:36:58,080
+Daniel Shanklin: Yep.
+
+588
+00:36:58,160 --> 00:36:59,360
+Daniel Shanklin: So you.
+
+589
+00:36:59,360 --> 00:37:00,400
+Daniel Shanklin: You absolutely can.
+
+590
+00:37:01,760 --> 00:37:05,680
+Daniel Shanklin: The magic of AI is that it converges towards the outcome you want.
+
+591
+00:37:05,760 --> 00:37:17,110
+Daniel Shanklin: So if you just say, like, hey, I need better SEO score for xyz, It'll basically give you and me and anybody who's involved A plan on how it would do that and say, I want to do this refactor.
+
+592
+00:37:17,270 --> 00:37:21,310
+Daniel Shanklin: It would also help us to triage, like, you know, how much is that going to actually cost to do that?
+
+593
+00:37:21,310 --> 00:37:22,070
+Daniel Shanklin: That kind of thing.
+
+594
+00:37:22,710 --> 00:37:23,190
+Michael D Nguyen: Yeah.
+
+595
+00:37:23,990 --> 00:37:26,950
+Daniel Shanklin: The other thing I'd love to do so we can actually do this live.
+
+596
+00:37:26,950 --> 00:37:27,790
+Daniel Shanklin: So you can watch this.
+
+597
+00:37:27,790 --> 00:37:33,910
+Daniel Shanklin: I'll pull up the Yahoo site and then I'm going to come to the assistant and I'm going to say, oh, shoot, don't work different.
+
+598
+00:37:33,910 --> 00:37:35,030
+Daniel Shanklin: Need a different browser.
+
+599
+00:37:41,360 --> 00:37:42,400
+Daniel Shanklin: I'm going to close this.
+
+600
+00:37:43,040 --> 00:37:46,240
+Daniel Shanklin: I'm going to say, give me an SEO score.
+
+601
+00:37:47,680 --> 00:37:48,400
+Daniel Shanklin: And it'll.
+
+602
+00:37:48,480 --> 00:37:51,120
+Daniel Shanklin: Because it reads the site, it understands the ask.
+
+603
+00:37:51,200 --> 00:37:51,600
+Daniel Shanklin: Right.
+
+604
+00:37:51,760 --> 00:37:55,440
+Daniel Shanklin: So it's like, I'll take a screenshot and it will go through its own process.
+
+605
+00:37:55,920 --> 00:38:00,320
+Daniel Shanklin: It's not quite as good as the PageRank algorithm, but it's pretty good.
+
+606
+00:38:00,560 --> 00:38:01,440
+Daniel Shanklin: It's pretty good.
+
+607
+00:38:01,680 --> 00:38:02,240
+Daniel Shanklin: So when.
+
+608
+00:38:02,880 --> 00:38:10,440
+Daniel Shanklin: Bigger picture, this is why people say it'll take over software and there won't be software anymore, because you can just ask it, you know.
+
+609
+00:38:11,000 --> 00:38:14,760
+Daniel Shanklin: Yeah, here we go.
+
+610
+00:38:14,840 --> 00:38:19,400
+Daniel Shanklin: 52 out of 100 title tags wrong.
+
+611
+00:38:20,280 --> 00:38:21,000
+Daniel Shanklin: Pretty wild.
+
+612
+00:38:21,640 --> 00:38:24,360
+Daniel Shanklin: Do you want to see green marks now or, you know, I mean, is that something?
+
+613
+00:38:25,400 --> 00:38:25,880
+Michael D Nguyen: Yeah.
+
+614
+00:38:26,440 --> 00:38:27,000
+Daniel Shanklin: Okay.
+
+615
+00:38:28,120 --> 00:38:28,720
+Daniel Shanklin: There won't be.
+
+616
+00:38:28,720 --> 00:38:29,320
+Daniel Shanklin: No offense.
+
+617
+00:38:30,360 --> 00:38:32,040
+Daniel Shanklin: So here's another trick I like to do.
+
+618
+00:38:34,850 --> 00:38:39,730
+Daniel Shanklin: Give me a scoring rubric for SEO.
+
+619
+00:38:40,210 --> 00:38:44,370
+Daniel Shanklin: So I first ask it, giving me a chance to correct it.
+
+620
+00:38:44,370 --> 00:38:44,690
+Daniel Shanklin: Right.
+
+621
+00:38:51,490 --> 00:38:54,050
+Daniel Shanklin: We call this Inception.
+
+622
+00:38:54,290 --> 00:38:56,850
+Daniel Shanklin: It's like you put the idea in its head while it's asleep thing.
+
+623
+00:38:58,290 --> 00:39:00,610
+Daniel Shanklin: And now that I've done that, I can say, okay.
+
+624
+00:39:01,020 --> 00:39:02,380
+Daniel Shanklin: So I'll say, okay, go do it.
+
+625
+00:39:04,940 --> 00:39:06,660
+Daniel Shanklin: Green mark just three pages.
+
+626
+00:39:06,660 --> 00:39:08,540
+Daniel Shanklin: Because I don't want it to go through every one of them.
+
+627
+00:39:08,780 --> 00:39:12,860
+Daniel Shanklin: Yeah, there's.
+
+628
+00:39:14,860 --> 00:39:18,380
+Daniel Shanklin: There's all sorts of metrics, like what they call first paint.
+
+629
+00:39:19,500 --> 00:39:24,660
+Daniel Shanklin: How many seconds or milliseconds does it take to see something final load?
+
+630
+00:39:24,660 --> 00:39:27,100
+Daniel Shanklin: Like, how many seconds does it take till the final loads done?
+
+631
+00:39:27,260 --> 00:39:32,060
+Daniel Shanklin: It's crazy, the amount of effort, but each of those numbers actually adds up to a score.
+
+632
+00:39:32,060 --> 00:39:36,300
+Daniel Shanklin: And if you have low numbers on that, they put you down on SEO, as I'm sure you do.
+
+633
+00:39:36,540 --> 00:39:37,020
+Daniel Shanklin: Yeah.
+
+634
+00:39:38,140 --> 00:39:41,420
+Michael D Nguyen: But it can give you corrective action kind of as well, right?
+
+635
+00:39:41,980 --> 00:39:42,820
+Daniel Shanklin: Absolutely.
+
+636
+00:39:42,820 --> 00:39:50,380
+Daniel Shanklin: And what's wild about that is if that corrective action is good and you agree with it, you just come over here and be like, take this corrective action.
+
+637
+00:39:51,660 --> 00:39:54,710
+Daniel Shanklin: It's totally different than it was before.
+
+638
+00:39:57,110 --> 00:39:57,510
+Daniel Shanklin: Yeah.
+
+639
+00:39:57,510 --> 00:39:58,670
+Daniel Shanklin: Page Speed Insights.
+
+640
+00:39:58,670 --> 00:39:59,790
+Daniel Shanklin: This is one of my favorite tools.
+
+641
+00:39:59,790 --> 00:40:02,430
+Daniel Shanklin: If you haven't seen this before, I'll make sure I get Put it in our notes.
+
+642
+00:40:02,430 --> 00:40:05,830
+Daniel Shanklin: And we are recording this with PageSpeed Insights.
+
+643
+00:40:06,230 --> 00:40:07,830
+Daniel Shanklin: I think it's actually run by Google.
+
+644
+00:40:09,110 --> 00:40:13,110
+Daniel Shanklin: You put your link in and I want you to notice something too.
+
+645
+00:40:13,430 --> 00:40:15,830
+Daniel Shanklin: It didn't just read the Green Mark site.
+
+646
+00:40:15,910 --> 00:40:21,100
+Daniel Shanklin: It actually went to a different location and now it's putting your URL in.
+
+647
+00:40:22,300 --> 00:40:27,020
+Daniel Shanklin: Before we get into the performance scores, let me highlight what a security risk this truly is.
+
+648
+00:40:28,140 --> 00:40:34,140
+Daniel Shanklin: It literally could take stuff off of Cerebro and go paste it in somewhere else.
+
+649
+00:40:34,620 --> 00:40:39,260
+Daniel Shanklin: That's what people are so worried about and why I wouldn't give this to anybody who wasn't in a C suite to start with.
+
+650
+00:40:39,740 --> 00:40:40,220
+Daniel Shanklin: Yeah.
+
+651
+00:40:46,550 --> 00:40:51,110
+Michael D Nguyen: And so we would just take Claude's suggestions and then plug it into webflow.
+
+652
+00:40:51,590 --> 00:40:54,150
+Michael D Nguyen: Like the code is that kind of.
+
+653
+00:40:54,790 --> 00:40:56,990
+Daniel Shanklin: Let me ask, is that what y' all use for your site?
+
+654
+00:40:56,990 --> 00:40:57,750
+Daniel Shanklin: Webflow?
+
+655
+00:40:58,070 --> 00:40:58,790
+Michael D Nguyen: Huh.
+
+656
+00:40:59,350 --> 00:41:03,830
+Daniel Shanklin: Okay, so here's where it gets kind of cool.
+
+657
+00:41:04,150 --> 00:41:10,950
+Daniel Shanklin: You could literally come down here and be like, go open up webflow and make these changes and you could watch as it does it for you.
+
+658
+00:41:11,370 --> 00:41:20,250
+Daniel Shanklin: I do that very often because I don't remember everything to qlik and I certainly don't remember all the like idiosyncratic, you know, syntax changes that I'd have to make.
+
+659
+00:41:24,570 --> 00:41:33,290
+Michael D Nguyen: Yeah, we should probably add this kind of to something because this seems like a pretty simple, kind of simple fix of our website that makes kind of.
+
+660
+00:41:33,530 --> 00:41:37,210
+Michael D Nguyen: Because we want to drive traffic to our website.
+
+661
+00:41:37,210 --> 00:41:37,610
+Michael D Nguyen: Right.
+
+662
+00:41:38,100 --> 00:41:39,140
+Michael D Nguyen: And so this is like a.
+
+663
+00:41:39,140 --> 00:41:40,420
+Michael D Nguyen: Some low hanging fruit.
+
+664
+00:41:41,780 --> 00:41:42,340
+Daniel Shanklin: Yep.
+
+665
+00:41:42,660 --> 00:41:45,540
+Daniel Shanklin: Let me see if I can take a look and give the human eye on this.
+
+666
+00:41:45,540 --> 00:41:50,980
+Daniel Shanklin: The biggest problem is actually that around 60% of traffic is on mobile.
+
+667
+00:41:50,980 --> 00:41:53,460
+Daniel Shanklin: I don't know what it is in the trash business, but I know it.
+
+668
+00:41:53,780 --> 00:41:54,740
+Michael D Nguyen: Yeah, waste business.
+
+669
+00:41:55,620 --> 00:41:56,100
+Daniel Shanklin: Yeah.
+
+670
+00:41:56,340 --> 00:41:57,780
+Daniel Shanklin: So if you have a.
+
+671
+00:41:58,900 --> 00:42:04,580
+Daniel Shanklin: So this largest contentful paint, you can usually fix this pretty easily by reducing the size of images.
+
+672
+00:42:04,660 --> 00:42:10,490
+Daniel Shanklin: There's a bunch of little tricks and the best part is if you don't know how to get it up, I literally say, AI, what do I have to do to get to an 80?
+
+673
+00:42:11,370 --> 00:42:12,730
+Daniel Shanklin: What do I have to do to get to a 90?
+
+674
+00:42:12,730 --> 00:42:16,650
+Daniel Shanklin: And it's like, here you go, it's something else.
+
+675
+00:42:17,050 --> 00:42:19,970
+Daniel Shanklin: Let's say you were on here and you said like, hey, I want to remember this.
+
+676
+00:42:19,970 --> 00:42:20,810
+Daniel Shanklin: I could say something.
+
+677
+00:42:20,890 --> 00:42:23,010
+Daniel Shanklin: I could just copy paste it right.
+
+678
+00:42:23,010 --> 00:42:24,730
+Daniel Shanklin: I can click this button and stick in an email.
+
+679
+00:42:24,890 --> 00:42:33,840
+Daniel Shanklin: You could also say, go to GitHub for green mark waste and update the weekly task log.
+
+680
+00:42:34,800 --> 00:42:38,760
+Daniel Shanklin: It's gonna do it because it knows how to do.
+
+681
+00:42:41,400 --> 00:42:42,880
+Daniel Shanklin: Might fiddle around a little bit.
+
+682
+00:42:43,440 --> 00:42:47,760
+Daniel Shanklin: But to me, this probably is the future of how to do these sorts of things.
+
+683
+00:42:50,480 --> 00:42:54,160
+Daniel Shanklin: Just no copy paste you.
+
+684
+00:42:54,160 --> 00:42:55,120
+Daniel Shanklin: Well, here's another thing.
+
+685
+00:42:55,200 --> 00:42:56,960
+Daniel Shanklin: As you're working on it, you can live.
+
+686
+00:42:56,960 --> 00:43:01,420
+Daniel Shanklin: Just go pick where you want it to go and say, you know, get it to where I want to go.
+
+687
+00:43:01,420 --> 00:43:02,620
+Daniel Shanklin: Here, I fixed it for you.
+
+688
+00:43:03,660 --> 00:43:09,740
+Michael D Nguyen: So as long as Quad is looking and has access and you're logged in to GitHub, like, it can write things in there for you.
+
+689
+00:43:10,460 --> 00:43:11,500
+Daniel Shanklin: Yeah, because it's.
+
+690
+00:43:11,500 --> 00:43:12,780
+Daniel Shanklin: It's impersonating me.
+
+691
+00:43:12,780 --> 00:43:17,100
+Daniel Shanklin: So it'll actually go in here and it'll like, click on a.
+
+692
+00:43:17,900 --> 00:43:18,780
+Daniel Shanklin: It'll go find it.
+
+693
+00:43:18,780 --> 00:43:21,500
+Daniel Shanklin: It'll either open up an issue or it might even create a new file.
+
+694
+00:43:22,060 --> 00:43:23,980
+Daniel Shanklin: And when it does that, it'll stick that in.
+
+695
+00:43:25,420 --> 00:43:36,620
+Daniel Shanklin: This is a trick I use pretty commonly, exactly what you and I were just describing, because I've actually done this for clients on SEO work, where I'm like, go run an SEO report and then go update the GitHub.
+
+696
+00:43:37,340 --> 00:43:40,060
+Daniel Shanklin: I'm basically watching it, but it's doing most of the work.
+
+697
+00:43:40,780 --> 00:43:42,980
+Michael D Nguyen: So then, like, we could do the same thing, kind of.
+
+698
+00:43:42,980 --> 00:43:48,020
+Michael D Nguyen: We can log into the back end of webflow and tell Claude to implement whatever.
+
+699
+00:43:48,020 --> 00:43:49,540
+Michael D Nguyen: Whatever it's doing and it should be.
+
+700
+00:43:49,540 --> 00:43:49,900
+Michael D Nguyen: And it.
+
+701
+00:43:49,900 --> 00:43:50,620
+Michael D Nguyen: It would do it.
+
+702
+00:43:51,260 --> 00:43:52,060
+Daniel Shanklin: Exactly.
+
+703
+00:43:52,380 --> 00:43:58,220
+Daniel Shanklin: And where this is probably going, gentlemen, and for the next, like, three to six months, maybe a year, I'll build this infrastructure.
+
+704
+00:43:58,220 --> 00:44:03,300
+Daniel Shanklin: But when you want to actually change Cerebro, you literally could do it yourself.
+
+705
+00:44:03,460 --> 00:44:08,180
+Daniel Shanklin: I. I know that seems fantasy, but it's where we are now with coding.
+
+706
+00:44:08,180 --> 00:44:09,340
+Daniel Shanklin: Coding is just like a.
+
+707
+00:44:09,340 --> 00:44:10,420
+Daniel Shanklin: Describe what you want.
+
+708
+00:44:10,660 --> 00:44:14,860
+Daniel Shanklin: The most important part is having somebody above you checking that, you know.
+
+709
+00:44:14,860 --> 00:44:26,590
+Michael D Nguyen: Yeah, well, it's like, it's, you know, it's not, you know, exactly the same, but it's like, before, you know, the GUI interface, you had to know how to use Ms. Dos, Right?
+
+710
+00:44:26,590 --> 00:44:26,990
+Daniel Shanklin: Exactly.
+
+711
+00:44:26,990 --> 00:44:29,430
+Michael D Nguyen: And, like, actually say, like, execute this.
+
+712
+00:44:29,430 --> 00:44:33,070
+Michael D Nguyen: And then they said, well, why don't we just make it so you can click on an icon?
+
+713
+00:44:33,230 --> 00:44:34,910
+Michael D Nguyen: Yeah, I.
+
+714
+00:44:34,910 --> 00:44:35,390
+Daniel Shanklin: In my.
+
+715
+00:44:35,390 --> 00:44:44,030
+Daniel Shanklin: All the time that I've been doing this, I'm the biggest believer that the average Joe is going to probably win in the long run because they just have the tenacity to learn how to do it.
+
+716
+00:44:44,030 --> 00:44:48,430
+Daniel Shanklin: But there are a lot of engineering blogs you'll read where the gatekeepers say, well, they won't be able to figure this out.
+
+717
+00:44:48,430 --> 00:44:48,980
+Daniel Shanklin: I won't be able to.
+
+718
+00:44:49,450 --> 00:44:50,090
+Daniel Shanklin: That's false.
+
+719
+00:44:50,090 --> 00:44:52,330
+Daniel Shanklin: Because you can just literally ask it when you don't understand.
+
+720
+00:44:52,570 --> 00:44:53,730
+Daniel Shanklin: Like, that's the whole goal.
+
+721
+00:44:53,730 --> 00:44:54,090
+Daniel Shanklin: Right.
+
+722
+00:44:54,170 --> 00:45:00,810
+Daniel Shanklin: So I think though that where the real money is going to be made is managing process.
+
+723
+00:45:01,290 --> 00:45:08,090
+Daniel Shanklin: So I would have to set something up where I'm like, AI, you're allowed to change the website, but you're not allowed to change main or master.
+
+724
+00:45:08,090 --> 00:45:08,450
+Daniel Shanklin: Right.
+
+725
+00:45:08,450 --> 00:45:09,610
+Daniel Shanklin: Only I can do that.
+
+726
+00:45:09,850 --> 00:45:12,090
+Daniel Shanklin: And then I as a person have to review that.
+
+727
+00:45:12,410 --> 00:45:13,850
+Daniel Shanklin: And that's where it gets pretty cool.
+
+728
+00:45:14,090 --> 00:45:15,260
+Daniel Shanklin: Any questions about all that?
+
+729
+00:45:17,410 --> 00:45:17,650
+Daniel Shanklin: Now.
+
+730
+00:45:19,650 --> 00:45:21,650
+Michael D Nguyen: I think if you.
+
+731
+00:45:21,650 --> 00:45:22,850
+Daniel Shanklin: do get this working, by the way.
+
+732
+00:45:22,930 --> 00:45:23,890
+Daniel Shanklin: Oh, sorry, go ahead.
+
+733
+00:45:24,370 --> 00:45:25,090
+Michael D Nguyen: No, go ahead.
+
+734
+00:45:25,890 --> 00:45:36,370
+Daniel Shanklin: If you do get this cloud sidebar working, the next time you have a data question and Daniel's out on vacation, you can come in here and ask it and it will help you figure out like how that works.
+
+735
+00:45:36,370 --> 00:45:37,810
+Daniel Shanklin: I use that all the time as well.
+
+736
+00:45:42,140 --> 00:45:42,620
+Michael D Nguyen: Okay.
+
+737
+00:45:43,660 --> 00:45:44,500
+Michael D Nguyen: That's all really.
+
+738
+00:45:44,500 --> 00:45:44,940
+Michael D Nguyen: I don't.
+
+739
+00:45:44,940 --> 00:45:48,500
+Michael D Nguyen: Alex and I've taken up a lot of the questions kind of going through this.
+
+740
+00:45:48,500 --> 00:45:49,300
+Michael D Nguyen: Do we want to.
+
+741
+00:45:49,300 --> 00:45:52,300
+Michael D Nguyen: Do you have any questions, specific questions or you want to go through the.
+
+742
+00:45:54,380 --> 00:45:54,780
+Daniel Shanklin: Kind of.
+
+743
+00:45:54,780 --> 00:45:55,180
+Michael D Nguyen: The plan?
+
+744
+00:45:57,980 --> 00:45:59,260
+Michael D Nguyen: No, let's go through the plan.
+
+745
+00:45:59,260 --> 00:45:59,980
+Daniel Shanklin: That's good.
+
+746
+00:46:00,380 --> 00:46:00,820
+Michael D Nguyen: Yeah.
+
+747
+00:46:00,820 --> 00:46:08,820
+Michael D Nguyen: And I think Daniel, maybe, you know, before we kind of dive in, I, I'm kind of spitballing with Alex kind of in real time here.
+
+748
+00:46:08,820 --> 00:46:15,620
+Michael D Nguyen: But I think we need to make these changes to the websites like both Hometown and Green Marks kind of.
+
+749
+00:46:16,020 --> 00:46:17,180
+Michael D Nguyen: That's low hanging fruit.
+
+750
+00:46:17,180 --> 00:46:18,340
+Michael D Nguyen: That shouldn't take too long.
+
+751
+00:46:18,340 --> 00:46:21,940
+Michael D Nguyen: Like that should be kind of at the top, kind of the top list.
+
+752
+00:46:22,659 --> 00:46:23,300
+Daniel Shanklin: Sounds great.
+
+753
+00:46:23,540 --> 00:46:28,740
+Daniel Shanklin: So what I'm going to do is show y' all how I do that.
+
+754
+00:46:28,740 --> 00:46:31,460
+Daniel Shanklin: So you get to kind of tag along on this.
+
+755
+00:46:32,990 --> 00:46:34,190
+Daniel Shanklin: This is a different one.
+
+756
+00:46:36,670 --> 00:46:37,230
+Daniel Shanklin: There we go.
+
+757
+00:46:37,230 --> 00:46:38,590
+Daniel Shanklin: We are in Green Mark right here.
+
+758
+00:46:39,710 --> 00:46:43,070
+Daniel Shanklin: Just got a note from our phone call.
+
+759
+00:46:44,590 --> 00:46:54,870
+Daniel Shanklin: You need to get SEO scores up for both Greenmark, Waste.com and also.
+
+760
+00:46:54,870 --> 00:46:55,710
+Daniel Shanklin: What was the other one?
+
+761
+00:46:55,790 --> 00:46:56,590
+Daniel Shanklin: Hometown.
+
+762
+00:46:58,460 --> 00:46:58,660
+Michael D Nguyen: Yeah.
+
+763
+00:46:58,660 --> 00:47:00,780
+Michael D Nguyen: H ht disposal.com.
+
+764
+00:47:02,140 --> 00:47:02,780
+Daniel Shanklin: excellent.
+
+765
+00:47:04,140 --> 00:47:07,100
+Daniel Shanklin: And then I'm going to say ask Pal for a plan.
+
+766
+00:47:07,980 --> 00:47:10,380
+Daniel Shanklin: I'm asking two AIs to work together.
+
+767
+00:47:11,340 --> 00:47:12,540
+Daniel Shanklin: See how they would do it.
+
+768
+00:47:12,540 --> 00:47:13,700
+Daniel Shanklin: Don't mean they're going to do it.
+
+769
+00:47:13,700 --> 00:47:14,700
+Daniel Shanklin: So it's going to do it.
+
+770
+00:47:14,780 --> 00:47:15,260
+Daniel Shanklin: Come up.
+
+771
+00:47:15,260 --> 00:47:16,060
+Daniel Shanklin: What is pal?
+
+772
+00:47:17,340 --> 00:47:21,500
+Daniel Shanklin: It's something I built into CODe to ask a second one for help.
+
+773
+00:47:22,460 --> 00:47:25,180
+Daniel Shanklin: It's an invention that I had from over a year ago.
+
+774
+00:47:26,450 --> 00:47:27,650
+Daniel Shanklin: This idea that.
+
+775
+00:47:29,570 --> 00:47:30,090
+Michael D Nguyen: kind of.
+
+776
+00:47:30,090 --> 00:47:36,490
+Daniel Shanklin: Yeah, but if you look here, I need a comprehensive plan and the two of them will duke it out until they come back with a plan for me.
+
+777
+00:47:36,490 --> 00:47:39,890
+Daniel Shanklin: It don't mean it's right, but it usually gets the ball rolling.
+
+778
+00:47:40,050 --> 00:47:44,930
+Daniel Shanklin: And then, of course, when it's done, I'm going to say add this to our task list so it won't be forgotten about.
+
+779
+00:47:47,330 --> 00:47:48,610
+Daniel Shanklin: Yep, there you go.
+
+780
+00:47:54,140 --> 00:47:55,900
+Daniel Shanklin: I think it's exciting, gentlemen like this.
+
+781
+00:47:55,900 --> 00:47:56,540
+Daniel Shanklin: This is a.
+
+782
+00:47:57,020 --> 00:48:05,020
+Daniel Shanklin: Everyone's talking about the jobs being lost, but I'm like, imagine all the cool stuff being able to know.
+
+783
+00:48:06,300 --> 00:48:06,780
+Daniel Shanklin: Sorry.
+
+784
+00:48:06,780 --> 00:48:08,300
+Michael D Nguyen: Sometimes stuff like this happens.
+
+785
+00:48:08,300 --> 00:48:11,500
+Michael D Nguyen: No one thinks about all the new doors it opens.
+
+786
+00:48:12,940 --> 00:48:13,500
+Daniel Shanklin: Just think.
+
+787
+00:48:13,580 --> 00:48:16,780
+Daniel Shanklin: I think about all your customers that will have really good feedback.
+
+788
+00:48:16,780 --> 00:48:17,820
+Michael D Nguyen: You know, I'll jump in.
+
+789
+00:48:18,060 --> 00:48:19,890
+Michael D Nguyen: I. I've been surprised at aic.
+
+790
+00:48:19,890 --> 00:48:28,210
+Michael D Nguyen: You know, I was thinking, like, man, this is going to replace me and, you know, maybe teammate, team members.
+
+791
+00:48:28,450 --> 00:48:36,810
+Michael D Nguyen: And I think what we're finding is that we're actually doing more work because it's dropping the cost of executing on things.
+
+792
+00:48:36,810 --> 00:48:44,450
+Michael D Nguyen: And so our ability to make a, like, CI, like a investment memo now is like, zero.
+
+793
+00:48:45,340 --> 00:48:46,940
+Michael D Nguyen: So now we're gonna be making a ton of them.
+
+794
+00:48:47,100 --> 00:48:50,780
+Michael D Nguyen: And it's all about organizing it, scoring it, thinking about it.
+
+795
+00:48:50,780 --> 00:48:53,980
+Daniel Shanklin: So anyway, that's a great point.
+
+796
+00:48:54,380 --> 00:48:55,660
+Daniel Shanklin: It changes the.
+
+797
+00:48:55,900 --> 00:48:58,060
+Daniel Shanklin: The math for what you would accomplish.
+
+798
+00:48:59,260 --> 00:49:05,980
+Michael D Nguyen: I mean, Slate's busier now than he's been probably since he started getting all these scoring things and figuring all this out.
+
+799
+00:49:05,980 --> 00:49:06,380
+Daniel Shanklin: So.
+
+800
+00:49:07,660 --> 00:49:13,390
+Daniel Shanklin: And meanwhile, he told me the other day when he and I went out for beer, and he was like, this is great.
+
+801
+00:49:13,390 --> 00:49:15,550
+Daniel Shanklin: I feel like a portfolio manager now.
+
+802
+00:49:15,950 --> 00:49:17,230
+Daniel Shanklin: I was like, all right.
+
+803
+00:49:18,350 --> 00:49:19,310
+Daniel Shanklin: You know, so,
+
+804
+00:49:21,470 --> 00:49:22,390
+Michael D Nguyen: Daniel, kind of why.
+
+805
+00:49:22,390 --> 00:49:24,590
+Michael D Nguyen: That's thinking just a general question.
+
+806
+00:49:24,590 --> 00:49:31,710
+Michael D Nguyen: On Green Marks Claude account, do we have sort of like data limits that we bump up against?
+
+807
+00:49:31,710 --> 00:49:33,630
+Michael D Nguyen: Because I. I feel like I noticed some like.
+
+808
+00:49:34,350 --> 00:49:34,750
+Daniel Shanklin: Right.
+
+809
+00:49:35,880 --> 00:49:38,520
+Michael D Nguyen: You know, can you just explain that or, like, how that works?
+
+810
+00:49:39,240 --> 00:49:39,640
+Daniel Shanklin: Sure.
+
+811
+00:49:39,720 --> 00:49:43,320
+Daniel Shanklin: So let's take a look at the different plans that are offered under Claude.
+
+812
+00:49:46,120 --> 00:49:47,560
+Daniel Shanklin: And that's an old page.
+
+813
+00:49:52,120 --> 00:49:52,520
+Daniel Shanklin: Business.
+
+814
+00:49:53,080 --> 00:49:57,000
+Daniel Shanklin: They got two different modes of cloud, and it's important to know the difference between the two.
+
+815
+00:49:57,400 --> 00:50:01,720
+Daniel Shanklin: One of them is for business and the other is for individual use.
+
+816
+00:50:02,940 --> 00:50:03,820
+Daniel Shanklin: I don't much.
+
+817
+00:50:04,060 --> 00:50:05,980
+Daniel Shanklin: I don't mind using this for myself.
+
+818
+00:50:06,380 --> 00:50:07,420
+Daniel Shanklin: But here's the problem.
+
+819
+00:50:07,580 --> 00:50:11,980
+Daniel Shanklin: You know that little checkbox that says don't subscribe me or do subscribe me?
+
+820
+00:50:12,540 --> 00:50:15,580
+Daniel Shanklin: They literally have a checkbox that says, don't train on my data.
+
+821
+00:50:15,580 --> 00:50:21,940
+Daniel Shanklin: And it's unchecked for these guys when you sign up, but it's always checked for these guys and you can't turn it off.
+
+822
+00:50:21,940 --> 00:50:26,460
+Daniel Shanklin: There is no way for an AI to train on Green Marks data when you're on a business plan.
+
+823
+00:50:26,780 --> 00:50:28,300
+Daniel Shanklin: But this, it absolutely could.
+
+824
+00:50:28,710 --> 00:50:33,990
+Daniel Shanklin: So we Already went through the process here and decided ever going to work for any company for us to use these.
+
+825
+00:50:34,390 --> 00:50:35,670
+Daniel Shanklin: Which leaves us with these.
+
+826
+00:50:36,710 --> 00:50:39,590
+Daniel Shanklin: These have two different levels at this point.
+
+827
+00:50:39,750 --> 00:50:41,030
+Daniel Shanklin: You got a team mode.
+
+828
+00:50:41,990 --> 00:50:48,310
+Daniel Shanklin: You have to have minimum 5 users and it's $30 a month on a month to month or 25 if you buy it up front annually.
+
+829
+00:50:50,070 --> 00:50:53,910
+Daniel Shanklin: These premium seats give you access to CODe.
+
+830
+00:50:54,250 --> 00:50:57,450
+Daniel Shanklin: I do recommend at some point y' all everybody upgrade to that.
+
+831
+00:50:58,010 --> 00:51:07,530
+Daniel Shanklin: There are non technical people at AIC that have already upgraded to this because you get a lot more tokens, which is Chuck E. Cheese coins to use in the machine.
+
+832
+00:51:07,850 --> 00:51:11,050
+Daniel Shanklin: And you also get access to a few extra tools they wouldn't otherwise have.
+
+833
+00:51:11,610 --> 00:51:17,210
+Daniel Shanklin: And what's best of all is when you're on the business plan, you can create projects inside of Claude.
+
+834
+00:51:18,730 --> 00:51:19,770
+Daniel Shanklin: Come inside of here.
+
+835
+00:51:20,010 --> 00:51:23,930
+Daniel Shanklin: I know we're doing this fast, but you can create project.
+
+836
+00:51:24,010 --> 00:51:26,810
+Daniel Shanklin: So come over here and say project, new project.
+
+837
+00:51:28,490 --> 00:51:28,970
+Daniel Shanklin: Hi.
+
+838
+00:51:30,970 --> 00:51:33,690
+Daniel Shanklin: On a business context, this is my personal.
+
+839
+00:51:33,850 --> 00:51:34,610
+Daniel Shanklin: So it doesn't work.
+
+840
+00:51:34,610 --> 00:51:37,250
+Daniel Shanklin: But on a business one, you could share.
+
+841
+00:51:37,250 --> 00:51:38,730
+Daniel Shanklin: I can maintain multiple.
+
+842
+00:51:39,370 --> 00:51:42,250
+Daniel Shanklin: You can click share and then you can share it with somebody else.
+
+843
+00:51:42,250 --> 00:51:45,130
+Daniel Shanklin: And now the project and you and someone else can work on the same thing.
+
+844
+00:51:45,700 --> 00:51:48,500
+Daniel Shanklin: Mixed results, but it actually can be a really cool concept.
+
+845
+00:51:49,060 --> 00:52:08,500
+Daniel Shanklin: If you run out of tokens, the only option to get more is you either come down here and go to Settings and go to Billing and say I want to add overage, extra use and you can do that, or you just upgrade someone to the max plan, which is that $150 a month.
+
+846
+00:52:08,820 --> 00:52:09,620
+Daniel Shanklin: And then they're.
+
+847
+00:52:09,620 --> 00:52:10,340
+Daniel Shanklin: They're ripping.
+
+848
+00:52:10,820 --> 00:52:21,600
+Daniel Shanklin: In every single business case we've ever had at AIC where somebody ran out of tokens, it was decided that it worth the hundred dollars because their time is worth so much more with this in their hands.
+
+849
+00:52:21,680 --> 00:52:23,120
+Daniel Shanklin: Would you agree with that, Colin?
+
+850
+00:52:27,920 --> 00:52:28,560
+Michael D Nguyen: Thank you.
+
+851
+00:52:28,960 --> 00:52:29,920
+Michael D Nguyen: Off it looks like.
+
+852
+00:52:30,000 --> 00:52:31,040
+Daniel Shanklin: Yeah, that's okay.
+
+853
+00:52:31,760 --> 00:52:32,480
+Daniel Shanklin: I think you get.
+
+854
+00:52:32,480 --> 00:52:33,200
+Daniel Shanklin: You get the point.
+
+855
+00:52:33,439 --> 00:52:33,800
+Daniel Shanklin: Yeah.
+
+856
+00:52:33,800 --> 00:52:34,160
+Daniel Shanklin: Yeah.
+
+857
+00:52:34,240 --> 00:52:35,280
+Michael D Nguyen: I don't know if we're there yet.
+
+858
+00:52:35,280 --> 00:52:35,760
+Michael D Nguyen: I just.
+
+859
+00:52:36,240 --> 00:52:36,920
+Michael D Nguyen: Yeah, it.
+
+860
+00:52:36,920 --> 00:52:40,120
+Michael D Nguyen: It seemed like there were some things that kind of.
+
+861
+00:52:40,120 --> 00:52:44,840
+Michael D Nguyen: Because I've been just tooling around in IT ever since you gave us access and we signed up.
+
+862
+00:52:44,840 --> 00:52:48,060
+Michael D Nguyen: And I don't think it ever like didn't work.
+
+863
+00:52:48,060 --> 00:52:48,540
+Michael D Nguyen: It just.
+
+864
+00:52:49,180 --> 00:52:52,460
+Michael D Nguyen: I don't know, it seemed like I did hit some little speed bumps.
+
+865
+00:52:53,900 --> 00:52:55,820
+Michael D Nguyen: I'm probably not explaining this very well, but.
+
+866
+00:52:55,980 --> 00:52:58,380
+Michael D Nguyen: And then I kind of saw like that usage bar.
+
+867
+00:52:59,580 --> 00:53:00,060
+Daniel Shanklin: Yeah.
+
+868
+00:53:00,060 --> 00:53:00,620
+Daniel Shanklin: Settings.
+
+869
+00:53:00,940 --> 00:53:02,540
+Michael D Nguyen: So I'm just wondering how that works.
+
+870
+00:53:02,540 --> 00:53:04,700
+Daniel Shanklin: So I'll do a brief overview on that.
+
+871
+00:53:04,860 --> 00:53:07,660
+Daniel Shanklin: The the speed bumps of the roadblocks.
+
+872
+00:53:08,780 --> 00:53:11,660
+Daniel Shanklin: Number one, they have three different brains.
+
+873
+00:53:12,920 --> 00:53:14,920
+Daniel Shanklin: OPUS is big, powerful, expensive.
+
+874
+00:53:14,920 --> 00:53:16,600
+Daniel Shanklin: It's the mack truck of AIs.
+
+875
+00:53:16,920 --> 00:53:19,400
+Daniel Shanklin: Sonnet is your Ford Mustang.
+
+876
+00:53:19,880 --> 00:53:21,920
+Daniel Shanklin: Not the V8, just the V6.
+
+877
+00:53:21,920 --> 00:53:22,880
+Daniel Shanklin: But it's a.
+
+878
+00:53:22,880 --> 00:53:23,960
+Daniel Shanklin: It does good work.
+
+879
+00:53:24,520 --> 00:53:26,120
+Daniel Shanklin: And then haiku is.
+
+880
+00:53:26,520 --> 00:53:27,800
+Daniel Shanklin: That's a gas zipper.
+
+881
+00:53:28,039 --> 00:53:29,800
+Daniel Shanklin: This is your tiny little scooter.
+
+882
+00:53:30,360 --> 00:53:40,120
+Daniel Shanklin: If you need to summarize something or you know you're going to be using AI all day, you probably won't want to live in sonnet and haiku and save OPUS for the big, important stuff.
+
+883
+00:53:40,560 --> 00:53:48,880
+Daniel Shanklin: Me, personally, the reason I have three, not one, but three AI plans for me is because I use OPUS all day, right?
+
+884
+00:53:48,880 --> 00:53:49,440
+Daniel Shanklin: For me.
+
+885
+00:53:49,440 --> 00:53:56,480
+Daniel Shanklin: For me, the money's negligible to the productivity gain I get from having the smartest brain working on the problem.
+
+886
+00:53:58,240 --> 00:53:59,920
+Daniel Shanklin: That is not true for everybody.
+
+887
+00:54:01,040 --> 00:54:01,920
+Daniel Shanklin: I'm a coder.
+
+888
+00:54:02,320 --> 00:54:07,370
+Daniel Shanklin: We use, like, a hundred times more AI than most people, so that's probably a difference.
+
+889
+00:54:08,010 --> 00:54:11,770
+Daniel Shanklin: Another thing, when you start a conversation with AI, hey, how are you?
+
+890
+00:54:12,570 --> 00:54:15,730
+Daniel Shanklin: The way it works, people say, AI is stupid.
+
+891
+00:54:15,730 --> 00:54:17,770
+Daniel Shanklin: And it doesn't think and it doesn't reason.
+
+892
+00:54:18,170 --> 00:54:20,010
+Daniel Shanklin: It's not exactly correct.
+
+893
+00:54:20,890 --> 00:54:23,370
+Daniel Shanklin: It is true that it only spits out the next word.
+
+894
+00:54:23,770 --> 00:54:31,050
+Daniel Shanklin: But it's also true that when you're 15 minutes in and you ask another question, it doesn't just tack it onto the list.
+
+895
+00:54:31,410 --> 00:54:39,730
+Daniel Shanklin: It actually sends your entire conversation back to the machine and says, read this whole thing, and then tell me what you'd say next.
+
+896
+00:54:40,210 --> 00:54:41,850
+Daniel Shanklin: That is reflection, right?
+
+897
+00:54:41,850 --> 00:54:42,850
+Daniel Shanklin: Like, that is true.
+
+898
+00:54:43,090 --> 00:54:45,650
+Daniel Shanklin: I'm thinking about everything is at one time.
+
+899
+00:54:45,890 --> 00:54:55,050
+Daniel Shanklin: But now imagine there's this time where it gets so long, it can't send the whole thing back up and you know and say, like, hey, read this whole conversation.
+
+900
+00:54:55,050 --> 00:54:58,000
+Daniel Shanklin: It couldn't be like, hey, Daniel, there's three months of discussions we've had.
+
+901
+00:54:58,000 --> 00:54:58,840
+Daniel Shanklin: What do you think of that?
+
+902
+00:54:59,880 --> 00:55:01,600
+Daniel Shanklin: Maybe in a couple years, I don't know.
+
+903
+00:55:01,600 --> 00:55:03,000
+Daniel Shanklin: But for now, that you can't do that.
+
+904
+00:55:03,000 --> 00:55:09,720
+Daniel Shanklin: So what you might see is if you get in a really long conversation, it'll say, let me compact that down for you.
+
+905
+00:55:10,840 --> 00:55:12,240
+Daniel Shanklin: It's funny, it'll actually say that.
+
+906
+00:55:12,240 --> 00:55:13,560
+Daniel Shanklin: I'll compact this down for you.
+
+907
+00:55:13,560 --> 00:55:20,520
+Daniel Shanklin: What it's doing is it's running AI on your big one and summarizing it like an executive summary, like you'd hand to your CEO.
+
+908
+00:55:20,840 --> 00:55:25,850
+Daniel Shanklin: And then it takes that thing and it keeps recycling that so that the conversation can continue.
+
+909
+00:55:26,330 --> 00:55:32,090
+Daniel Shanklin: But as you can imagine, you will lose salience to the finer details.
+
+910
+00:55:32,090 --> 00:55:33,130
+Daniel Shanklin: They won't get Every number.
+
+911
+00:55:33,130 --> 00:55:33,330
+Daniel Shanklin: Right.
+
+912
+00:55:33,330 --> 00:55:34,730
+Daniel Shanklin: If it does a summary like that.
+
+913
+00:55:35,050 --> 00:55:38,330
+Daniel Shanklin: So I don't recommend people keep one chat open forever.
+
+914
+00:55:38,330 --> 00:55:42,890
+Daniel Shanklin: Instead, just start one new for a specific task.
+
+915
+00:55:43,450 --> 00:55:55,300
+Daniel Shanklin: And lastly, I'll say if you find that you do a weekly reconciliation, you keep coming back to it, keep that chat open, and just keep adding to that one.
+
+916
+00:55:55,700 --> 00:55:59,940
+Daniel Shanklin: And then it starts to get into a rhythm where it's like, oh, I understand how you do this every week.
+
+917
+00:56:00,340 --> 00:56:01,140
+Daniel Shanklin: Is that helpful?
+
+918
+00:56:01,700 --> 00:56:02,500
+Michael D Nguyen: Yeah, it is.
+
+919
+00:56:03,460 --> 00:56:04,020
+Daniel Shanklin: Okay.
+
+920
+00:56:05,700 --> 00:56:10,180
+Michael D Nguyen: Daniel, do you need access to our Claude to kind of do work?
+
+921
+00:56:11,620 --> 00:56:12,980
+Daniel Shanklin: Not at the present time.
+
+922
+00:56:14,420 --> 00:56:20,820
+Daniel Shanklin: I. I've actually never cost accounting done the work to figure out, like, how to split up my COD usage.
+
+923
+00:56:20,900 --> 00:56:23,540
+Daniel Shanklin: Like, in here, you know, I wouldn't even know how.
+
+924
+00:56:25,300 --> 00:56:29,780
+Daniel Shanklin: So at the present time, I let AIC buy one account, I buy two.
+
+925
+00:56:29,780 --> 00:56:37,100
+Daniel Shanklin: And if you guys need green marker, it'll probably just be like you were renting time for me.
+
+926
+00:56:37,100 --> 00:56:37,860
+Daniel Shanklin: It's no big deal.
+
+927
+00:56:38,900 --> 00:56:39,580
+Michael D Nguyen: Yeah, it's not.
+
+928
+00:56:39,580 --> 00:56:41,060
+Michael D Nguyen: We still have one seat.
+
+929
+00:56:41,060 --> 00:56:47,230
+Michael D Nguyen: Really, like, kind of right now open, like, you can have it, and then you can use it to help kind of help us with our stuff.
+
+930
+00:56:48,030 --> 00:56:52,510
+Daniel Shanklin: I don't think it's a bad idea, especially if a month or.
+
+931
+00:56:52,590 --> 00:56:53,270
+Daniel Shanklin: Let's do that.
+
+932
+00:56:53,270 --> 00:56:56,190
+Daniel Shanklin: And then a month or two, if you decide someone else needs it, you can kick me off.
+
+933
+00:56:56,430 --> 00:57:01,230
+Daniel Shanklin: But it would help because we could do shared projects for this particular thing.
+
+934
+00:57:01,710 --> 00:57:04,510
+Michael D Nguyen: What email address should I use kind of for that?
+
+935
+00:57:05,550 --> 00:57:05,950
+Daniel Shanklin: Sure.
+
+936
+00:57:06,110 --> 00:57:09,400
+Daniel Shanklin: I will put it into teams right now.
+
+937
+00:57:09,640 --> 00:57:10,560
+Daniel Shanklin: Our main teams.
+
+938
+00:57:10,560 --> 00:57:11,240
+Daniel Shanklin: Not this one.
+
+939
+00:57:11,800 --> 00:57:13,480
+Daniel Shanklin: It's D. Shanklin at aic.
+
+940
+00:57:14,920 --> 00:57:15,800
+Michael D Nguyen: That's what you want to use.
+
+941
+00:57:15,800 --> 00:57:16,280
+Michael D Nguyen: Okay.
+
+942
+00:57:16,440 --> 00:57:17,160
+Daniel Shanklin: Yes, sir.
+
+943
+00:57:27,080 --> 00:57:31,000
+Daniel Shanklin: So I. I do want to say in closing, I know this is just from my side.
+
+944
+00:57:31,000 --> 00:57:33,160
+Daniel Shanklin: I know you guys still may have some questions you want to ask.
+
+945
+00:57:33,480 --> 00:57:34,280
+Daniel Shanklin: Totally fine.
+
+946
+00:57:36,460 --> 00:57:46,140
+Daniel Shanklin: Project planning has never been weirder or more different than it has been now, because you used to assign things in wrike and then somebody would go do it.
+
+947
+00:57:47,340 --> 00:57:51,660
+Daniel Shanklin: I tried that for a year, and we even tried Wrike here for a while.
+
+948
+00:57:51,740 --> 00:57:55,180
+Daniel Shanklin: It just honestly didn't go well because people don't update it.
+
+949
+00:57:55,740 --> 00:57:58,380
+Daniel Shanklin: Please don't mistake that as me saying, I don't like project management.
+
+950
+00:57:58,380 --> 00:57:59,260
+Daniel Shanklin: I love it.
+
+951
+00:57:59,260 --> 00:58:05,010
+Daniel Shanklin: It's more like the tool itself became the thing were managing and not the software.
+
+952
+00:58:05,330 --> 00:58:11,250
+Daniel Shanklin: So if y' all have any complaints about, like, hey, I'm not getting enough intel, please let me know.
+
+953
+00:58:12,210 --> 00:58:19,570
+Daniel Shanklin: And if we could try to not have, like, a hundred tests and wrike, but just keep them, like five or six big block things, that would help me as well.
+
+954
+00:58:20,370 --> 00:58:20,850
+Michael D Nguyen: Yeah.
+
+955
+00:58:21,170 --> 00:58:21,730
+Michael D Nguyen: Okay.
+
+956
+00:58:22,290 --> 00:58:23,250
+Michael D Nguyen: That's good to know.
+
+957
+00:58:23,250 --> 00:58:27,750
+Michael D Nguyen: Hey, it's saying that you need an AI Green mark email.
+
+958
+00:58:29,030 --> 00:58:31,030
+Daniel Shanklin: Son of a son of a gun kind of address.
+
+959
+00:58:31,110 --> 00:58:36,950
+Michael D Nguyen: But I think I can make an alias for you that kind of just goes straight to your aic.
+
+960
+00:58:39,670 --> 00:58:40,470
+Daniel Shanklin: Let me see.
+
+961
+00:58:40,630 --> 00:58:41,270
+Daniel Shanklin: Claude.
+
+962
+00:58:41,270 --> 00:58:42,710
+Daniel Shanklin: Add second domain.
+
+963
+00:58:42,710 --> 00:58:44,230
+Daniel Shanklin: It probably wouldn't work anyway.
+
+964
+00:58:44,390 --> 00:58:45,030
+Daniel Shanklin: Let's see.
+
+965
+00:58:46,870 --> 00:58:47,670
+Daniel Shanklin: Actually, you can.
+
+966
+00:58:47,910 --> 00:58:51,030
+Daniel Shanklin: If you go to the organization, you can say allowed email domains.
+
+967
+00:58:51,840 --> 00:58:53,440
+Daniel Shanklin: It seems like you may be able to add a second.
+
+968
+00:58:54,720 --> 00:58:57,760
+Daniel Shanklin: It might, however, say you can't because that one's taken.
+
+969
+00:59:13,920 --> 00:59:17,680
+Michael D Nguyen: Okay, well, I can figure this out while we're kind of going, but.
+
+970
+00:59:20,030 --> 00:59:21,150
+Daniel Shanklin: how can I serve you best?
+
+971
+00:59:22,750 --> 00:59:23,230
+Michael D Nguyen: Do you.
+
+972
+00:59:24,750 --> 00:59:27,230
+Michael D Nguyen: I guess, like, do we want to go through that email?
+
+973
+00:59:28,670 --> 00:59:29,870
+Daniel Shanklin: Yeah, that'd be great.
+
+974
+00:59:30,590 --> 00:59:32,270
+Daniel Shanklin: And I'll pull it back up on my screen.
+
+975
+00:59:43,150 --> 00:59:43,710
+Daniel Shanklin: Okay.
+
+976
+00:59:54,290 --> 00:59:56,610
+Daniel Shanklin: Which two data sources do you want connect first?
+
+977
+00:59:58,770 --> 00:59:59,250
+Michael D Nguyen: Sage.
+
+978
+00:59:59,250 --> 01:00:00,290
+Michael D Nguyen: Makes sense, right, Alex?
+
+979
+01:00:00,290 --> 01:00:00,690
+Daniel Shanklin: Yep.
+
+980
+01:00:00,690 --> 01:00:01,170
+Michael D Nguyen: Sage.
+
+981
+01:00:05,330 --> 01:00:06,530
+Michael D Nguyen: I mean, our big three.
+
+982
+01:00:07,330 --> 01:00:08,290
+Michael D Nguyen: I think hubs.
+
+983
+01:00:09,420 --> 01:00:10,300
+Michael D Nguyen: HubSpot would be good.
+
+984
+01:00:10,300 --> 01:00:11,020
+Michael D Nguyen: I. I can.
+
+985
+01:00:11,340 --> 01:00:13,660
+Michael D Nguyen: You know, Navisoft is definitely.
+
+986
+01:00:15,020 --> 01:00:16,420
+Michael D Nguyen: I don't know if we're ready for that.
+
+987
+01:00:16,420 --> 01:00:17,340
+Michael D Nguyen: Yeah, I know.
+
+988
+01:00:17,660 --> 01:00:19,020
+Michael D Nguyen: But the next one.
+
+989
+01:00:19,100 --> 01:00:23,580
+Michael D Nguyen: Yeah, I wouldn't worry about getting into Wham.
+
+990
+01:00:23,900 --> 01:00:31,740
+Michael D Nguyen: Like, because I. I think we're going to try to transition over pretty, you know, kind of over the next couple months over to Navisoft.
+
+991
+01:00:34,540 --> 01:00:35,100
+Daniel Shanklin: Okay.
+
+992
+01:00:35,990 --> 01:00:37,310
+Daniel Shanklin: It was also flagged as a.
+
+993
+01:00:37,310 --> 01:00:37,990
+Daniel Shanklin: Not having any.
+
+994
+01:00:37,990 --> 01:00:40,390
+Michael D Nguyen: Yeah, yeah, dude, that thing's.
+
+995
+01:00:40,550 --> 01:00:41,350
+Michael D Nguyen: I think it.
+
+996
+01:00:41,350 --> 01:00:42,790
+Michael D Nguyen: It's still living in the 80s.
+
+997
+01:00:43,590 --> 01:00:45,110
+Michael D Nguyen: It's like a DOS interface.
+
+998
+01:00:45,110 --> 01:00:45,910
+Michael D Nguyen: You'd love it.
+
+999
+01:00:46,550 --> 01:00:47,830
+Daniel Shanklin: I probably would love it.
+
+1000
+01:00:48,870 --> 01:00:49,510
+Michael D Nguyen: I probably.
+
+1001
+01:00:49,590 --> 01:00:50,990
+Michael D Nguyen: Literally the DOS interface.
+
+1002
+01:00:50,990 --> 01:00:51,150
+Michael D Nguyen: And.
+
+1003
+01:00:51,150 --> 01:00:55,350
+Michael D Nguyen: Yeah, you have like these shortcuts and you're, like, pressing, like, the F keys a lot to get.
+
+1004
+01:00:56,550 --> 01:00:58,630
+Daniel Shanklin: All right, all right, y' all laugh, but hear me out.
+
+1005
+01:00:58,710 --> 01:01:00,830
+Daniel Shanklin: Which is AI going to control faster?
+
+1006
+01:01:00,830 --> 01:01:02,310
+Daniel Shanklin: A website or the terminal?
+
+1007
+01:01:04,130 --> 01:01:05,890
+Daniel Shanklin: You hook that thing into that, it's gonna be like.
+
+1008
+01:01:06,690 --> 01:01:11,370
+Michael D Nguyen: Yeah, but I think this order is, you know, is.
+
+1009
+01:01:11,370 --> 01:01:11,970
+Michael D Nguyen: Is good.
+
+1010
+01:01:13,890 --> 01:01:14,690
+Michael D Nguyen: I think Hub.
+
+1011
+01:01:14,690 --> 01:01:25,090
+Michael D Nguyen: You know, one thing kind of with HubSpot that HubSpot doesn't have, that I know that the sales people use a lot is like, being able just to map their prospects, you know, like, just being able to throw.
+
+1012
+01:01:25,730 --> 01:01:28,090
+Michael D Nguyen: Because, like, we have addresses for everything.
+
+1013
+01:01:28,090 --> 01:01:29,410
+Michael D Nguyen: It's just being able to throw it.
+
+1014
+01:01:29,670 --> 01:01:31,270
+Michael D Nguyen: Throw it down kind of in a map.
+
+1015
+01:01:31,590 --> 01:01:35,350
+Michael D Nguyen: So a lot of them are kind of creating little Google Maps on the side for themselves.
+
+1016
+01:01:37,030 --> 01:01:37,790
+Michael D Nguyen: So that's a.
+
+1017
+01:01:37,790 --> 01:01:42,110
+Michael D Nguyen: That's a helpful kind of function that I think would be, you know, I don't know how easy that would do.
+
+1018
+01:01:42,110 --> 01:01:42,550
+Daniel Shanklin: But you.
+
+1019
+01:01:42,710 --> 01:01:43,990
+Michael D Nguyen: You have the data, right?
+
+1020
+01:01:44,790 --> 01:01:45,150
+Daniel Shanklin: Yeah.
+
+1021
+01:01:45,150 --> 01:01:47,630
+Daniel Shanklin: You Want to, you want to put a map page in Cerebro?
+
+1022
+01:01:47,630 --> 01:01:48,230
+Daniel Shanklin: Would that help?
+
+1023
+01:01:50,150 --> 01:01:52,230
+Michael D Nguyen: Yeah, because I, I, I think like, it would.
+
+1024
+01:01:52,470 --> 01:01:55,110
+Michael D Nguyen: You know, from my cool.
+
+1025
+01:01:57,060 --> 01:01:59,020
+Michael D Nguyen: You know, these are where our customers are right.
+
+1026
+01:01:59,020 --> 01:02:00,300
+Michael D Nguyen: By business line.
+
+1027
+01:02:00,300 --> 01:02:07,180
+Michael D Nguyen: And, and, but also, like, these are the prospects and you know, you can, we can permission down the sales folks to.
+
+1028
+01:02:07,180 --> 01:02:13,620
+Michael D Nguyen: So where they just see kind of like, you know, their customers and their, you know, their, their leads.
+
+1029
+01:02:14,580 --> 01:02:15,140
+Daniel Shanklin: Yeah.
+
+1030
+01:02:15,700 --> 01:02:16,820
+Daniel Shanklin: Makes a lot of sense.
+
+1031
+01:02:16,900 --> 01:02:27,790
+Daniel Shanklin: So let's do you want it on customers like a map that you click and it expands out, or you want it to be a separate one?
+
+1032
+01:02:28,030 --> 01:02:29,190
+Daniel Shanklin: If you don't care, it's okay.
+
+1033
+01:02:29,190 --> 01:02:29,870
+Daniel Shanklin: I'll just pick.
+
+1034
+01:02:31,710 --> 01:02:37,149
+Michael D Nguyen: do a separate one just because, like, it's because it's customers and prospects too.
+
+1035
+01:02:38,350 --> 01:02:38,750
+Daniel Shanklin: Right.
+
+1036
+01:02:39,790 --> 01:02:41,870
+Daniel Shanklin: Customer and prospect map.
+
+1037
+01:02:42,590 --> 01:02:47,630
+Daniel Shanklin: Do y' all do opportunity management inside of HubSpot yet?
+
+1038
+01:02:47,630 --> 01:02:51,220
+Daniel Shanklin: You know, like, funnel management?
+
+1039
+01:02:51,940 --> 01:02:54,020
+Michael D Nguyen: Yeah, we use the deal pipeline.
+
+1040
+01:02:54,580 --> 01:02:55,020
+Daniel Shanklin: Nice.
+
+1041
+01:02:55,020 --> 01:02:55,620
+Daniel Shanklin: Okay.
+
+1042
+01:02:56,660 --> 01:02:59,380
+Daniel Shanklin: Do you want to see on the map where they are in the deal pipeline?
+
+1043
+01:03:01,780 --> 01:03:02,180
+Daniel Shanklin: Good.
+
+1044
+01:03:02,180 --> 01:03:02,540
+Michael D Nguyen: Yeah.
+
+1045
+01:03:02,540 --> 01:03:14,900
+Michael D Nguyen: Like, you know, like, I think because there's going to be things in there that's not quite a deal yet that still kind of they're working a lead and, you know, being able to differentiate between what's kind of where it's at would be good.
+
+1046
+01:03:16,150 --> 01:03:24,150
+Daniel Shanklin: Do you, are you, do you have to drive around town to where you'd want to filter to, like, here's my meeting this week or something?
+
+1047
+01:03:24,710 --> 01:03:25,310
+Daniel Shanklin: I don't know.
+
+1048
+01:03:25,310 --> 01:03:26,190
+Daniel Shanklin: That's probably too much.
+
+1049
+01:03:26,190 --> 01:03:26,430
+Michael D Nguyen: Yeah.
+
+1050
+01:03:26,430 --> 01:03:27,110
+Daniel Shanklin: You, you.
+
+1051
+01:03:27,190 --> 01:03:28,870
+Michael D Nguyen: I think you could, I think, like.
+
+1052
+01:03:28,870 --> 01:03:31,630
+Michael D Nguyen: the sales guys, if they're doing their job in HubSpot.
+
+1053
+01:03:31,630 --> 01:03:32,110
+Michael D Nguyen: Yeah.
+
+1054
+01:03:32,110 --> 01:03:36,750
+Michael D Nguyen: And like all those addresses and accounts and clients are getting into this map.
+
+1055
+01:03:36,750 --> 01:03:37,150
+Michael D Nguyen: Yeah.
+
+1056
+01:03:37,150 --> 01:03:39,470
+Alex Kaye: And they're like, plan my week for me, yo.
+
+1057
+01:03:39,470 --> 01:03:40,630
+Michael D Nguyen: Yeah, totally.
+
+1058
+01:03:40,940 --> 01:03:42,380
+Daniel Shanklin: I think it's crazy, right?
+
+1059
+01:03:43,020 --> 01:03:43,580
+Michael D Nguyen: There's.
+
+1060
+01:03:43,980 --> 01:03:44,860
+Michael D Nguyen: But they do.
+
+1061
+01:03:44,860 --> 01:03:46,380
+Michael D Nguyen: Daniel, like you bring up a good point.
+
+1062
+01:03:46,380 --> 01:03:47,140
+Michael D Nguyen: Like they, we.
+
+1063
+01:03:47,140 --> 01:03:49,300
+Michael D Nguyen: They drive around a lot like they are they.
+
+1064
+01:03:49,300 --> 01:03:50,860
+Michael D Nguyen: If they're doing their job, they should be.
+
+1065
+01:03:52,860 --> 01:03:53,260
+Daniel Shanklin: Then.
+
+1066
+01:03:53,580 --> 01:03:55,820
+Daniel Shanklin: I love the quote from Alex just there.
+
+1067
+01:03:55,820 --> 01:03:57,220
+Daniel Shanklin: Plan my week for me.
+
+1068
+01:03:57,220 --> 01:03:58,780
+Daniel Shanklin: That's the North Star, isn't it?
+
+1069
+01:03:58,860 --> 01:03:59,340
+Daniel Shanklin: Yeah.
+
+1070
+01:03:59,340 --> 01:03:59,820
+Michael D Nguyen: Yeah.
+
+1071
+01:04:00,700 --> 01:04:01,340
+Daniel Shanklin: Okay.
+
+1072
+01:04:03,900 --> 01:04:05,980
+Daniel Shanklin: If I could give you a magic wand.
+
+1073
+01:04:05,980 --> 01:04:13,140
+Daniel Shanklin: Not me personally, but the folks at Anthropic, where you touch it and it's like, here's how I would do my route planning for your sales thing.
+
+1074
+01:04:13,540 --> 01:04:14,300
+Daniel Shanklin: That'd be cool.
+
+1075
+01:04:14,300 --> 01:04:14,740
+Daniel Shanklin: All right.
+
+1076
+01:04:16,180 --> 01:04:17,300
+Michael D Nguyen: Eventually too, right?
+
+1077
+01:04:17,300 --> 01:04:23,860
+Michael D Nguyen: Like, we also, you know, op like Navisoft has like a route optimization kind of tool.
+
+1078
+01:04:23,860 --> 01:04:35,280
+Michael D Nguyen: But, like, it would be cool to see kind of what, you know, what Cerebro could do kind of for that as well because it's here Route optimization is tough because you.
+
+1079
+01:04:35,280 --> 01:04:37,800
+Michael D Nguyen: There's a lot of things you're factoring in kind of all.
+
+1080
+01:04:37,800 --> 01:04:38,440
+Michael D Nguyen: All at once.
+
+1081
+01:04:38,440 --> 01:04:41,840
+Michael D Nguyen: And there's, you know, and it's constantly changing.
+
+1082
+01:04:41,840 --> 01:04:43,360
+Michael D Nguyen: One accident changes everything.
+
+1083
+01:04:44,400 --> 01:04:44,960
+Daniel Shanklin: It's.
+
+1084
+01:04:45,360 --> 01:04:45,920
+Daniel Shanklin: I've.
+
+1085
+01:04:45,920 --> 01:04:52,880
+Daniel Shanklin: I did a. I used to be in data science and RAT optimization was a problem for patients.
+
+1086
+01:04:52,880 --> 01:04:55,440
+Daniel Shanklin: It's literally the same problem from like a tech perspective.
+
+1087
+01:04:55,440 --> 01:04:59,360
+Daniel Shanklin: You know, it's actually what they call an NP hard algorithm.
+
+1088
+01:04:59,360 --> 01:05:00,920
+Daniel Shanklin: It seems that you can't solve it.
+
+1089
+01:05:00,920 --> 01:05:02,560
+Daniel Shanklin: Like there's no, like one.
+
+1090
+01:05:02,560 --> 01:05:03,440
+Daniel Shanklin: There's no one.
+
+1091
+01:05:03,440 --> 01:05:03,720
+Daniel Shanklin: Right.
+
+1092
+01:05:03,720 --> 01:05:04,160
+Daniel Shanklin: Answ.
+
+1093
+01:05:05,140 --> 01:05:05,420
+Daniel Shanklin: Yeah.
+
+1094
+01:05:05,420 --> 01:05:07,260
+Daniel Shanklin: And that frustrates people because they're like.
+
+1095
+01:05:07,260 --> 01:05:07,940
+Daniel Shanklin: What do you mean?
+
+1096
+01:05:08,180 --> 01:05:09,060
+Daniel Shanklin: Like there isn't.
+
+1097
+01:05:10,100 --> 01:05:20,500
+Daniel Shanklin: So when we get to there, my best advice is literally, if y' all work on prompts until they're just correct, like, these are my.
+
+1098
+01:05:20,820 --> 01:05:21,260
+Daniel Shanklin: This is.
+
+1099
+01:05:21,260 --> 01:05:22,500
+Daniel Shanklin: This is the kind of route I like.
+
+1100
+01:05:22,500 --> 01:05:24,740
+Daniel Shanklin: I don't want more than three people in a day.
+
+1101
+01:05:25,940 --> 01:05:26,820
+Daniel Shanklin: It'd be amazing.
+
+1102
+01:05:26,820 --> 01:05:29,460
+Daniel Shanklin: It would be amazing how it would custom tailor over time.
+
+1103
+01:05:29,780 --> 01:05:31,100
+Daniel Shanklin: It really is going to kill software.
+
+1104
+01:05:31,100 --> 01:05:31,380
+Michael D Nguyen: Michael.
+
+1105
+01:05:32,090 --> 01:05:32,410
+Michael D Nguyen: Yeah.
+
+1106
+01:05:34,250 --> 01:05:34,730
+Daniel Shanklin: Wow.
+
+1107
+01:05:39,770 --> 01:05:42,170
+Daniel Shanklin: Okay, were here.
+
+1108
+01:05:43,770 --> 01:05:45,410
+Daniel Shanklin: Is there a tech lead at Greenmark?
+
+1109
+01:05:45,410 --> 01:05:48,090
+Daniel Shanklin: Like, is there a context now?
+
+1110
+01:05:48,330 --> 01:05:50,570
+Michael D Nguyen: Like you're, you know, at very.
+
+1111
+01:05:51,050 --> 01:05:53,770
+Michael D Nguyen: At very best and it's weak.
+
+1112
+01:05:53,770 --> 01:05:54,570
+Michael D Nguyen: That would be me.
+
+1113
+01:05:54,570 --> 01:05:55,690
+Michael D Nguyen: Like, I kind of.
+
+1114
+01:05:56,090 --> 01:06:00,060
+Michael D Nguyen: Okay, I manage most of the kind of the IT stuff and the software.
+
+1115
+01:06:00,060 --> 01:06:05,340
+Michael D Nguyen: And then we have a managed service provider that jumps in kind of on other things if needed.
+
+1116
+01:06:05,340 --> 01:06:16,980
+Michael D Nguyen: And then Travis dabbles a very little bit kind of on some of the stuff that, you know, the broader AIC jet organization helps host kind of for us.
+
+1117
+01:06:17,780 --> 01:06:18,420
+Daniel Shanklin: Okay.
+
+1118
+01:06:18,900 --> 01:06:26,360
+Daniel Shanklin: Probably the next cheat sheet I'll get from you or I'll hand out and ask for is like, who gets permission to what, you know.
+
+1119
+01:06:26,360 --> 01:06:26,800
+Daniel Shanklin: Yeah.
+
+1120
+01:06:27,200 --> 01:06:27,760
+Daniel Shanklin: Yeah.
+
+1121
+01:06:29,520 --> 01:06:30,000
+Daniel Shanklin: Cool.
+
+1122
+01:06:31,840 --> 01:06:33,600
+Daniel Shanklin: And that's why I asked about the tech lead.
+
+1123
+01:06:33,680 --> 01:06:36,400
+Daniel Shanklin: So you'll be a de facto tech lead that I guess.
+
+1124
+01:06:37,200 --> 01:06:37,640
+Michael D Nguyen: Yeah.
+
+1125
+01:06:37,640 --> 01:06:40,680
+Michael D Nguyen: Like access to software, all that stuff would be.
+
+1126
+01:06:40,680 --> 01:06:41,120
+Michael D Nguyen: Kind of.
+
+1127
+01:06:41,120 --> 01:06:41,760
+Daniel Shanklin: Would be me.
+
+1128
+01:06:42,640 --> 01:06:43,360
+Daniel Shanklin: Understood.
+
+1129
+01:06:44,960 --> 01:06:46,160
+Daniel Shanklin: This was a question for Alex.
+
+1130
+01:06:46,160 --> 01:06:49,200
+Daniel Shanklin: Do Comerica and Expensify already flow through Sage?
+
+1131
+01:06:51,200 --> 01:06:52,400
+Alex Kaye: Expensify does.
+
+1132
+01:06:53,090 --> 01:06:54,050
+Alex Kaye: That's already connected.
+
+1133
+01:06:56,610 --> 01:06:58,610
+Alex Kaye: Comerica is not.
+
+1134
+01:06:59,490 --> 01:07:01,490
+Alex Kaye: Yeah, Comerica is not really connected.
+
+1135
+01:07:02,850 --> 01:07:03,650
+Daniel Shanklin: The Sage.
+
+1136
+01:07:06,050 --> 01:07:06,770
+Daniel Shanklin: Okay.
+
+1137
+01:07:08,290 --> 01:07:12,130
+Daniel Shanklin: Do you guys plan on keeping Sage indefinitely, do you think?
+
+1138
+01:07:12,210 --> 01:07:15,090
+Michael D Nguyen: Yeah, unless you can build something better.
+
+1139
+01:07:15,810 --> 01:07:17,970
+Michael D Nguyen: No, I can't.
+
+1140
+01:07:18,850 --> 01:07:19,650
+Daniel Shanklin: I literally.
+
+1141
+01:07:20,420 --> 01:07:23,700
+Daniel Shanklin: That was so easy for me to say I can't accounting software.
+
+1142
+01:07:24,180 --> 01:07:24,740
+Daniel Shanklin: Literally.
+
+1143
+01:07:24,900 --> 01:07:28,020
+Daniel Shanklin: Alex, when we got to aic, they were like, can you build us portfolio management software?
+
+1144
+01:07:28,020 --> 01:07:28,660
+Daniel Shanklin: I was like, sure.
+
+1145
+01:07:28,660 --> 01:07:29,780
+Daniel Shanklin: Start with an easy one.
+
+1146
+01:07:30,660 --> 01:07:33,380
+Daniel Shanklin: Yeah, I was like, can I get a cowardly or something?
+
+1147
+01:07:35,860 --> 01:07:40,180
+Daniel Shanklin: So it's literally the hardest one because the stakes are impossibly high.
+
+1148
+01:07:40,180 --> 01:07:42,820
+Daniel Shanklin: You know, you have all these reconciliations to double check.
+
+1149
+01:07:45,060 --> 01:07:51,830
+Daniel Shanklin: Well, then you want to keep working your Sage process that way and not bring Comerica data directly into Cerebra.
+
+1150
+01:07:51,830 --> 01:07:54,670
+Daniel Shanklin: Or you do want Comerica directly into Cerebro,
+
+1151
+01:07:57,230 --> 01:07:59,470
+Michael D Nguyen: and I think at some point we do.
+
+1152
+01:07:59,550 --> 01:08:02,910
+Michael D Nguyen: I just, look, I need to think about like, what that.
+
+1153
+01:08:03,470 --> 01:08:04,670
+Michael D Nguyen: What that kind of means.
+
+1154
+01:08:04,670 --> 01:08:06,030
+Michael D Nguyen: Right, of course.
+
+1155
+01:08:06,030 --> 01:08:07,190
+Daniel Shanklin: Yeah, we can table that.
+
+1156
+01:08:07,190 --> 01:08:07,990
+Daniel Shanklin: We can table that.
+
+1157
+01:08:07,990 --> 01:08:08,910
+Alex Kaye: Yeah, let's.
+
+1158
+01:08:08,910 --> 01:08:10,030
+Alex Kaye: Let's table that.
+
+1159
+01:08:11,070 --> 01:08:12,900
+Alex Kaye: Because I.
+
+1160
+01:08:12,900 --> 01:08:16,779
+Alex Kaye: There's like Sages, and I think Mike said it in one of his notes.
+
+1161
+01:08:16,779 --> 01:08:20,140
+Alex Kaye: Like, Sage, I think is very forward thinking with all this stuff.
+
+1162
+01:08:20,140 --> 01:08:27,340
+Alex Kaye: They're one of the most, like, flexible solutions out there in terms of like API connections.
+
+1163
+01:08:27,340 --> 01:08:35,899
+Alex Kaye: So I, you know, if that can be kind of our Rosetta stone for most things, I'd rather just kind of flow it through Sage.
+
+1164
+01:08:35,899 --> 01:08:38,590
+Alex Kaye: So let me, let me think about that one.
+
+1165
+01:08:38,750 --> 01:08:40,029
+Daniel Shanklin: I agree with you too.
+
+1166
+01:08:40,430 --> 01:08:41,310
+Daniel Shanklin: It's, it's.
+
+1167
+01:08:42,510 --> 01:08:43,950
+Daniel Shanklin: Your auditors will love it.
+
+1168
+01:08:44,590 --> 01:08:45,710
+Daniel Shanklin: You never get trouble.
+
+1169
+01:08:46,189 --> 01:08:47,270
+Daniel Shanklin: It's okay to like.
+
+1170
+01:08:47,270 --> 01:08:49,870
+Daniel Shanklin: And, and you have a golden record set.
+
+1171
+01:08:50,029 --> 01:08:50,710
+Daniel Shanklin: What do they call it?
+
+1172
+01:08:50,710 --> 01:08:51,710
+Daniel Shanklin: The system of record?
+
+1173
+01:08:51,790 --> 01:08:52,830
+Daniel Shanklin: Is Sage.
+
+1174
+01:08:53,149 --> 01:08:54,910
+Daniel Shanklin: Re just happens to look at it.
+
+1175
+01:08:55,149 --> 01:08:57,630
+Alex Kaye: Yeah, yeah, exactly.
+
+1176
+01:08:59,550 --> 01:09:00,189
+Daniel Shanklin: Excellent.
+
+1177
+01:09:02,670 --> 01:09:06,270
+Daniel Shanklin: Any disagreement on that, Michael, that we should talk about or think about?
+
+1178
+01:09:07,470 --> 01:09:09,229
+Alex Kaye: He had to walk out for a second.
+
+1179
+01:09:09,229 --> 01:09:11,229
+Daniel Shanklin: Oh, no.
+
+1180
+01:09:11,790 --> 01:09:12,430
+Michael D Nguyen: Yeah, that.
+
+1181
+01:09:12,430 --> 01:09:13,550
+Alex Kaye: He's good with that.
+
+1182
+01:09:14,109 --> 01:09:14,910
+Daniel Shanklin: Okay, cool.
+
+1183
+01:09:17,870 --> 01:09:18,510
+Daniel Shanklin: All right.
+
+1184
+01:09:21,149 --> 01:09:23,870
+Daniel Shanklin: I made a suggestion on how to work and it was literally.
+
+1185
+01:09:24,350 --> 01:09:26,590
+Daniel Shanklin: I know this is so backwards, right?
+
+1186
+01:09:26,590 --> 01:09:28,830
+Daniel Shanklin: In the old days you just have to go fill out all your software.
+
+1187
+01:09:28,910 --> 01:09:33,779
+Daniel Shanklin: But what's cool is if y' all just email me what you want, I can like paste it into the thing.
+
+1188
+01:09:34,259 --> 01:09:34,658
+Daniel Shanklin: Right.
+
+1189
+01:09:35,139 --> 01:09:40,779
+Daniel Shanklin: Whenever somebody, like, I've had a. I used to run a startup and I had employees, like, I put 57 tasks in the thing for you.
+
+1190
+01:09:40,779 --> 01:09:41,259
+Daniel Shanklin: I'm like, thanks.
+
+1191
+01:09:41,259 --> 01:09:44,219
+Daniel Shanklin: Now I have to read 57 things to click.
+
+1192
+01:09:44,219 --> 01:09:45,059
+Daniel Shanklin: 57 things.
+
+1193
+01:09:45,059 --> 01:09:48,658
+Daniel Shanklin: So if you want to just do it or email, I would appreciate that.
+
+1194
+01:09:48,658 --> 01:09:50,578
+Daniel Shanklin: But this is your show.
+
+1195
+01:09:50,819 --> 01:09:52,499
+Daniel Shanklin: I just have my suggestion.
+
+1196
+01:09:54,899 --> 01:09:55,459
+Daniel Shanklin: Okay.
+
+1197
+01:09:55,459 --> 01:09:56,019
+Daniel Shanklin: Credentials.
+
+1198
+01:09:56,019 --> 01:09:58,499
+Daniel Shanklin: At some point I'm going to need like Sage access.
+
+1199
+01:09:58,899 --> 01:10:01,299
+Daniel Shanklin: Do you want to give me an account to Sage?
+
+1200
+01:10:01,800 --> 01:10:10,840
+Daniel Shanklin: Like a, like I'm a user of Sage, or do you just want to keep me out of it and then send me an API key and that's all I get?
+
+1201
+01:10:11,400 --> 01:10:13,160
+Daniel Shanklin: Either way, I am going to see the data.
+
+1202
+01:10:14,040 --> 01:10:22,520
+Michael D Nguyen: Which, what's like, I guess like the question with all of the data, all of the systems is what's easiest to create a user kind of, you know, for you?
+
+1203
+01:10:22,840 --> 01:10:24,600
+Michael D Nguyen: Or it's.
+
+1204
+01:10:24,840 --> 01:10:35,340
+Daniel Shanklin: If it's not expensive, it's easiest to create like an admin type user for me, giving me access to Sage so that I can go in and create the API keys and manage them.
+
+1205
+01:10:35,500 --> 01:10:36,220
+Daniel Shanklin: But it does.
+
+1206
+01:10:36,700 --> 01:10:37,260
+Daniel Shanklin: It just.
+
+1207
+01:10:37,260 --> 01:10:37,980
+Daniel Shanklin: It's one more.
+
+1208
+01:10:38,780 --> 01:10:41,580
+Daniel Shanklin: I also operate as a security guy under least.
+
+1209
+01:10:42,940 --> 01:10:43,820
+Daniel Shanklin: Least privilege.
+
+1210
+01:10:44,460 --> 01:10:47,340
+Daniel Shanklin: Like what's the minimum privilege you need to accomplish your task?
+
+1211
+01:10:47,980 --> 01:10:48,460
+Michael D Nguyen: Yeah.
+
+1212
+01:10:48,940 --> 01:10:52,300
+Daniel Shanklin: This is a unique situation though, because you don't have a cto.
+
+1213
+01:10:52,780 --> 01:10:54,700
+Daniel Shanklin: If you did, I would say cto.
+
+1214
+01:10:54,700 --> 01:10:55,180
+Daniel Shanklin: You do it.
+
+1215
+01:10:55,180 --> 01:10:55,920
+Daniel Shanklin: Give me the key.
+
+1216
+01:10:56,150 --> 01:10:58,150
+Daniel Shanklin: In this case, I would probably give me an account.
+
+1217
+01:10:58,550 --> 01:11:00,870
+Alex Kaye: Yeah, yeah, I think that's doable.
+
+1218
+01:11:00,870 --> 01:11:01,310
+Alex Kaye: I don't.
+
+1219
+01:11:01,310 --> 01:11:02,710
+Alex Kaye: Sage, like, that's.
+
+1220
+01:11:03,270 --> 01:11:04,870
+Alex Kaye: I don't think it costs really anything.
+
+1221
+01:11:05,270 --> 01:11:08,470
+Alex Kaye: All the cost for an extra seed is so kind of de minimis.
+
+1222
+01:11:09,670 --> 01:11:10,070
+Daniel Shanklin: Right?
+
+1223
+01:11:10,790 --> 01:11:11,990
+Michael D Nguyen: Pretty, pretty easily.
+
+1224
+01:11:13,750 --> 01:11:14,310
+Daniel Shanklin: Yeah.
+
+1225
+01:11:15,030 --> 01:11:17,590
+Daniel Shanklin: Colin and I talk about that a lot now that AI is here.
+
+1226
+01:11:17,910 --> 01:11:20,310
+Daniel Shanklin: Michael and Alex, your time's worth even more.
+
+1227
+01:11:20,950 --> 01:11:25,640
+Daniel Shanklin: So, like every little road bump I give you is just a, you know, $20 account.
+
+1228
+01:11:25,640 --> 01:11:26,320
+Daniel Shanklin: Fixes it.
+
+1229
+01:11:27,360 --> 01:11:28,000
+Daniel Shanklin: Excellent.
+
+1230
+01:11:28,080 --> 01:11:32,880
+Daniel Shanklin: All right, where were we then?
+
+1231
+01:11:33,120 --> 01:11:43,360
+Daniel Shanklin: That means we don't have to do what I call secure request, which is on the email building a mini application so that you can request things securely from someone over the web.
+
+1232
+01:11:43,600 --> 01:11:45,280
+Daniel Shanklin: But we won't need that for that.
+
+1233
+01:11:46,000 --> 01:11:51,090
+Daniel Shanklin: Yeah, we talked about GitHub organization and projects being tracked there and we also talked about.
+
+1234
+01:11:51,240 --> 01:11:56,040
+Daniel Shanklin: Talked about railway cloud hosting.
+
+1235
+01:11:56,040 --> 01:12:02,040
+Daniel Shanklin: I'm going to sell one last point again on why I love this for us, even if it's a little messy as we get started.
+
+1236
+01:12:03,640 --> 01:12:16,560
+Daniel Shanklin: In my experience working with clients or any kind of like, data systems, they'll have a really nice organization like an Asana or a Trello board, and they've got all the cards in there and then they've got the code and somebody built that.
+
+1237
+01:12:16,560 --> 01:12:16,840
+Daniel Shanklin: Right.
+
+1238
+01:12:17,390 --> 01:12:26,430
+Daniel Shanklin: What happens is they'll pass the project off from one Indian team to another and they give them the code and none of the project comes with it.
+
+1239
+01:12:27,230 --> 01:12:30,670
+Daniel Shanklin: You never know the history on how it got to where it was.
+
+1240
+01:12:30,830 --> 01:12:36,430
+Daniel Shanklin: So there's actually this unique benefit now that AI is here to having everything all in one place.
+
+1241
+01:12:36,670 --> 01:12:38,350
+Daniel Shanklin: So that's just my sales pitch on that.
+
+1242
+01:12:39,630 --> 01:12:44,110
+Michael D Nguyen: We need to get our own instance of that and kind of start paying for it too.
+
+1243
+01:12:44,940 --> 01:12:47,180
+Daniel Shanklin: It's totally free, there's no cost.
+
+1244
+01:12:47,180 --> 01:12:55,500
+Daniel Shanklin: I do recommend that the two of y' all have a GitHub account and my father and I think that it's going to become a big deal.
+
+1245
+01:12:55,740 --> 01:12:57,260
+Daniel Shanklin: Like, it was a coding tool.
+
+1246
+01:12:57,660 --> 01:13:01,020
+Daniel Shanklin: Just like, you know, like AI was a coding tool a year ago, and now it's everybody's.
+
+1247
+01:13:01,180 --> 01:13:02,420
+Daniel Shanklin: We think it'll be a big deal.
+
+1248
+01:13:02,420 --> 01:13:05,500
+Daniel Shanklin: So y' all getting in there, be really cool.
+
+1249
+01:13:10,470 --> 01:13:13,510
+Daniel Shanklin: See, there was really nothing down here to note.
+
+1250
+01:13:14,470 --> 01:13:15,910
+Daniel Shanklin: This is mostly for me.
+
+1251
+01:13:15,990 --> 01:13:20,950
+Daniel Shanklin: For the future, don't embed AI into the dashboard.
+
+1252
+01:13:20,950 --> 01:13:25,030
+Daniel Shanklin: That was just me kind of saying, again, if we build it in, we have to maintain it.
+
+1253
+01:13:25,030 --> 01:13:29,430
+Daniel Shanklin: If you build it as a sidebar, you don't have to build it because Claude does it for you.
+
+1254
+01:13:29,990 --> 01:13:30,550
+Daniel Shanklin: Yeah.
+
+1255
+01:13:31,190 --> 01:13:40,380
+Daniel Shanklin: And then lastly, just as kind of like a triangle of how we think about AI, we use it to write code, we use it to run quality checks, like looking at the website.
+
+1256
+01:13:40,700 --> 01:13:50,540
+Daniel Shanklin: But generally speaking, we don't employ it as an agent yet to do complex work.
+
+1257
+01:13:51,900 --> 01:13:54,700
+Daniel Shanklin: That sounds weird because it's like, isn't code complex work?
+
+1258
+01:13:54,780 --> 01:14:01,100
+Daniel Shanklin: The big difference is with code, there is a measure of success or failure through testing.
+
+1259
+01:14:01,180 --> 01:14:12,610
+Daniel Shanklin: So you can run like thousands of tests and be like, you did a good job, but there is no test for, like, you sent the email to the wrong client and it's just going to it up.
+
+1260
+01:14:12,610 --> 01:14:13,810
+Daniel Shanklin: Pardon my French, you know?
+
+1261
+01:14:13,810 --> 01:14:20,770
+Daniel Shanklin: So what we try to do is actually avoid agentic AI for now until we feel more confident that, like, it plays a really central role.
+
+1262
+01:14:21,250 --> 01:14:25,090
+Daniel Shanklin: Do you have an opinion on that forming, Michael?
+
+1263
+01:14:26,530 --> 01:14:26,930
+Michael D Nguyen: Good.
+
+1264
+01:14:30,540 --> 01:14:31,900
+Michael D Nguyen: Really have much to add to that.
+
+1265
+01:14:33,100 --> 01:14:34,940
+Michael D Nguyen: Hey, real quick, back to GitHub.
+
+1266
+01:14:35,020 --> 01:14:37,300
+Michael D Nguyen: Like, those are all just individual accounts.
+
+1267
+01:14:37,300 --> 01:14:39,780
+Michael D Nguyen: Like, so Alex and I should just set up an individual account?
+
+1268
+01:14:39,780 --> 01:14:41,100
+Michael D Nguyen: Like, it's not a corporate thing.
+
+1269
+01:14:41,660 --> 01:14:43,340
+Daniel Shanklin: Yeah, they're exactly.
+
+1270
+01:14:43,340 --> 01:14:45,220
+Daniel Shanklin: Their model is individual, one per human.
+
+1271
+01:14:45,220 --> 01:14:48,060
+Michael D Nguyen: Okay, well, yeah, we can each do that.
+
+1272
+01:14:50,380 --> 01:14:57,240
+Daniel Shanklin: As soon as you do, put it on my list and we'll be in the recording that we are going to invite both of you and I will make Michael, you.
+
+1273
+01:14:57,310 --> 01:15:00,510
+Daniel Shanklin: You're going to be an admin in that account so that you have the same privilege as me.
+
+1274
+01:15:00,510 --> 01:15:02,670
+Daniel Shanklin: And if I get hit by a bus, you'll own the code.
+
+1275
+01:15:06,030 --> 01:15:10,190
+Michael D Nguyen: I'm in using my Green Mark email address already.
+
+1276
+01:15:10,590 --> 01:15:11,270
+Daniel Shanklin: Look at him.
+
+1277
+01:15:11,270 --> 01:15:11,710
+Michael D Nguyen: Yeah.
+
+1278
+01:15:12,030 --> 01:15:13,309
+Daniel Shanklin: Can't keep up with this guy.
+
+1279
+01:15:13,309 --> 01:15:14,270
+Daniel Shanklin: All right, here we go.
+
+1280
+01:15:15,390 --> 01:15:16,750
+Daniel Shanklin: So I'll show you what that looks like.
+
+1281
+01:15:18,430 --> 01:15:19,470
+Daniel Shanklin: This is GitHub.
+
+1282
+01:15:19,550 --> 01:15:21,070
+Daniel Shanklin: I should get a message right here.
+
+1283
+01:15:22,590 --> 01:15:25,290
+Daniel Shanklin: Actually, it would have given you an account, but I haven't invited you.
+
+1284
+01:15:25,610 --> 01:15:32,730
+Daniel Shanklin: So I'll go over here to organizations, Green Mark, and then over here on people.
+
+1285
+01:15:34,490 --> 01:15:36,490
+Daniel Shanklin: Luke, by the way, is our senior AI engineer.
+
+1286
+01:15:37,770 --> 01:15:40,490
+Daniel Shanklin: He Is a member in here?
+
+1287
+01:15:40,809 --> 01:15:41,690
+Daniel Shanklin: I'm an admin.
+
+1288
+01:15:41,690 --> 01:15:42,410
+Daniel Shanklin: He's a member.
+
+1289
+01:15:42,970 --> 01:15:44,730
+Daniel Shanklin: Member allows him to see the code.
+
+1290
+01:15:45,290 --> 01:15:45,770
+Daniel Shanklin: Yeah.
+
+1291
+01:15:45,770 --> 01:15:46,090
+Daniel Shanklin: And.
+
+1292
+01:15:46,090 --> 01:15:47,050
+Daniel Shanklin: And to edit it.
+
+1293
+01:15:47,930 --> 01:15:49,930
+Daniel Shanklin: So if you do need a backup, he's your person.
+
+1294
+01:15:49,930 --> 01:15:50,570
+Daniel Shanklin: Talk to you.
+
+1295
+01:15:52,950 --> 01:15:53,190
+Daniel Shanklin: You.
+
+1296
+01:15:53,190 --> 01:15:58,310
+Daniel Shanklin: You are M N G U Y E n. Yeah.
+
+1297
+01:15:58,310 --> 01:15:58,710
+Daniel Shanklin: At.
+
+1298
+01:15:59,990 --> 01:16:01,190
+Daniel Shanklin: Green Mark Waste.
+
+1299
+01:16:01,510 --> 01:16:02,070
+Michael D Nguyen: Yeah.
+
+1300
+01:16:26,080 --> 01:16:29,200
+Daniel Shanklin: In old days I used to go watch YouTube videos, learn how to use things.
+
+1301
+01:16:29,200 --> 01:16:29,760
+Daniel Shanklin: Like at home.
+
+1302
+01:16:29,920 --> 01:16:32,720
+Daniel Shanklin: I kind of still do, but I also just open up the sidebar.
+
+1303
+01:16:32,720 --> 01:16:34,000
+Daniel Shanklin: I'm like, how do you use this thing?
+
+1304
+01:16:34,640 --> 01:16:42,240
+Daniel Shanklin: Just tells me, all right, any other thresholds we didn't cross as far as the email?
+
+1305
+01:16:45,640 --> 01:16:45,960
+Michael D Nguyen: I think.
+
+1306
+01:16:45,960 --> 01:16:53,160
+Michael D Nguyen: So it sounds like the next steps kind of here are just getting you access to kind of these platforms.
+
+1307
+01:16:56,200 --> 01:16:56,560
+Michael D Nguyen: Yeah.
+
+1308
+01:16:56,560 --> 01:16:59,560
+Michael D Nguyen: Then just kind of making sure we check in, you know, periodically.
+
+1309
+01:17:00,440 --> 01:17:01,240
+Daniel Shanklin: Absolutely.
+
+1310
+01:17:01,800 --> 01:17:07,240
+Daniel Shanklin: So I will make sure we have access to Sage as a kind of like a to do for somebody.
+
+1311
+01:17:07,960 --> 01:17:13,320
+Daniel Shanklin: I'm Dee shanklin@aicholdings.com what else?
+
+1312
+01:17:13,800 --> 01:17:23,720
+Daniel Shanklin: As soon as that happens, I will go in there, I'll take a couple screenshots and make sure we storm in the repo for how I did it and I'll create an API key from there.
+
+1313
+01:17:24,520 --> 01:17:29,560
+Daniel Shanklin: Sometimes when you're provisioning API keys, they'll say things like, what do you want to give access to?
+
+1314
+01:17:30,920 --> 01:17:31,960
+Daniel Shanklin: It's like an unknown.
+
+1315
+01:17:31,960 --> 01:17:32,400
+Michael D Nguyen: Unknown.
+
+1316
+01:17:32,400 --> 01:17:34,120
+Daniel Shanklin: I actually don't know what those questions are.
+
+1317
+01:17:34,120 --> 01:17:37,380
+Daniel Shanklin: So before I click go, I'm going to ask for your approval.
+
+1318
+01:17:37,380 --> 01:17:42,700
+Daniel Shanklin: Alex, on you know what we're gonna let this thing do because.
+
+1319
+01:17:43,180 --> 01:17:43,820
+Daniel Shanklin: And it.
+
+1320
+01:17:43,900 --> 01:17:47,180
+Daniel Shanklin: My recommendation too would be that it be a read only key.
+
+1321
+01:17:48,140 --> 01:17:50,140
+Daniel Shanklin: It should not have the ability to make entries.
+
+1322
+01:17:50,220 --> 01:17:51,340
+Daniel Shanklin: Do we agree on that?
+
+1323
+01:17:51,820 --> 01:17:52,940
+Alex Kaye: Yeah, definitely.
+
+1324
+01:17:52,940 --> 01:17:53,740
+Alex Kaye: I was gonna.
+
+1325
+01:17:56,860 --> 01:18:02,060
+Daniel Shanklin: I don't mind using AI to make entries, but I do it as the sidebar, not like an agent.
+
+1326
+01:18:03,130 --> 01:18:03,450
+Michael D Nguyen: Yeah.
+
+1327
+01:18:06,330 --> 01:18:06,890
+Daniel Shanklin: Okay.
+
+1328
+01:18:09,130 --> 01:18:10,010
+Daniel Shanklin: Exciting times.
+
+1329
+01:18:12,810 --> 01:18:26,890
+Daniel Shanklin: I can give you, before we go, one small preview of the kind of stuff we can do with data that I think it kind of blew me away a little bit.
+
+1330
+01:18:26,890 --> 01:18:28,940
+Daniel Shanklin: Honestly, I couldn't believe it was so good.
+
+1331
+01:18:30,620 --> 01:18:33,340
+Daniel Shanklin: I know you guys got to go, but I think this is worth a look at.
+
+1332
+01:18:36,060 --> 01:18:37,940
+Daniel Shanklin: Okay, everybody see my screen?
+
+1333
+01:18:37,940 --> 01:18:38,380
+Daniel Shanklin: Okay.
+
+1334
+01:18:40,940 --> 01:18:43,420
+Daniel Shanklin: I told you that I asked it to make up a fake company.
+
+1335
+01:18:45,260 --> 01:18:49,420
+Daniel Shanklin: You ran this report, came up with all these problems with the fake data.
+
+1336
+01:18:51,820 --> 01:18:56,170
+Daniel Shanklin: Your accounts, billing amounts were not on a distribution that made sense.
+
+1337
+01:18:56,170 --> 01:18:57,770
+Daniel Shanklin: So if you were an auditor, you'd flag that.
+
+1338
+01:18:57,770 --> 01:18:58,970
+Daniel Shanklin: No, that's not right.
+
+1339
+01:19:01,370 --> 01:19:03,290
+Daniel Shanklin: You have certain invoice gaps.
+
+1340
+01:19:03,690 --> 01:19:06,490
+Daniel Shanklin: So like, I expected most of your invoices to be a certain amount.
+
+1341
+01:19:06,650 --> 01:19:10,370
+Daniel Shanklin: There was one that said a hundred thousand, you know, right away you got a bad entry in your system.
+
+1342
+01:19:10,370 --> 01:19:10,730
+Daniel Shanklin: Right?
+
+1343
+01:19:11,610 --> 01:19:13,210
+Daniel Shanklin: There's 34 pages of this.
+
+1344
+01:19:14,090 --> 01:19:18,250
+Daniel Shanklin: All right, where are they in the pipeline and how much money does each of those represent?
+
+1345
+01:19:18,810 --> 01:19:19,210
+Daniel Shanklin: Right.
+
+1346
+01:19:21,220 --> 01:19:22,340
+Daniel Shanklin: The tonnage floor.
+
+1347
+01:19:22,660 --> 01:19:24,100
+Daniel Shanklin: I couldn't believe it knew this.
+
+1348
+01:19:24,820 --> 01:19:27,020
+Daniel Shanklin: And on and on.
+
+1349
+01:19:27,020 --> 01:19:28,220
+Daniel Shanklin: All the different things that did.
+
+1350
+01:19:28,220 --> 01:19:30,900
+Daniel Shanklin: My personal favorite, I'll scroll down to was the diesel.
+
+1351
+01:19:34,500 --> 01:19:34,900
+Daniel Shanklin: Please.
+
+1352
+01:19:34,980 --> 01:19:35,980
+Daniel Shanklin: Where's diesel?
+
+1353
+01:19:35,980 --> 01:19:36,580
+Daniel Shanklin: Here it is.
+
+1354
+01:19:37,380 --> 01:19:43,220
+Daniel Shanklin: It actually tracked the average cost of Diesel with a 30 day window on it.
+
+1355
+01:19:43,620 --> 01:19:44,820
+Daniel Shanklin: I thought, my God.
+
+1356
+01:19:46,110 --> 01:19:50,750
+Daniel Shanklin: So giving it the data raw is sufficient usually for getting.
+
+1357
+01:19:52,270 --> 01:19:53,950
+Daniel Shanklin: It's like having a magic machine.
+
+1358
+01:19:54,350 --> 01:19:58,550
+Daniel Shanklin: You can just go ask it, find seasonality, trends, etc.
+
+1359
+01:19:58,550 --> 01:19:58,910
+Daniel Shanklin: Etc.
+
+1360
+01:19:59,630 --> 01:20:00,270
+Daniel Shanklin: Pretty wild.
+
+1361
+01:20:00,270 --> 01:20:01,189
+Daniel Shanklin: I don't know what y' all think of this.
+
+1362
+01:20:01,189 --> 01:20:02,110
+Daniel Shanklin: I think it's pretty cool.
+
+1363
+01:20:04,350 --> 01:20:05,350
+Michael D Nguyen: coming up with things.
+
+1364
+01:20:05,350 --> 01:20:06,110
+Michael D Nguyen: It's crazy.
+
+1365
+01:20:06,590 --> 01:20:07,790
+Daniel Shanklin: It's, it's wild.
+
+1366
+01:20:08,510 --> 01:20:14,800
+Daniel Shanklin: It also that's why it's not good for people like me and Colin because we'll look at it and we'll spend all day looking at it, you know.
+
+1367
+01:20:16,560 --> 01:20:20,560
+Daniel Shanklin: Anyway, I guess just to take a.
+
+1368
+01:20:20,640 --> 01:20:29,600
+Michael D Nguyen: step back, we're going to, you know, get you the requisite access to kind of our primary systems and start with Sage.
+
+1369
+01:20:30,560 --> 01:20:45,620
+Michael D Nguyen: And then, I mean that's essentially going to let you connect sage to GitHub and then GitHub to railway.
+
+1370
+01:20:47,940 --> 01:20:50,100
+Daniel Shanklin: Yeah, I would say that's actually a good characterization.
+
+1371
+01:20:51,300 --> 01:20:55,940
+Daniel Shanklin: As soon as I get that API key, we have to securely store that in Railway.
+
+1372
+01:20:56,100 --> 01:20:58,660
+Daniel Shanklin: So that Railway is the only place where that key exists.
+
+1373
+01:20:59,700 --> 01:21:06,670
+Daniel Shanklin: The code +raILWAY turns it into a robot, a data robot that can go out and grab that information and bring it back.
+
+1374
+01:21:06,670 --> 01:21:07,070
+Daniel Shanklin: Right.
+
+1375
+01:21:08,190 --> 01:21:13,310
+Daniel Shanklin: So I kind of said too many words there.
+
+1376
+01:21:13,310 --> 01:21:19,470
+Daniel Shanklin: All you need to basic just is an API key plus a Railway turns on a machine that starts to grab data.
+
+1377
+01:21:19,710 --> 01:21:40,070
+Daniel Shanklin: Now where it gets cool for us is I'll start figuring out which dashboards pull from Sage and make sure that's noted on each page and we'll know, you know, like if I was looking through here I'd say hey AI, you'll notice that on this operations page we don't have any data from Sage.
+
+1378
+01:21:40,070 --> 01:21:41,430
+Daniel Shanklin: So you don't need touch that.
+
+1379
+01:21:41,590 --> 01:21:44,710
+Daniel Shanklin: But I do want you to take a look and see what you can pull in from here.
+
+1380
+01:21:45,110 --> 01:21:47,910
+Daniel Shanklin: I do want you to take a look and see what you can pull it from here.
+
+1381
+01:21:47,910 --> 01:21:52,790
+Daniel Shanklin: So I, I've never really seen this done super well other places.
+
+1382
+01:21:52,790 --> 01:21:54,590
+Daniel Shanklin: So we'll have to see if this works well here.
+
+1383
+01:21:54,590 --> 01:21:58,920
+Daniel Shanklin: But I think it's a cool Idea this, it wasn't my Idea, it was AI's idea.
+
+1384
+01:21:58,920 --> 01:21:59,960
+Daniel Shanklin: I like this idea.
+
+1385
+01:22:00,200 --> 01:22:05,600
+Daniel Shanklin: Being able to see all the different data sources that would come in here and to tell you if they're stale or not.
+
+1386
+01:22:05,600 --> 01:22:06,360
+Daniel Shanklin: That's neat.
+
+1387
+01:22:09,000 --> 01:22:14,520
+Daniel Shanklin: Okay, so yes, access to Sage and what was the second one?
+
+1388
+01:22:15,800 --> 01:22:16,600
+Daniel Shanklin: HubSpot.
+
+1389
+01:22:17,240 --> 01:22:17,720
+Daniel Shanklin: Yeah.
+
+1390
+01:22:18,440 --> 01:22:19,000
+Daniel Shanklin: Okay.
+
+1391
+01:22:19,320 --> 01:22:23,160
+Michael D Nguyen: Yeah, there's not a ton of data in HubSpot yet because we kind of just started using it.
+
+1392
+01:22:26,100 --> 01:22:31,860
+Michael D Nguyen: But it's gonna get, it's gonna grow pretty big here soon.
+
+1393
+01:22:32,660 --> 01:22:34,020
+Daniel Shanklin: You know what's interesting?
+
+1394
+01:22:34,020 --> 01:22:36,180
+Daniel Shanklin: I thought AI would kill HubSpot.
+
+1395
+01:22:36,180 --> 01:22:37,140
+Daniel Shanklin: I think I was wrong.
+
+1396
+01:22:37,620 --> 01:22:45,300
+Daniel Shanklin: What if these like browser assistants actually make it even more valuable because like they start doing all the stuff that people aren't doing.
+
+1397
+01:22:46,020 --> 01:22:47,700
+Daniel Shanklin: I think it's an interesting argument.
+
+1398
+01:22:50,510 --> 01:22:54,190
+Michael D Nguyen: Like you could have it fill out all the addresses and things like that.
+
+1399
+01:22:55,070 --> 01:22:55,470
+Daniel Shanklin: Yeah.
+
+1400
+01:22:55,470 --> 01:22:59,710
+Daniel Shanklin: Imagine you go like have an off site and just record it on your phone or something.
+
+1401
+01:22:59,710 --> 01:23:04,110
+Daniel Shanklin: Or take a picture of the person's front of their business and you're like, go fill out my HubSpot.
+
+1402
+01:23:04,749 --> 01:23:05,710
+Daniel Shanklin: That'd be incredible.
+
+1403
+01:23:06,830 --> 01:23:14,270
+Daniel Shanklin: It would actually make me want a HubSpot account more, not less because I would still have all the oversight and like the intel, but I would have to do.
+
+1404
+01:23:14,430 --> 01:23:21,540
+Daniel Shanklin: I feel like the reason CRMs are so poor, they're actually known in the data industry as like the worst data quality.
+
+1405
+01:23:22,100 --> 01:23:27,940
+Daniel Shanklin: So when you're looking for companies to buy like which ones have high quality data, CRMs are the worst because people don't fill them out.
+
+1406
+01:23:27,940 --> 01:23:28,660
+Daniel Shanklin: It's too hard.
+
+1407
+01:23:28,740 --> 01:23:34,420
+Daniel Shanklin: Like I can't possibly spend all my day like filling out every little nook and cranny of every deal I've ever done or every lead.
+
+1408
+01:23:34,900 --> 01:23:36,580
+Daniel Shanklin: So they're very pock marked.
+
+1409
+01:23:36,580 --> 01:23:45,820
+Daniel Shanklin: I personally believe that could change with AI to where as soon as you put in the lead's name and their email address, know like he goes out and grabs everything.
+
+1410
+01:23:45,820 --> 01:23:49,420
+Daniel Shanklin: It's like, here you go, be interesting.
+
+1411
+01:24:01,660 --> 01:24:03,020
+Daniel Shanklin: Everybody still here ready?
+
+1412
+01:24:03,020 --> 01:24:04,140
+Daniel Shanklin: Ready to wrap up?
+
+1413
+01:24:04,940 --> 01:24:05,420
+Daniel Shanklin: Yeah.
+
+1414
+01:24:07,100 --> 01:24:23,530
+Michael D Nguyen: And I guess, you know, kind of things we're talking about just internally again, just kind of with the access to Claude that we now have, you know, we're going to be just kind of seeing how that can make our daily life easier.
+
+1415
+01:24:23,690 --> 01:24:24,090
+Michael D Nguyen: Right.
+
+1416
+01:24:24,170 --> 01:24:39,700
+Michael D Nguyen: Just kind of as you're working on all this Cerebro stuff and as we have check ins but you know, I guess just we're going to keep a running list of just kind of the bells and whistles that might make sense.
+
+1417
+01:24:39,940 --> 01:24:40,460
+Michael D Nguyen: Yeah.
+
+1418
+01:24:40,460 --> 01:24:42,740
+Michael D Nguyen: Kind of go, yeah, I'D love that.
+
+1419
+01:24:42,740 --> 01:24:48,900
+Michael D Nguyen: And, and you kind of just touched on it and don't, you know, don't do anything with this.
+
+1420
+01:24:48,900 --> 01:25:01,390
+Alex Kaye: It's just, you know, just an idea right now, you know, but like you mentioned the agent not making journal entries in Sage and I that totally agree with that.
+
+1421
+01:25:01,390 --> 01:25:29,450
+Alex Kaye: But like, kind of one thing we've been to and around with is kind of using this, the cloud Excel plug in, to basically process, you know, really detailed long PDF invoices for some of our key costs and like, you know, summarizing in a table and then spitting out a journal entry and kind of allocating it by all of our different lines of business and departments.
+
+1422
+01:25:31,050 --> 01:25:39,370
+Alex Kaye: And you know, I think that'll be useful to kind of show you at least the thought process behind some of these things.
+
+1423
+01:25:39,370 --> 01:26:01,870
+Alex Kaye: And then ultimately you know, potentially at some point, like just creating that whole process, like I'll just say in Claude, I guess as an agent, where it's like maybe scanning a certain kind of email address, you know, scraping in those PDFs, doing everything behind the scenes and then plugging a journal entry into stage.
+
+1424
+01:26:01,870 --> 01:26:02,230
+Alex Kaye: Right.
+
+1425
+01:26:02,550 --> 01:26:02,950
+Daniel Shanklin: So.
+
+1426
+01:26:04,950 --> 01:26:07,990
+Michael D Nguyen: we're just going to keep like a running list of all those bells and whistles.
+
+1427
+01:26:07,990 --> 01:26:12,710
+Michael D Nguyen: I mean, does that kind of sound like the right way to be thinking about this going forward?
+
+1428
+01:26:13,270 --> 01:26:21,990
+Daniel Shanklin: It's 100 the right way to think about it and what you touched on so well that a lot of people do miss about AI, you don't ask it to automate the whole job.
+
+1429
+01:26:21,990 --> 01:26:26,950
+Daniel Shanklin: All you do is ask it to do the 99% so that you can look at the finished product and then click approve.
+
+1430
+01:26:27,030 --> 01:26:31,510
+Daniel Shanklin: So if everything you build is around that mental model, you'll fly through everything.
+
+1431
+01:26:31,750 --> 01:26:32,150
+Daniel Shanklin: Right?
+
+1432
+01:26:32,710 --> 01:26:39,190
+Daniel Shanklin: Accounting feels effortless because it does all the doldrum where we run into trouble and they're like, do my books.
+
+1433
+01:26:39,190 --> 01:26:40,270
+Daniel Shanklin: It's like, do my books.
+
+1434
+01:26:40,270 --> 01:26:41,230
+Daniel Shanklin: What the hell does that mean?
+
+1435
+01:26:41,230 --> 01:26:42,550
+Daniel Shanklin: Like it's going to go.
+
+1436
+01:26:42,790 --> 01:26:44,070
+Daniel Shanklin: It's off the rails.
+
+1437
+01:26:44,880 --> 01:26:46,640
+Daniel Shanklin: So you also have a huge advantage.
+
+1438
+01:26:47,120 --> 01:26:52,200
+Daniel Shanklin: We've already built for AIC code that does most of what you've described.
+
+1439
+01:26:52,200 --> 01:26:58,240
+Daniel Shanklin: Not exactly in the accounting sense, but in the like, AI grabs document and summarizes and pulls numbers out.
+
+1440
+01:26:58,560 --> 01:27:05,600
+Daniel Shanklin: So since we already have that, if you get, you know, me involved or Luke involved, we just say like, hey, can you make this same thing?
+
+1441
+01:27:06,240 --> 01:27:10,080
+Daniel Shanklin: I guess what I'm saying, gentlemen, we're now like you're imagineers.
+
+1442
+01:27:10,880 --> 01:27:11,560
+Daniel Shanklin: You can imagine.
+
+1443
+01:27:11,560 --> 01:27:22,720
+Daniel Shanklin: You just draw it up and you tell me what you think and we'll, we can make it generally Work and my best advice is to just to have that approval button.
+
+1444
+01:27:22,800 --> 01:27:24,600
+Daniel Shanklin: You know, if you nail that part.
+
+1445
+01:27:24,600 --> 01:27:25,360
+Daniel Shanklin: Everything else.
+
+1446
+01:27:26,160 --> 01:27:32,080
+Michael D Nguyen: I've never been to Disney World or Disneyland my entire life and I, how is that possible?
+
+1447
+01:27:32,960 --> 01:27:33,720
+Michael D Nguyen: You know what?
+
+1448
+01:27:33,720 --> 01:27:36,240
+Michael D Nguyen: I, I, you know, I've gone this long, I might not.
+
+1449
+01:27:36,430 --> 01:27:37,790
+Michael D Nguyen: That's, I'm going to try not to go.
+
+1450
+01:27:38,990 --> 01:27:39,630
+Daniel Shanklin: I agree.
+
+1451
+01:27:39,790 --> 01:27:42,030
+Daniel Shanklin: You should not like they're over the hump guys.
+
+1452
+01:27:42,110 --> 01:27:43,070
+Daniel Shanklin: They're old hat.
+
+1453
+01:27:43,790 --> 01:27:46,350
+Daniel Shanklin: You go to Redneck Disney, you know, that is Dollywood.
+
+1454
+01:27:47,390 --> 01:27:48,990
+Daniel Shanklin: I know you like them cowboy boots.
+
+1455
+01:27:49,470 --> 01:27:49,870
+Daniel Shanklin: So.
+
+1456
+01:27:49,950 --> 01:27:56,430
+Daniel Shanklin: Yeah, Alex, great call out on the thinking about the future because.
+
+1457
+01:27:58,190 --> 01:27:58,470
+Michael D Nguyen: we.
+
+1458
+01:27:58,470 --> 01:28:02,760
+Daniel Shanklin: might be two or three weeks away from that, not months given the speed.
+
+1459
+01:28:03,240 --> 01:28:04,040
+Daniel Shanklin: Yeah, yeah,
+
+1460
+01:28:07,160 --> 01:28:07,520
+Michael D Nguyen: yeah.
+
+1461
+01:28:07,520 --> 01:28:07,920
+Daniel Shanklin: Okay.
+
+1462
+01:28:07,920 --> 01:28:09,080
+Michael D Nguyen: All right, that's enough for now.
+
+1463
+01:28:09,240 --> 01:28:17,480
+Michael D Nguyen: Yeah, I think Daniel, in a couple weeks here, you know, we'll have our, we'll have kind of like our new office spaces for Greenmark and stuff.
+
+1464
+01:28:17,480 --> 01:28:18,200
+Michael D Nguyen: Like you're always.
+
+1465
+01:28:18,760 --> 01:28:21,400
+Michael D Nguyen: That makes sense to kind of meet in person and stuff.
+
+1466
+01:28:21,880 --> 01:28:23,640
+Michael D Nguyen: We can always, you know, do that.
+
+1467
+01:28:23,640 --> 01:28:26,200
+Michael D Nguyen: As long as that, you know, Colin and William are good with it.
+
+1468
+01:28:27,080 --> 01:28:31,560
+Daniel Shanklin: I brought that up in a one one with William that I suggested at least a monthly.
+
+1469
+01:28:32,210 --> 01:28:34,050
+Daniel Shanklin: Daniel works out of Green Mark all day.
+
+1470
+01:28:34,850 --> 01:28:35,330
+Michael D Nguyen: Yeah.
+
+1471
+01:28:35,330 --> 01:28:36,770
+Daniel Shanklin: And yeah.
+
+1472
+01:28:37,010 --> 01:28:43,010
+Daniel Shanklin: So just to make sure that we're meeting targets, you know.
+
+1473
+01:28:43,010 --> 01:28:43,450
+Daniel Shanklin: Yeah.
+
+1474
+01:28:43,450 --> 01:28:49,010
+Daniel Shanklin: It's so it's also one of those things like what if I was sitting there with Claude code.
+
+1475
+01:28:51,490 --> 01:28:56,050
+Daniel Shanklin: Whether you guys think so or not, in six months you, I swear you'll be able to do it yourself.
+
+1476
+01:28:56,290 --> 01:28:57,090
+Michael D Nguyen: That's wild.
+
+1477
+01:28:59,290 --> 01:29:00,890
+Daniel Shanklin: That's where the whole industry is going.
+
+1478
+01:29:00,970 --> 01:29:03,210
+Daniel Shanklin: I actually just downloaded a new iPhone app.
+
+1479
+01:29:03,210 --> 01:29:04,330
+Daniel Shanklin: It's a scanning app.
+
+1480
+01:29:04,410 --> 01:29:08,090
+Daniel Shanklin: I paid $5 for it because it solved my problem and it has AI power behind it.
+
+1481
+01:29:08,490 --> 01:29:13,210
+Daniel Shanklin: It was built by a guy who's the CEO of like a portable toilets company.
+
+1482
+01:29:13,850 --> 01:29:15,450
+Daniel Shanklin: But he was like, I was just playing around.
+
+1483
+01:29:15,530 --> 01:29:17,530
+Daniel Shanklin: I was like holy shit, this thing's amazing.
+
+1484
+01:29:18,410 --> 01:29:20,170
+Daniel Shanklin: So pretty cool.
+
+1485
+01:29:20,490 --> 01:29:23,050
+Daniel Shanklin: Anyway, well, it was a good call.
+
+1486
+01:29:23,210 --> 01:29:25,130
+Daniel Shanklin: If there's anything else you need, I'm always here.
+
+1487
+01:29:25,840 --> 01:29:29,840
+Daniel Shanklin: I'll make sure you have my phone number and my email and I'll wait to get a Sage account.
+
+1488
+01:29:30,400 --> 01:29:32,000
+Daniel Shanklin: All right, sounds good.
+
+1489
+01:29:32,800 --> 01:29:33,680
+Daniel Shanklin: Thank you very much.
+
+1490
+01:29:34,400 --> 01:29:35,000
+Michael D Nguyen: Thanks buddy.
+
+1491
+01:29:35,000 --> 01:29:35,160
+Daniel Shanklin: Sure.
+
+1492
+01:29:35,160 --> 01:29:35,640
+Daniel Shanklin: Have a great day.
+
+1493
+01:29:35,640 --> 01:29:35,840
+Daniel Shanklin: Bye.
+
+1494
+01:29:35,840 --> 01:29:36,760
+Daniel Shanklin: Bye, you too.
+
+1495
+01:29:36,760 --> 01:29:37,200
+Michael D Nguyen: Bye.
+
