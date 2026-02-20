@@ -1,0 +1,118 @@
+# CLAUDE.md — Greenmark Planning
+
+This is the shared planning hub for Greenmark Waste Solutions leadership. It is NOT a code repo. It contains projects, decisions, meeting records, and reference material.
+
+## Who's Who
+
+### Greenmark Leadership
+- **Michael D. Nguyen** — President. Initiated Project Cerebro. Owns Navusoft, WAM, 3rd Eye vendor relationships. mnguyen@greenmarkwaste.com
+- **Alex Kaye, CFA** — CFO. Owns Sage Intacct, HubSpot, Paylocity credentials. Knows which systems flow through Sage. akaye@greenmarkwaste.com
+- **Lannis Nicholson** — CRO (Partner). Sales strategy, revenue operations. Previously at LRS and Ramco.
+- **Robert Heath** — General Manager. Owns Fleetio credentials. Fleet and field operations.
+
+### AIC Holdings (Technology Partner)
+- **Daniel Shanklin** — Director of AI & Technology. Tech lead for Project Cerebro. Writes the code, runs the agents.
+- **William Holloway** — Partner & COO. Strategic advisor.
+- **Collin Bird** — Managing Director. Project sponsor.
+
+### Audience for This Repo
+Michael, Alex, and Robert browse this in GitHub's web UI. Keep files readable as rendered markdown. Don't assume git/CLI knowledge.
+
+## Glossary
+
+| Term | Meaning |
+|------|---------|
+| **Cerebro** | Project Cerebro — the executive dashboard and data warehouse initiative |
+| **NTX** | North Texas entity — operates as Greenmark Waste Solutions |
+| **Hometown** | Indiana entity — operates as Hometown Disposal (htdisposal.com) |
+| **Entity** | A business unit. Greenmark has 3: NTX, Hometown, and Memphis (nascent) |
+| **Bronze schema** | Raw data landing zone in the warehouse — one schema per vendor (e.g., sage_bronze, navusoft_bronze) |
+| **data-daemon** | The extraction pipeline that pulls vendor data into the warehouse |
+| **Medallion architecture** | Bronze (raw) → Silver (cleaned) → Gold (business metrics) data layers |
+| **2+2+2** | Integration strategy: connect 2 vendor systems at a time, ordered by business value |
+| **Elephant Carpaccio** | Thin-slicing delivery so stakeholders approve each increment before proceeding |
+
+## Repo Structure
+
+```
+greenmark-planning/
+├── CLAUDE.md              ← you are here
+├── README.md              ← dashboard: active projects, status, links
+├── projects/              ← active work with checklists and deliverables
+│   ├── seo-improvement/   ← SEO plans for both websites
+│   ├── data-mockups/      ← 3 HTML dashboard prototypes
+│   ├── data-integration/  ← (future: 2+2+2 integration tracking)
+│   ├── recording-solution/
+│   ├── tech-org-setup/
+│   └── warehouse-strategy/
+├── meetings/              ← meeting folders: transcripts, notes, action items
+│   └── YYYY-MM-DD-short-description/
+├── decisions/             ← decision log (pending and resolved)
+├── reference/             ← living reference material
+│   ├── stakeholders/      ← org chart, contact info
+│   └── research/          ← design docs, gap analysis, processes
+└── archive/               ← completed/superseded material
+    └── kickoff-2026-02/   ← original engagement kickoff (Feb 2026)
+```
+
+## Meeting Conventions
+
+Each meeting gets a folder: `meetings/YYYY-MM-DD-short-description/`
+
+A meeting folder should contain:
+- **transcript.md** — diarized transcript with speaker names (or raw .srt if unprocessed)
+- **README.md** — attendees, key decisions, action items, links to artifacts
+- **Source files** — .ics, .eml, .docx, .pdf, .srt as received
+
+After processing a transcript, extract:
+1. **Decisions made** — add to `decisions/` if significant
+2. **Action items** — update relevant project checklists
+3. **New information** — update reference docs or project plans
+
+## Related Repos (Where the Code Lives)
+
+| Repo | What It Is | Who Works In It |
+|------|-----------|-----------------|
+| [data-daemon](https://github.com/greenmark-waste-solutions/data-daemon) | Extraction pipeline — YAML-driven, Postgres job queue, 82 tests | Daniel |
+| [cerebro](https://github.com/greenmark-waste-solutions/cerebro) | Next.js dashboard app — hosted on Railway | Daniel |
+| [infra](https://github.com/greenmark-waste-solutions/infra) | Vendor API research, data dictionary, integration specs | Daniel |
+| [weekly-updates](https://github.com/greenmark-waste-solutions/weekly-updates) | Automated engineering reports from GitHub commits | Daniel |
+| [cerebro-qa](https://github.com/greenmark-waste-solutions/cerebro-qa) | QA dashboard — data quality monitoring | Daniel |
+
+## Current State (as of 2026-02-20)
+
+### What's Active
+- **Vendor research**: 6 of 15 systems deeply researched (Sage, Navusoft, HubSpot, Fleetio, Paylocity, WAM). 65 bronze tables proposed.
+- **data-daemon**: v1.4 complete. Pipeline works with synthetic data. Ready for real connections.
+- **SEO planning**: 90-day plans written for both greenmarkwaste.com and htdisposal.com. No baseline audit done yet.
+
+### What's Blocked
+- **All data connections**: Need API credentials from Alex (Sage, HubSpot, Paylocity), Robert (Fleetio), and Michael (Navusoft, WAM, 3rd Eye)
+- **AIC Secure Request**: Credential transfer tool not yet live — prerequisite for receiving credentials
+- **3rd Eye**: Complete unknown — no API docs, no vendor contact, can't even evaluate
+- **WAM**: Confirmed no API. Need DB access or CSV exports from Michael.
+
+### Pending Decisions (for leadership)
+1. Which two data sources to connect first? (Recommended: Sage + HubSpot)
+2. Is Daniel the tech lead at Greenmark, or is there someone else?
+3. Do Comerica and Expensify already flow through Sage Intacct? (Determines if they need separate connectors)
+
+## Vendor Systems at a Glance
+
+15 total systems across 3 priority tiers:
+
+| Tier | Systems | Status |
+|------|---------|--------|
+| **P1 Core** | Sage Intacct, Navusoft, HubSpot | Deep research complete |
+| **P2 Operational** | Fleetio, Paylocity, 3rd Eye, WAM | Deep research complete (except 3rd Eye — unknown) |
+| **P3 Supporting** | LB Technologies, Comerica, Expensify, AssureHire, Samba Safety, Wrike, Egnyte, Vested Network | Cataloged, not yet researched. Several may flow through Sage. |
+
+Full details: [infra/vendor-status.md](https://github.com/greenmark-waste-solutions/infra/blob/main/vendor-status.md)
+
+## Rules
+
+- **Soft deletes only** — never hard-delete records from any database. Use `deleted_at` timestamps.
+- **No secrets in repos** — credentials go in Knox or AIC Secure Request, never in git.
+- **Commit messages explain why** — not just what changed.
+- **Keep files under 2700 lines** — break up large documents.
+- **Meeting folders are self-contained** — all artifacts for a meeting live in one folder.
