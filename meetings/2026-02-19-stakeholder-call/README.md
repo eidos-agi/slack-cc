@@ -127,7 +127,7 @@ All 5 members can see the Greenmark Waste channel (channels are team-wide by def
 | 2 | Create read-only API key in Sage (Daniel to do once he has account, with Alex approval on permissions) | Daniel | Blocked on #1 |
 | 3 | Provision Daniel a seat on Greenmark Claude Team (dshanklin@aicholdings.com) | Michael | Pending — may need greenmark email alias |
 | 4 | Get Daniel HubSpot API access | Alex/Michael | Pending |
-| 5 | SEO improvement for greenmarkwaste.com + htdisposal.com | Daniel | In progress — [plans created](../../projects/seo-improvement/README.md) |
+| 5 | SEO improvement for greenmarkwaste.com + htdisposal.com | Daniel | Planning — [plans created](../../projects/seo-improvement/README.md) |
 | 6 | Transfer Railway project to Greenmark billing (Pro account, $20/mo) | Daniel + Michael | Pending — needs Greenmark Railway account |
 | 7 | Make Michael admin in GitHub org | Daniel | Pending — Michael just created account |
 | 8 | Alex to create GitHub account | Alex | Pending |
@@ -160,3 +160,12 @@ All 5 members can see the Greenmark Waste channel (channels are team-wide by def
 > **Michael on AI at AIC:** "We're actually doing more work because it's dropping the cost of executing on things."
 
 > **Alex on journal entries:** "Scanning a certain email address, scraping in those PDFs, doing everything behind the scenes and then plugging a journal entry into Sage."
+
+## Routing Log
+*Routed by task-out on 2026-02-20*
+- 13 items already tracked in project checklists (status matches)
+- 1 status discrepancy fixed: #5 SEO "In progress" → "Planning" (plans written, no execution)
+- 1 item added to Waiting On table: Railway account setup (Michael)
+- 1 item covered by process: #14 "bells and whistles list" → meeting pipeline captures feature requests automatically
+- 2 items self-unblockable: #7 GitHub admin for Michael, #11 billing documentation
+- 2 follow-up emails flagged: Alex (Sage, HubSpot, GitHub), Michael (Claude seat, Railway)

@@ -1,11 +1,12 @@
 # Warehouse Strategy (Long Haul) - Engineering Checklist
 *Identified: 2026-02-11 kickoff*
+*Updated: 2026-02-20 — kickoff recording now available*
 
 ## Context
-Need to think through Greenmark's warehouse/yard needs for the long term. Details to be refined after reviewing the kickoff recording.
+Need to think through Greenmark's warehouse/yard needs for the long term. This is about the PHYSICAL warehouse/yard facilities, not the data warehouse.
 
 ## Tasks
-- [ ] Review kickoff recording for warehouse discussion details
+- [x] Review kickoff recording for warehouse discussion details — diarized, minimal warehouse discussion in Feb 11 call
 - [ ] Document current yard situation (4316 Langdon Rd, Dallas)
 - [ ] Identify long-term capacity needs (fleet growth, equipment storage, etc.)
 - [ ] Research warehouse/yard options in DFW
@@ -13,4 +14,4 @@ Need to think through Greenmark's warehouse/yard needs for the long term. Detail
 - [ ] Develop recommendation
 
 ## Status
-Waiting on Fireflies recording from kickoff call to refine scope.
+Kickoff recording reviewed. Warehouse was not a major topic on the Feb 11 call — scoping still needed.

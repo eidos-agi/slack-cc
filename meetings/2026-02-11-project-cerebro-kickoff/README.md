@@ -93,3 +93,11 @@
 > **Alex on AI:** "I'm like an elementary school user of it. I'm like, what's two plus two? And I make sure it's worth."
 
 > **Lannis on background:** *(attributed to Michael in transcript, corrected here)* "Started my own company with one truck and one container and built into something pretty special."
+
+## Routing Log
+*Routed by task-out on 2026-02-20*
+- 4 items completed (no routing needed): #1 infra map, #2 dashboards, #3 follow-up email, #4 data walkthrough
+- 2 cross-meeting carry-overs: #5 Claude setup (still pending, re-raised Feb 19), #8 system access (decomposed into specific items on Feb 19)
+- 1 project checklist created: data-integration/checklist.md (for #6 data warehouse, #7 vendor research — previously tracked only in external repos)
+- 1 stale checklist updated: warehouse-strategy (kickoff recording now reviewed)
+- 1 follow-up flagged: Michael — Claude Team seat (raised twice, no action)

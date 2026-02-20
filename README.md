@@ -6,8 +6,8 @@ Shared planning hub for Greenmark Waste Solutions leadership.
 
 | Project | Status | Owner | Details |
 |---------|--------|-------|---------|
-| **Data Integration (Cerebro)** | Researching | Daniel | [infra repo](https://github.com/greenmark-waste-solutions/infra) — 6 of 15 vendor APIs researched. Next: HubSpot API data model. |
-| **SEO Improvement** | In progress | Daniel | [greenmarkwaste.com](projects/seo-improvement/greenmarkwaste.com/seo-plan.md) / [htdisposal.com](projects/seo-improvement/htdisposal.com/seo-plan.md) — 90-day plans written, no baseline audit yet |
+| **Data Integration (Cerebro)** | Researching | Daniel | [checklist](projects/data-integration/checklist.md) / [infra repo](https://github.com/greenmark-waste-solutions/infra) — 6 of 15 vendor APIs researched. Next: HubSpot API data model. |
+| **SEO Improvement** | Planning | Daniel | [greenmarkwaste.com](projects/seo-improvement/greenmarkwaste.com/seo-plan.md) / [htdisposal.com](projects/seo-improvement/htdisposal.com/seo-plan.md) — 90-day plans written, no baseline audit yet |
 | **Dashboard Mockups** | Awaiting feedback | Daniel | [3 HTML prototypes](projects/data-mockups/checklist.md) — executive, operations, financial. Need Michael + Alex review. |
 | **Tech Org Setup** | In progress | Daniel + Alex | [checklist](projects/tech-org-setup/checklist.md) — GitHub org done, Sage/HubSpot access pending |
 | **Recording Solution** | Phase 1+2 done | Daniel | [checklist](projects/recording-solution/checklist.md) — diarize skill built + tested, glossary created |
@@ -22,18 +22,23 @@ Shared planning hub for Greenmark Waste Solutions leadership.
 
 ## Waiting On
 
-| What | Who | Unblocks |
-|------|-----|----------|
-| Sage Intacct user account for Daniel | Alex | API key creation → real data connection |
-| HubSpot API access for Daniel | Alex / Michael | Second data source for Cerebro |
-| Claude Team seat for Daniel | Michael | Shared Claude projects with Greenmark team |
-| GitHub admin for Michael | Daniel | Full org access (Michael just created account) |
-| GitHub account for Alex | Alex | Repo visibility and collaboration |
-| Dashboard mockup feedback | Michael + Alex | Refine before building with real data |
+| What | Who | Unblocks | Since |
+|------|-----|----------|-------|
+| Sage Intacct user account for Daniel | Alex | API key creation → real data connection | Feb 19 |
+| HubSpot API access for Daniel | Alex / Michael | Second data source for Cerebro | Feb 19 |
+| Webflow login (both sites) | Michael | SEO execution on greenmarkwaste.com + htdisposal.com | Feb 19 |
+| GA4 / Google Search Console access | Alex | SEO baseline audit | Feb 19 |
+| Claude Team seat for Daniel | Michael | Shared Claude projects with Greenmark team | **Feb 11** |
+| GitHub admin for Michael | Daniel | Full org access (Michael just created account) | Feb 19 |
+| GitHub account for Alex | Alex | Repo visibility and collaboration | Feb 19 |
+| Greenmark Railway account setup | Michael | Daniel can transfer project once account exists ($20/mo Pro) | Feb 19 |
+| Google Business Profile login | Michael / Alex | Local SEO optimization for both brands | Feb 19 |
+| Dashboard mockup feedback | Michael + Alex | Refine before building with real data | Feb 11 |
 
 ## Reference
 
 - [Greenmark glossary](reference/glossary/README.md) — systems, entities, people, industry terms, financial terms, transcription corrections
+- [Why we refine before we ship](reference/skill-development-methodology.md) — how AI meeting processing gets calibrated on real data, and why skipping it breaks trust
 - [Stakeholder org chart](reference/stakeholders/greenmark-org.md)
 
 ## Weekly Updates
