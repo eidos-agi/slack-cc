@@ -20,12 +20,22 @@ How to identify and extract each category from a meeting transcript.
 - "That thing's living in the 80s" is NOT a decision — it's commentary
 - "Sage makes sense, right, Alex?" + "Yes" IS a decision
 
-**Example from Feb 19 call:**
+**Examples:**
+
+*System-specific decision (Feb 19):*
 ```markdown
 ### 1. Sage Intacct + HubSpot are the first two data sources
 - Michael: "Sage makes sense, right, Alex?" — confirmed
 - Alex agreed (HubSpot second)
 - Michael explicitly said **don't worry about WAM**
+```
+
+*Strategic/phase decision (Feb 11):*
+```markdown
+### 1. Dashboards first, AI agent second
+- Daniel asked whether dashboards or AI agent was more important
+- Michael: "That's number one... The AI agent that can answer questions is kind of like phase two."
+- Clear phase approach established for the project
 ```
 
 ## Action Items
@@ -45,12 +55,18 @@ How to identify and extract each category from a meeting transcript.
 - Must be actionable. "Think about X" is too vague unless it's clearly assigned.
 - Look for implicit assignments: "Alex, can you..." or "Daniel to do once he has account"
 
-**Output format:**
+**Examples:**
+
+*Explicit commitment (Feb 19):*
 ```markdown
-| # | Action | Owner | Status |
-|---|--------|-------|--------|
 | 1 | Provision Daniel a Sage Intacct user account | Alex Kaye | Pending |
 | 2 | Create read-only API key in Sage | Daniel | Blocked on #1 |
+```
+
+*Wrap-up commitment (Feb 11):*
+```markdown
+| 3 | Send follow-up email with next steps (within the hour) | Daniel | Completed |
+| 4 | Walk through detailed underlying data tables with Daniel | Alex + Michael | Completed — [Feb 19 call](../2026-02-19-stakeholder-call/README.md) |
 ```
 
 ## Feature Requests / Future Ideas
@@ -69,12 +85,20 @@ How to identify and extract each category from a meeting transcript.
 - Include enough context that someone reading this in 3 months understands the ask
 - Note who brought it up — reveals priorities
 
-**Example:**
+**Examples:**
+
+*Feature with quote (Feb 19):*
 ```markdown
 - **Customer + prospect map in Cerebro** — separate page, shows HubSpot customers
   and prospects on a map, color-coded by deal pipeline stage.
   Michael: "The sales guys drive around a lot."
   Alex: "Plan my week for me, yo."
+```
+
+*Deferred capability (Feb 11):*
+```markdown
+- **AI agent for querying data** — Michael: "The AI agent that can answer questions
+  is kind of like phase two of all of this." Deferred until dashboards are live.
 ```
 
 ## Key Quotes
@@ -91,14 +115,30 @@ How to identify and extract each category from a meeting transcript.
 - Exact quote in blockquote
 
 **Quality checks:**
-- Max 5-7 quotes per meeting. Be selective.
+- Aim for 5-7 per meeting. Fewer is fine for short meetings. Don't pad.
 - Not every sentence — just the ones that capture the spirit
-- Prefer quotes that would be useful in future planning ("this is what Michael cares about")
+- Prefer quotes useful in future planning ("this is what Michael cares about")
 
-**Example:**
+**Examples across meeting types:**
+
+*System opinion (Feb 19):*
 ```markdown
 > **Michael on WAM:** "I think it's still living in the 80s. It's like a DOS interface."
-> **Alex on AI future:** "Plan my week for me, yo."
+```
+
+*Cultural insight (Feb 11):*
+```markdown
+> **Michael on their business:** "A lot of our business — and you'll love this, Daniel — is still face to face and shaking hands."
+```
+
+*Engineering principle (Feb 11):*
+```markdown
+> **Daniel on engineering:** "Code is easy. Governance is hard."
+```
+
+*Self-aware humor (Feb 11):*
+```markdown
+> **Alex on AI:** "I'm like an elementary school user of it. I'm like, what's two plus two? And I make sure it's worth."
 ```
 
 ## Edge Cases
@@ -133,8 +173,29 @@ This is common in two distinct scenarios:
 
 **Resolution:** Start with strong signals only. Use the decision authority matrix from the cheat sheet for topic-based inference, but only when corroborated by at least one strong signal. Annotate every inferred reattribution with the block number, timestamp, and reasoning.
 
+### Long transcripts (>3000 lines)
+SRT files from calls over 45 minutes can exceed 5000 lines. Don't try to load the whole thing at once.
+
+**Strategy:**
+1. Grep for speaker names to get counts and distribution
+2. Read the first 200 lines (call opening, attendee check, agenda)
+3. Read the last 200 lines (wrap-up, action items, next steps)
+4. Grep for decision signal words ("agreed", "let's do", "makes sense", "confirmed") to find decision clusters
+5. Read around each cluster (±50 lines) for full context
+6. Grep for action signal words ("I'll", "can you", "provision", "set up") for action items
+7. Read any remaining unvisited sections for feature requests and quotes
+
+This is more work but prevents context overflow and focuses on the high-value content.
+
 ### Action items from outside the transcript
-Some action items arise from email chains, follow-up conversations, or institutional knowledge that isn't in the transcript. The skill's "Gather external context" step (step 9) catches these. Mark them distinctly so reviewers know the source.
+Some action items arise from email chains, follow-up conversations, or institutional knowledge that isn't in the transcript. The summary step (step 9) catches these. Mark them distinctly so reviewers know the source.
+
+### Action items from a prior meeting
+Check `meetings/` for earlier calls with the same attendees. If a prior README exists, scan its action items — some may have been resolved, updated, or superseded by this call. Link to the prior meeting for continuity:
+- "Completed — covered in [Feb 19 call](../2026-02-19-stakeholder-call/README.md)"
+- "Superseded by Decision #3 above"
+
+This prevents the same action item from appearing as "Pending" across multiple meeting READMEs when it was actually resolved.
 
 ### Someone talks about a topic but no decision is made
 Log as context under the most relevant decision, or as a discussion point in a "Notes" section. Don't force it into a decision.
@@ -151,17 +212,11 @@ Summarize the conclusion, not the explanation. The transcript exists for anyone 
 ### Attendee joins late or leaves early
 Note in attendees section: "*(Collin Bird joined briefly but stepped out)*"
 
-### Action items from a prior meeting
-Check `meetings/` for earlier calls with the same attendees. If a prior README exists, scan its action items — some may have been resolved, updated, or superseded by this call. Link to the prior meeting for continuity:
-- "Completed — covered in [Feb 19 call](../2026-02-19-stakeholder-call/README.md)"
-- "Superseded by Decision #3 above"
-
-This prevents the same action item from appearing as "Pending" across multiple meeting READMEs when it was actually resolved.
-
 ### Fireflies uses inconsistent speaker name formats
 The same person may appear as different labels across meetings:
 - "Michael Nguyen" vs "Michael D Nguyen"
 - "Collin Bird - AIC" (with org suffix) vs "Collin Bird"
 - "Alex Kaye" vs "Alex K"
+- "Lannis Nicholson" vs "Lance" vs "Lana" (Fireflies mishearings)
 
 Always normalize to the canonical name from the cheat sheet. Don't assume different labels mean different people.

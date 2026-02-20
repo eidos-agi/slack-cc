@@ -7,134 +7,139 @@ description: "Process meeting transcripts into structured project artifacts. Use
 
 Extract structured intelligence from meeting transcripts: decisions, action items, feature requests, and key quotes. Output follows the greenmark-planning meeting convention.
 
+## Autonomous by default
+
+This skill runs end-to-end without stopping unless it hits genuine ambiguity. Infer what you can from the transcript, cheat sheet, folder name, and project state. Generate the full README, then present a summary at the end. Only ask the user when:
+- Speaker attribution is suspect and you need confirmation on reattributions
+- The transcript has no speaker labels at all
+- You truly cannot determine who was on the call
+
+Do NOT stop to confirm: format detection, platform, duration, or other metadata you can infer.
+
 ## Workflow
 
-### 1. Locate the transcript
+### 1. Locate and load
 
-Accept a file path argument or look for the most recent unprocessed transcript:
+Accept a file path argument or find the most recent unprocessed transcript:
 ```
 meetings/YYYY-MM-DD-*/transcript.{txt,srt,vtt,md}
 ```
 
-If no README.md exists alongside the transcript, it's unprocessed.
+A transcript is unprocessed if no `README.md` exists alongside it.
 
-### 2. Load speaker context
+**If a README already exists:** Do not overwrite. Instead:
+- If the user explicitly asked to re-diarize, write to `README-rediarized.md` and note differences
+- If the transcript is a corrected version (e.g., `transcript-corrected.srt`), validate the existing README against it and update metadata only
+- If unsure, ask the user: overwrite, create a draft, or validate?
 
-Read the cheat sheet before processing:
+Load the cheat sheet before doing anything else:
 ```
 reference/stakeholders/diarize-cheatsheet.md
 ```
 
-This provides name variants, decision authority, systems owned, and entity context. Use it to:
-- Resolve ambiguous speaker names ("Michael" → Michael D. Nguyen, President)
-- Validate decisions (does this speaker have authority over this topic?)
-- Route action items (who typically owns this system?)
+Also load:
+```
+references/extraction-guide.md
+references/output-template.md
+```
 
-### 3. Detect transcript format
+### 2. Detect format and parse
 
 Check file extension and content patterns:
 
-| Pattern | Format | Parser |
-|---------|--------|--------|
-| `.srt` extension or numbered blocks + `HH:MM:SS,mmm --> HH:MM:SS,mmm` | SRT | Strip sequence numbers and timestamps, join speaker turns |
-| `.vtt` extension or `WEBVTT` header + `HH:MM:SS.mmm --> HH:MM:SS.mmm` | VTT | Strip header and timestamps, join speaker turns |
-| `Speaker Name` paragraph prefix pattern | Fireflies plain text | Split on speaker name changes |
-| `Speaker Name:` prefix per line | Generic diarized text | Split on colon-delimited speaker tags |
-| No speaker attribution | Raw text | Flag for user — ask who was speaking |
+| Pattern | Format | How to parse |
+|---------|--------|-------------|
+| `.srt` or numbered blocks + `HH:MM:SS,mmm --> HH:MM:SS,mmm` | SRT | Group consecutive blocks by same speaker into turns. Duration = last timestamp minus first. |
+| `.vtt` or `WEBVTT` header + `HH:MM:SS.mmm --> HH:MM:SS.mmm` | VTT | Same as SRT after stripping the WEBVTT header. |
+| `Speaker Name` paragraph prefix | Fireflies plain text | Split on speaker name changes. Each paragraph = one turn. |
+| `Speaker Name:` per line | Generic diarized | Split on colon-delimited speaker tags. |
+| No speaker attribution | Raw text | Stop — ask user who was speaking. Cannot proceed without attribution. |
 
-Confirm detected format with user before proceeding.
+**Long transcripts (>3000 lines):** Read in chunks. For SRT/VTT, you can grep for speaker names first to get a count and distribution, then read sections focused on decision-heavy portions (typically mid-call, after introductions and before wrap-up). Always read the first 200 and last 200 lines for metadata and wrap-up action items.
+
+### 3. Collect metadata and identify attendees
+
+Infer these fields — only ask if truly unknowable:
+- **Date** — from folder name (`YYYY-MM-DD`) or transcript header/timestamps
+- **Platform** — Greenmark uses Teams. Default to "Microsoft Teams" unless transcript says otherwise.
+- **Title** — from folder name. Strip the date prefix.
+- **Attendees** — extract unique speaker labels, normalize to canonical names via cheat sheet. Cross-reference: does the cheat sheet list someone who should be on this call but has no speaker label?
+- **Duration** — for SRT/VTT: last timestamp minus first. For plain text: estimate at ~150 words/minute.
+- **Recording source** — default "Fireflies" unless stated otherwise. Note whose account if known.
 
 ### 4. Audit speaker attribution
 
-Before extracting content, scan for attribution problems. Fireflies and other tools often misattribute speakers when multiple people share similar audio profiles.
+Now that you know who the attendees are (step 3), check whether everyone is accounted for.
 
-**Check for:**
-- Fewer unique speaker labels than known attendees (e.g., 2 labels but 3 people on the call)
-- Finance/accounting statements attributed to a non-finance person
-- Statements that contradict a speaker's known role or authority
+**Red flags:**
+- Fewer speaker labels than expected attendees
+- Someone mentioned as present ("I got Lannis sitting here with me") but no label for them
+- One label covers both financial AND operational topics
+- Finance vocabulary ("de minimis", "journal entries", "GL") under a non-finance label
 
 **If attribution is suspect:**
-1. Add a `**Speaker attribution warning**` block after Attendees in the output
-2. Use the decision authority matrix from the cheat sheet to infer likely speakers
-3. Annotate inferred attributions with *(line N, attributed to X but Y topic = likely Z)*
-4. Present the inferred attributions to the user for confirmation before finalizing
+1. Count the gap (e.g., "3 known attendees, 2 labels — who's missing?")
+2. Scan for strong reattribution signals (see `references/extraction-guide.md` edge cases)
+3. If you find strong signals, note the corrections and proceed
+4. If the evidence is ambiguous, stop and ask the user — show the suspect blocks with context
+5. Add a **Speaker attribution warning** block in the output
 
-This is critical — a misattributed decision changes who owns it.
+### 5. Extract structured content
 
-### 5. Collect metadata
-
-Infer or ask for these fields:
-- **Date** — from folder name (`YYYY-MM-DD`) or transcript timestamps
-- **Platform** — from transcript content or ask user (Teams, Zoom, etc.)
-- **Title** — from folder name or first topic discussed
-- **Attendees** — extract unique speaker names from transcript, cross-reference cheat sheet for roles
-- **Duration** — estimate from timestamp range or transcript length (~150 words/minute of conversation)
-- **Recording source** — ask if not obvious
-
-### 6. Extract structured content
-
-Process the full transcript and extract four categories. See `references/extraction-guide.md` for signal words, quality checks, and examples. When speaker attribution was flagged in step 4, use inferred attributions during extraction but annotate them.
+Process the full transcript. See `references/extraction-guide.md` for signal words, quality checks, and examples.
 
 **Categories:**
-1. **Decisions** — commitments made with consensus. Need: title, who decided, exact quote, implications.
+1. **Decisions** — commitments with consensus. Need: title, who decided, exact quote, implications.
 2. **Action items** — specific tasks with owners. Need: description, owner, status, dependencies.
-3. **Feature requests** — aspirational ideas, not committed work. Need: name, description, requester.
-4. **Key quotes** — memorable lines that capture priorities or sentiment. Max 5-7.
+3. **Feature requests** — aspirational ideas, not committed. Need: name, description, requester.
+4. **Key quotes** — memorable lines revealing priorities or sentiment. Aim for 5-7, fewer is fine for short meetings.
 
-### 7. Check existing project state and prior meetings
+### 6. Enrich from project state and prior meetings
 
-Before generating, scan two sources to enrich action items:
+Before generating, scan two sources:
 
 **Project checklists** (`projects/`):
-- If an extracted action item already appears in a project checklist, inherit its current status (e.g., "In progress" not "Pending")
-- If a project already exists for a topic discussed, link to it
+- If an action item already exists in a checklist, inherit its current status
+- Link to existing projects where relevant
 
 **Prior meeting READMEs** (`meetings/`):
-- Check for earlier meetings with the same attendees
-- If a prior README has action items that were resolved or updated by this call, mark them and link: "Completed — covered in [this call](../2026-MM-DD-*/README.md)"
-- This prevents the same action item appearing as "Pending" across multiple meetings
+- Check for earlier meetings with overlapping attendees
+- Mark action items that were resolved or superseded by this call
+- Link for continuity: "Completed — covered in [Feb 19 call](../2026-02-19-stakeholder-call/README.md)"
 
-### 8. Generate README.md
+### 7. Generate README.md
 
-Use the template in `references/output-template.md`. Write to the same folder as the transcript:
+Use the template in `references/output-template.md`. Write to:
 ```
 meetings/YYYY-MM-DD-title/README.md
 ```
 
-### 9. Gather external context
+### 8. Route action items to project checklists
 
-The transcript only captures what was said on the call. Ask the user:
-
-> "Is there anything from outside this transcript I should add? Examples:
-> - Email chains or follow-up decisions after the call
-> - How the transcript was obtained (chain of custody)
-> - Process improvements for future recordings
-> - Context only you would know (e.g., 'similar code already exists at AIC')"
-
-Add responses to the appropriate sections:
-- Chain of custody → "How We Got This Transcript" section (add if provided)
-- Follow-up action items → append to action items table
-- Process improvements → checklist items under transcript status
-- Institutional context → inline notes on relevant decisions or features
-
-### 10. Review with user
-
-Present a summary of what was extracted:
-- "Found X decisions, Y action items, Z feature requests, W key quotes"
-- Highlight any low-confidence extractions (especially inferred speaker attributions)
-- List any action items whose status was updated from project checklists
-- Ask if anything was missed
-
-### 11. Route action items (optional)
-
-Scan existing project checklists in `projects/` for keyword matches. Present proposed updates:
+Scan `projects/` checklists for keyword matches. Present proposed updates:
 ```
 Suggested checklist updates:
 - projects/tech-org-setup/checklist.md: Add "Provision Daniel HubSpot access"
 - projects/seo-improvement/README.md: Update blocker status
 ```
 
-Only update after user approval. Never auto-update project checklists.
+Always present suggestions. Only apply after user approval.
+
+### 9. Present summary and gather additions
+
+Combine the review step and external context prompt into one:
+
+```
+Diarized: X decisions, Y action items, Z feature requests, W key quotes.
+[List any low-confidence extractions or inferred attributions]
+[List any action items updated from project state]
+[List suggested checklist routes from step 8]
+
+Anything to add from outside this transcript? (email follow-ups, chain
+of custody, process improvements, context only you'd know)
+```
+
+This is the ONE checkpoint. Everything before this runs autonomously.
 
 ## Key Rules
 

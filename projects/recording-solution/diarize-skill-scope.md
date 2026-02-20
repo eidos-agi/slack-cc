@@ -1,6 +1,6 @@
 # Diarize Skill — Scope Document
 
-**Status:** Phase 1 complete — tested and iterated
+**Status:** Phase 1+2 complete — tested on both SRT and plain text, iterated twice
 **Owner:** Daniel Shanklin
 **Origin:** Feb 19 session — "I'd LOVE a diarizing skill of some kind we can work on together"
 
@@ -150,19 +150,17 @@ Or with metadata:
 /diarize [path-to-transcript] --date 2026-02-19 --platform "Microsoft Teams" --title "Stakeholder Call"
 ```
 
-### Interactive Flow
+### Interactive Flow (autonomous by default)
 
-1. **Input:** User provides transcript file path
-2. **Context:** Skill loads speaker cheat sheet for name resolution and authority matrix
-3. **Detect:** Skill identifies format, shows detected format for confirmation
-4. **Attribution audit:** Check for misattribution, infer corrections, ask user to confirm
-5. **Metadata:** Skill asks for missing metadata (date, platform, title, attendees) — or infers from transcript content
-6. **Extract:** Process transcript through LLM extraction with attribution corrections applied
-7. **Project state:** Check existing checklists to inherit action item statuses
-8. **Save:** Write README.md to `meetings/YYYY-MM-DD-short-description/`
-9. **External context:** Ask user for anything outside the transcript (emails, follow-ups, chain of custody)
-10. **Review:** Present extraction summary with confidence levels
-11. **Route:** (Optional) Suggest action item updates to project checklists
+1. **Locate + load:** Find transcript, load cheat sheet and guides
+2. **Parse:** Detect format automatically, parse into speaker turns. Handle long transcripts by chunking.
+3. **Metadata:** Infer date, platform, attendees, duration. Only ask if truly unknowable.
+4. **Attribution:** Now that attendees are known, audit for misattribution. Stop only if evidence is ambiguous.
+5. **Extract:** Process transcript — decisions, action items, features, quotes
+6. **Enrich:** Inherit statuses from project checklists and prior meeting READMEs
+7. **Save:** Write README.md to `meetings/YYYY-MM-DD-short-description/`
+8. **Route:** Suggest action item updates to project checklists
+9. **Summary:** Present extraction counts + gather any additions from outside the transcript. This is the ONE checkpoint.
 
 ### What the Skill Does NOT Do
 
@@ -181,18 +179,16 @@ The skill lives in the greenmark-planning repo itself — available to anyone wi
 
 **Location:** `greenmark-planning/.claude/skills/diarize/SKILL.md`
 
-**How it works (11-step workflow):**
-1. Locate transcript in `meetings/YYYY-MM-DD-title/`
-2. Load speaker context from `reference/stakeholders/diarize-cheatsheet.md`
-3. Detect transcript format (Fireflies text, SRT, VTT, etc.)
-4. **Audit speaker attribution** — check for misattribution, infer corrections using decision authority matrix
-5. Collect metadata (date, platform, attendees, duration)
-6. Extract decisions, action items, feature requests, key quotes
-7. **Check existing project state** — inherit action item statuses from project checklists
-8. Generate `README.md` in the meeting folder
-9. **Gather external context** — ask user for email chains, chain of custody, institutional knowledge
-10. Review with user — present extraction summary, flag low-confidence items
-11. Route action items to project checklists (optional, human-approved)
+**How it works (9-step workflow, autonomous by default):**
+1. Locate transcript + load speaker context + extraction guide
+2. Detect format and parse (SRT, VTT, Fireflies text, generic)
+3. Collect metadata and identify attendees (infer, don't ask)
+4. Audit speaker attribution (now AFTER attendees are known)
+5. Extract decisions, action items, feature requests, key quotes
+6. Enrich from project state and prior meetings
+7. Generate `README.md` in the meeting folder
+8. Route action items to project checklists (present suggestions, apply with approval)
+9. Present summary + gather additions (the ONE checkpoint)
 
 **Why repo-local:**
 - Anyone on the Greenmark Claude Team can use it (Michael, Alex, Daniel)
@@ -213,12 +209,12 @@ The skill lives in the greenmark-planning repo itself — available to anyone wi
 - [x] Test against the Feb 19 transcript (known-good baseline)
 - [x] Fix gaps found in testing: speaker attribution audit, external context prompt, project state check
 
-### Phase 2: Multi-Format Support
+### Phase 2: Multi-Format Support — COMPLETE
 
-- [ ] Add SRT parser (Fireflies SRT, generic SRT)
-- [ ] Add VTT parser (Teams, Zoom)
-- [ ] Add format auto-detection
-- [ ] Test against a second real transcript (next stakeholder call)
+- [x] SRT parser — tested on Feb 11 kickoff (clean attribution) and Feb 19 stakeholder call (corrected attribution)
+- [x] Format auto-detection — extension + content pattern matching
+- [x] Tested on both transcripts in repo
+- [ ] VTT parser — not yet tested (no Teams VTT transcript available yet)
 
 ### Phase 3: Action Item Routing
 
