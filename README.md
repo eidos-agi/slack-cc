@@ -20,20 +20,18 @@ Shared planning hub for Greenmark Waste Solutions leadership.
 | Feb 19 | [Stakeholder Call](meetings/2026-02-19-stakeholder-call/README.md) | Daniel, Michael, Alex, *(Collin briefly)* | 11 decisions, 14 action items, 6 feature ideas |
 | Feb 11 | [Project Cerebro Kickoff](meetings/2026-02-11-project-cerebro-kickoff/README.md) | Daniel, Michael, Alex, Lannis, Collin, Luke | 6 decisions, 8 action items, 3 feature ideas |
 
-## Waiting On
+## Open Tasks
 
-| What | Who | Unblocks | Since |
-|------|-----|----------|-------|
-| Sage Intacct user account for Daniel | Alex | API key creation → real data connection | Feb 19 |
-| HubSpot API access for Daniel | Alex / Michael | Second data source for Cerebro | Feb 19 |
-| Webflow login (both sites) | Michael | SEO execution on greenmarkwaste.com + htdisposal.com | Feb 19 |
-| GA4 / Google Search Console access | Alex | SEO baseline audit | Feb 19 |
-| Claude Team seat for Daniel | Michael | Shared Claude projects with Greenmark team | **Feb 11** |
-| GitHub admin for Michael | Daniel | Full org access (Michael just created account) | Feb 19 |
-| GitHub account for Alex | Alex | Repo visibility and collaboration | Feb 19 |
-| Greenmark Railway account setup | Michael | Daniel can transfer project once account exists ($20/mo Pro) | Feb 19 |
-| Google Business Profile login | Michael / Alex | Local SEO optimization for both brands | Feb 19 |
-| Dashboard mockup feedback | Michael + Alex | Refine before building with real data | Feb 11 |
+**[12 open tasks](tasks/README.md)** — 4 waiting on Alex, 4 waiting on Michael, 1 waiting on both, 2 blocked, 1 self-unblockable.
+
+| Who | Open | Oldest |
+|-----|------|--------|
+| Alex Kaye | 4 tasks | Feb 19 |
+| Michael Nguyen | 4 tasks | **Feb 11** (9 days) |
+| Daniel Shanklin | 3 tasks (2 blocked, 1 self-unblockable) | Feb 19 |
+| Michael + Alex | 1 task | **Feb 11** (9 days) |
+
+Full details, history, and comments: **[tasks/](tasks/README.md)**
 
 ## Reference
 

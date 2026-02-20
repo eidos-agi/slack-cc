@@ -36,7 +36,9 @@ Load these files:
 ```
 reference/glossary/people.md       — who owns what systems, decision authority
 reference/glossary/systems.md      — which systems map to which projects
-README.md                          — main dashboard, Waiting On table, project list
+README.md                          — main dashboard, project list
+tasks/README.md                    — task register index
+tasks/*.md                         — all open task files (scan frontmatter for status, owner, blocked-by)
 ```
 
 ### 2. Read the meeting README
@@ -163,10 +165,60 @@ ROUTING PLAN — [Meeting Name] ([N] action items)
 ### 6. Apply with approval
 
 Only make changes after the user confirms. For each approved change:
+- **Create task files** in `tasks/` for items that qualify (see "What gets a task file" below)
 - Add items to project checklists
-- Update the main README Waiting On table
 - Fix status discrepancies (update the less-accurate source to match the more-accurate one)
+- Update task index (`tasks/README.md`)
 - Note which items need follow-up emails (but don't send them)
+
+#### What gets a task file
+
+Not every action item needs its own task file. Create task files for items that:
+- Have an external owner (someone other than Daniel needs to act)
+- Block other work (dependency chains)
+- Were raised in multiple meetings (carry-overs — high signal)
+- Are self-unblockable (high visibility, should be done immediately)
+
+Project-internal checklist items (like "research Fleetio API") stay in project checklists. The task register is for **cross-project, cross-person work** that needs leadership visibility.
+
+#### Task file format
+
+```yaml
+---
+id: "NNN"                    # sequential, zero-padded to 3 digits
+title: Short description
+status: pending              # pending | in-progress | blocked | done | cancelled
+owner: Full Name
+project: project-slug        # matches projects/ directory name
+priority: high               # high | normal | low
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+source: meetings/YYYY-MM-DD-slug
+blocked-by: ["NNN"]          # task IDs this is blocked by
+blocks: ["NNN"]              # task IDs this blocks
+carry-over: false            # true if raised in 2+ meetings
+---
+
+Description paragraph.
+
+**Unblocks:** what this enables
+
+## History
+
+- **YYYY-MM-DD** — Created from [meeting] action item #N. Owner: Name.
+
+## Comments
+
+_(none yet)_
+```
+
+#### Updating existing task files
+
+When routing finds an item that already has a task file:
+- Append to the History section with the new meeting reference
+- Update `carry-over: true` if now raised in 2+ meetings
+- Update `updated` date in frontmatter
+- Update `status` if it changed
 
 ### 7. Log what was routed
 
@@ -176,10 +228,11 @@ Append a routing log to the bottom of the meeting README:
 ## Routing Log
 *Routed by task-out on YYYY-MM-DD*
 - N items completed (no routing needed)
-- N items already tracked in project checklists
+- N task files created in tasks/
+- N existing task files updated
+- N items added to project checklists
 - N cross-meeting carry-overs flagged
 - N status discrepancies fixed
-- N items added to Waiting On table
 - N items self-unblockable (flagged for immediate action)
 - N items covered by process / superseded
 - N follow-up emails flagged (names)
@@ -194,10 +247,12 @@ Run with `--reconcile` or "reconcile all tasks" to audit across everything.
 ### 1. Gather all open items
 
 Scan:
+- **All task files** (`tasks/*.md`) → parse frontmatter for status, owner, blocked-by, carry-over. This is now the primary source of truth for cross-project work.
 - All meeting READMEs → action items tables
 - All project checklists → unchecked items
-- **All project blockers** → items listed under "Blocked On", "Blockers", or similar sections in project READMEs and checklists. These often contain Waiting On items that never came from a meeting (e.g., SEO needs Webflow login, which was identified during planning, not on a call).
-- Main README → Waiting On table
+- **All project blockers** → items listed under "Blocked On", "Blockers", or similar sections in project READMEs and checklists. These often contain items that never came from a meeting (e.g., SEO needs Webflow login, which was identified during planning, not on a call).
+
+**Check for orphaned items:** If a meeting action item or project blocker qualifies for a task file (cross-person, blocks work, carry-over) but doesn't have one yet, flag it for creation.
 
 ### 2. Build the master list
 
@@ -257,6 +312,15 @@ Unique items (deduplicated): N
   - Alex: Sage account, HubSpot access, GitHub account
   - Michael: Claude Team seat (RAISED TWICE), Railway account
 ```
+
+### 5. Update the task register
+
+After presenting the reconciliation report and getting approval:
+- Create task files for any orphaned items that qualify
+- Update existing task files with new history entries and status changes
+- Move completed tasks to `tasks/archive/`
+- Regenerate `tasks/README.md` index (grouped by status, sorted by age)
+- Update `README.md` summary counts
 
 ---
 
