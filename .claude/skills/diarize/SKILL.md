@@ -32,16 +32,15 @@ A transcript is unprocessed if no `README.md` exists alongside it.
 - If the transcript is a corrected version (e.g., `transcript-corrected.srt`), validate the existing README against it and update metadata only
 - If unsure, ask the user: overwrite, create a draft, or validate?
 
-Load the cheat sheet before doing anything else:
+Load these references before doing anything else:
 ```
-reference/stakeholders/diarize-cheatsheet.md
+reference/stakeholders/diarize-cheatsheet.md    — speaker names, roles, authority
+reference/glossary/transcription-corrections.md — Fireflies mishearings → correct terms
+references/extraction-guide.md                  — signal words, quality checks, edge cases
+references/output-template.md                   — README template
 ```
 
-Also load:
-```
-references/extraction-guide.md
-references/output-template.md
-```
+Apply transcription corrections when generating the README: use canonical spellings in quotes and text, but never modify the original transcript file.
 
 ### 2. Detect format and parse
 
