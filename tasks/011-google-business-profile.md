@@ -20,7 +20,7 @@ Daniel needs access to Google Business Profile listings for both Greenmark Waste
 ## History
 
 - **2026-02-19** — Identified during SEO planning. Blocker surfaced from project checklist.
-- **2026-02-20** — Follow-up email sent to Michael ([follow-ups/2026-02-20-michael-nguyen.md](../follow-ups/2026-02-20-michael-nguyen.md)). Listed as item #5.
+- **2026-02-20** — Draft follow-up prepared but item was trimmed from sent email to Michael. Not yet formally requested via email.
 
 ## Comments
 

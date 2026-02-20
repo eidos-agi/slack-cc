@@ -20,7 +20,7 @@ Daniel needs viewer access to Google Analytics 4 and Google Search Console for b
 ## History
 
 - **2026-02-19** — Identified during SEO planning. Blocker surfaced from project checklist, not meeting action items.
-- **2026-02-20** — Follow-up email sent to Alex ([follow-ups/2026-02-20-alex-kaye.md](../follow-ups/2026-02-20-alex-kaye.md)). Listed as item #3.
+- **2026-02-20** — Follow-up email sent to Michael (not Alex). Asked Michael: "Do you want to run the SEO audit with Claude using instructions I provide, or do you want me to handle?" Not included in Alex email.
 
 ## Comments
 

@@ -23,23 +23,23 @@ Central view of all cross-project work items. Each task has its own file with fu
 |----|------|-------|-----------|
 | 001 | [Sage Intacct user account](001-sage-account.md) | Feb 19 | Emailed Feb 20 |
 | 004 | [HubSpot API access](004-hubspot-api-access.md) | Feb 19 | Emailed Feb 20 |
-| 006 | [GA4 / Google Search Console access](006-ga4-gsc-access.md) | Feb 19 | Emailed Feb 20 |
+| 006 | [GA4 / Google Search Console access](006-ga4-gsc-access.md) | Feb 19 | Emailed Michael Feb 20 |
 | 008 | [GitHub account](008-github-account-alex.md) | Feb 19 | Emailed Feb 20 |
 
 ## Pending — waiting on Michael (4)
 
 | ID | Task | Since | Follow-up |
 |----|------|-------|-----------|
-| 003 | [Claude Team seat](003-claude-team-seat.md) | **Feb 11** | RAISED TWICE — emailed Feb 20 |
-| 005 | [Webflow login](005-webflow-login.md) | Feb 19 | Emailed Feb 20 |
+| 003 | [Claude Team seat](003-claude-team-seat.md) | **Feb 11** | RAISED TWICE — emailed Feb 20. Invite received, accepting. |
+| 005 | [Webflow login](005-webflow-login.md) | Feb 19 | Not yet emailed |
 | 009 | [Railway account](009-railway-account.md) | Feb 19 | Emailed Feb 20 |
-| 011 | [Google Business Profile login](011-google-business-profile.md) | Feb 19 | Emailed Feb 20 |
+| 011 | [Google Business Profile login](011-google-business-profile.md) | Feb 19 | Not yet emailed |
 
 ## Pending — waiting on Michael + Alex (1)
 
 | ID | Task | Since | Follow-up |
 |----|------|-------|-----------|
-| 012 | [Dashboard mockup feedback](012-dashboard-feedback.md) | **Feb 11** | RAISED TWICE — emailed Feb 20 |
+| 012 | [Dashboard mockup feedback](012-dashboard-feedback.md) | **Feb 11** | RAISED TWICE — not yet emailed |
 
 ## Completed
 

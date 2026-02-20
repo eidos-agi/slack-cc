@@ -1,9 +1,11 @@
 # Email Draft — Michael Nguyen
 
 **To:** mnguyen@greenmarkwaste.com
+**Cc:** Alex Kaye
 **From:** Daniel Shanklin
 **Subject:** Quick follow-ups from our Feb 19 call — 5 items
 **Date:** Feb 20, 2026
+**Status:** SENT (trimmed to 3 items — Claude seat, GA4/GSC, Railway. Webflow, GBP, dashboard feedback removed.)
 
 ---
 

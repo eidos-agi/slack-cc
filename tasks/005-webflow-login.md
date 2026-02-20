@@ -20,7 +20,7 @@ Daniel needs editor access to Webflow for both greenmarkwaste.com and htdisposal
 ## History
 
 - **2026-02-19** — Identified during SEO discussion. Michael confirmed both sites are Webflow.
-- **2026-02-20** — Follow-up email sent to Michael ([follow-ups/2026-02-20-michael-nguyen.md](../follow-ups/2026-02-20-michael-nguyen.md)). Listed as item #3.
+- **2026-02-20** — Draft follow-up prepared but item was trimmed from sent email to Michael. Not yet formally requested via email.
 
 ## Comments
 

@@ -21,7 +21,7 @@ Michael to add Daniel to the Greenmark Claude Team plan. May require a greenmark
 
 - **2026-02-11** — Created from kickoff action item #5. Michael offered, Daniel accepted.
 - **2026-02-19** — Re-raised in stakeholder call action item #3. Still pending after 9 days.
-- **2026-02-20** — Follow-up email sent to Michael ([follow-ups/2026-02-20-michael-nguyen.md](../follow-ups/2026-02-20-michael-nguyen.md)). Flagged as raised twice with no action.
+- **2026-02-20** — Follow-up email sent to Michael ([follow-ups/2026-02-20-michael-nguyen.md](../follow-ups/2026-02-20-michael-nguyen.md)). Daniel noted: "You sent me an invite, I will accept today. Thank you." Status likely resolving — Michael sent the invite, Daniel accepting.
 
 ## Comments
 
