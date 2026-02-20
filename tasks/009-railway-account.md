@@ -20,7 +20,8 @@ Michael to create a Greenmark Railway account at railway.com ($20/mo Pro plan). 
 ## History
 
 - **2026-02-19** — Created from stakeholder call action item #6. Feb 19 decision: Greenmark billing fully separate from AIC.
-- **2026-02-20** — Follow-up email sent to Michael ([follow-ups/2026-02-20-michael-nguyen.md](../follow-ups/2026-02-20-michael-nguyen.md)). Listed as item #4.
+- **2026-02-20** — Follow-up email sent to Michael ([follow-ups/2026-02-20-michael-nguyen.md](../follow-ups/2026-02-20-michael-nguyen.md)).
+- **2026-02-20** — Daniel sending separate email to request $20/mo Railway Pro account with Daniel as invited member. Per-org billing, no fee for additional people.
 
 ## Comments
 

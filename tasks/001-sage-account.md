@@ -20,7 +20,8 @@ Alex to provision Daniel (dshanklin@aicholdings.com) a full Sage Intacct user ac
 ## History
 
 - **2026-02-19** — Created from stakeholder call action item #1. Owner: Alex Kaye.
-- **2026-02-20** — Follow-up email sent to Alex ([follow-ups/2026-02-20-alex-kaye.md](../follow-ups/2026-02-20-alex-kaye.md)). Grouped with 4 other items.
+- **2026-02-20** — Follow-up email sent to Alex ([follow-ups/2026-02-20-alex-kaye.md](../follow-ups/2026-02-20-alex-kaye.md)). Grouped with 2 other items.
+- **2026-02-20** — Alex replied: "will get you that sage access first thing Monday." ETA: Mon Feb 24.
 
 ## Comments
 
