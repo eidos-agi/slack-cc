@@ -6,25 +6,39 @@ Shared planning hub for Greenmark Waste Solutions leadership.
 
 | Project | Status | Owner | Details |
 |---------|--------|-------|---------|
-| **SEO Improvement** | Planning | Daniel | [greenmarkwaste.com](projects/seo-improvement/greenmarkwaste.com/seo-plan.md) / [htdisposal.com](projects/seo-improvement/htdisposal.com/seo-plan.md) |
-| **Data Integration (Cerebro)** | Researching | Daniel | [infra repo](https://github.com/greenmark-waste-solutions/infra) — 6 of 15 vendor APIs researched |
-| **Dashboard Mockups** | Review needed | Daniel | [mockups](projects/data-mockups/mockups/) — 3 HTML prototypes ready for stakeholder feedback |
-| **Recording Solution** | Blocked | Daniel | [checklist](projects/recording-solution/checklist.md) — waiting on Fireflies transcript |
-| **Warehouse Strategy** | Blocked | TBD | [checklist](projects/warehouse-strategy/checklist.md) — needs kickoff recording details |
+| **Data Integration (Cerebro)** | Researching | Daniel | [infra repo](https://github.com/greenmark-waste-solutions/infra) — 6 of 15 vendor APIs researched. Next: HubSpot API data model. |
+| **SEO Improvement** | In progress | Daniel | [greenmarkwaste.com](projects/seo-improvement/greenmarkwaste.com/seo-plan.md) / [htdisposal.com](projects/seo-improvement/htdisposal.com/seo-plan.md) — 90-day plans written, no baseline audit yet |
+| **Dashboard Mockups** | Awaiting feedback | Daniel | [3 HTML prototypes](projects/data-mockups/checklist.md) — executive, operations, financial. Need Michael + Alex review. |
+| **Tech Org Setup** | In progress | Daniel + Alex | [checklist](projects/tech-org-setup/checklist.md) — GitHub org done, Sage/HubSpot access pending |
+| **Recording Solution** | Phase 1+2 done | Daniel | [checklist](projects/recording-solution/checklist.md) — diarize skill built + tested, glossary created |
+| **Warehouse Strategy** | Scoping | TBD | [checklist](projects/warehouse-strategy/checklist.md) — kickoff recording now available |
 
-## Decisions Needed
+## Meetings
 
-*Open decisions will be tracked in [decisions/](decisions/). GitHub Issues can also be used — label with `needs-decision`.*
+| Date | Meeting | Attendees | Artifacts |
+|------|---------|-----------|-----------|
+| Feb 19 | [Stakeholder Call](meetings/2026-02-19-stakeholder-call/README.md) | Daniel, Michael, Alex, *(Collin briefly)* | 11 decisions, 14 action items, 6 feature ideas |
+| Feb 11 | [Project Cerebro Kickoff](meetings/2026-02-11-project-cerebro-kickoff/README.md) | Daniel, Michael, Alex, Lannis, Collin, Luke | 6 decisions, 8 action items, 3 feature ideas |
+
+## Waiting On
+
+| What | Who | Unblocks |
+|------|-----|----------|
+| Sage Intacct user account for Daniel | Alex | API key creation → real data connection |
+| HubSpot API access for Daniel | Alex / Michael | Second data source for Cerebro |
+| Claude Team seat for Daniel | Michael | Shared Claude projects with Greenmark team |
+| GitHub admin for Michael | Daniel | Full org access (Michael just created account) |
+| GitHub account for Alex | Alex | Repo visibility and collaboration |
+| Dashboard mockup feedback | Michael + Alex | Refine before building with real data |
+
+## Reference
+
+- [Greenmark glossary](reference/glossary/README.md) — systems, entities, people, industry terms, financial terms, transcription corrections
+- [Stakeholder org chart](reference/stakeholders/greenmark-org.md)
 
 ## Weekly Updates
 
 See the [weekly-updates repo](https://github.com/greenmark-waste-solutions/weekly-updates) for engineering progress reports.
-
-## Reference
-
-- [Stakeholder org chart](reference/stakeholders/greenmark-org.md)
-- [Research gaps](reference/research/gaps.md)
-- [Infra repo design principles](reference/research/infra-repo-design.md)
 
 ## Related Repos
 
@@ -33,6 +47,7 @@ See the [weekly-updates repo](https://github.com/greenmark-waste-solutions/weekl
 | [data-daemon](https://github.com/greenmark-waste-solutions/data-daemon) | Data extraction pipeline (code) |
 | [cerebro](https://github.com/greenmark-waste-solutions/cerebro) | Dashboard app (code) |
 | [infra](https://github.com/greenmark-waste-solutions/infra) | Vendor docs, data dictionary, integration specs |
+| [cerebro-qa](https://github.com/greenmark-waste-solutions/cerebro-qa) | Data quality monitoring |
 | [weekly-updates](https://github.com/greenmark-waste-solutions/weekly-updates) | Automated engineering reports |
 
 ## Archive
