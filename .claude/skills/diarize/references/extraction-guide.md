@@ -103,6 +103,17 @@ How to identify and extract each category from a meeting transcript.
 
 ## Edge Cases
 
+### Fireflies misattributes multiple speakers to one label
+This is common when two speakers have similar audio profiles or when Fireflies can't distinguish remote participants. Signs:
+- Only 2 speaker labels but 3+ known attendees
+- One label covers both financial AND operational topics (likely two different people)
+- A speaker "agrees with themselves" (actually two people in dialogue)
+
+**Resolution:** Use the decision authority matrix from the cheat sheet. Finance/accounting topics (Sage, journal entries, budgets) → CFO. Operations/IT topics (Navusoft, fleet, hiring) → President. Technical architecture → tech lead. Annotate every inferred reattribution with the line number and reasoning.
+
+### Action items from outside the transcript
+Some action items arise from email chains, follow-up conversations, or institutional knowledge that isn't in the transcript. The skill's "Gather external context" step (step 9) catches these. Mark them distinctly so reviewers know the source.
+
 ### Someone talks about a topic but no decision is made
 Log as context under the most relevant decision, or as a discussion point in a "Notes" section. Don't force it into a decision.
 
