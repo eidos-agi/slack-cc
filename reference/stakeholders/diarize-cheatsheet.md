@@ -31,10 +31,12 @@ For full org details: [greenmark-org.md](greenmark-org.md)
 
 ### Lannis Nicholson
 - **Title:** CRO (Partner), Greenmark Waste Solutions
-- **Name variants:** "Lannis Nicholson", "Lannis"
+- **Name variants:** "Lannis Nicholson", "Lannis", "Lance" (Fireflies mishearing), "Lana" (Fireflies mishearing)
 - **Decision authority:** Sales strategy, revenue operations, pricing
 - **Common topics:** Sales pipeline, revenue targets, market expansion, customer acquisition
-- **Key context:** Previously at LRS and Ramco. Knows waste industry sales well.
+- **Meeting behavior:** Tends to listen more than speak. On Feb 11 kickoff, introduced herself but was otherwise a passive participant.
+- **Key context:** Started career at Waste Management (the company) out of Arkansas. Started own waste company with "one truck and one container," grew it, sold to a mid-market waste company. Previously at LRS and Ramco. Joined AIC/Greenmark ~6 months before Daniel.
+- **Attribution note:** Often in-room with Michael, sharing a mic. Fireflies will merge her speech with Michael's. Her Fireflies name varies: "Lana", "Lance" — always check for these misspellings.
 
 ### Robert Heath
 - **Title:** General Manager, Greenmark Waste Solutions
@@ -66,10 +68,17 @@ For full org details: [greenmark-org.md](greenmark-org.md)
 
 ### Collin Bird
 - **Title:** Managing Director, AIC Holdings
-- **Name variants:** "Collin Bird", "Collin"
+- **Name variants:** "Collin Bird", "Collin", "Collin Bird - AIC" (Fireflies label with org suffix)
 - **Role in meetings:** Project sponsor, may join briefly
 - **Decision authority:** Project approval, budget, AIC team resources
 - **Key context:** Owns the Fireflies account where meetings are recorded.
+
+### Luke Huntley
+- **Title:** Engineer, AIC Holdings
+- **Name variants:** "Luke Huntley", "Luke"
+- **Role in meetings:** Technical contributor, joined remotely on Feb 11 kickoff
+- **Common topics:** Data warehouse architecture, frontend dashboards, Supabase, connectors
+- **Key context:** Worked with Daniel at a startup in North Carolina. Moved to Fort Worth area Sep 2025. Built Sable and Meridian dashboards for AIC (~9 months). Specializes in frontend work — "incredibly good at front end type work" per Daniel.
 
 ---
 
@@ -93,8 +102,9 @@ When the transcript has ambiguous speaker labels:
 
 1. **"Speaker 1", "Speaker 2"** — Match by topic. If discussing Sage/financials → likely Alex. If discussing operations/Navusoft → likely Michael. If explaining technical architecture → likely Daniel.
 2. **First name only ("Michael")** — Match to the person with that first name in the attendee list.
-3. **Misspelled names** — Fireflies sometimes misspells. "Micheal" = Michael. "Daneil" = Daniel.
-4. **"Unknown Speaker"** — Flag for human review. Don't guess.
+3. **Misspelled names** — Fireflies sometimes misspells. "Micheal" = Michael. "Daneil" = Daniel. "Lana" or "Lance" = Lannis.
+4. **Inconsistent format across meetings** — The same person may appear as "Michael Nguyen" on one call and "Michael D Nguyen" on another. "Collin Bird - AIC" with an org suffix on one, "Collin Bird" on another. Always normalize to canonical names above.
+5. **"Unknown Speaker"** — Flag for human review. Don't guess.
 
 ## Decision Authority Matrix
 

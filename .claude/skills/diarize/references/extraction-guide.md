@@ -104,9 +104,18 @@ How to identify and extract each category from a meeting transcript.
 ## Edge Cases
 
 ### Fireflies misattributes multiple speakers to one label
-This is common when two speakers have similar audio profiles or when Fireflies can't distinguish remote participants. Signs:
-- Only 2 speaker labels but 3+ known attendees
+This is common in two distinct scenarios:
+
+**Scenario A: Same room, shared microphone.** Two people in the same physical location share one mic/speaker. Fireflies merges them into one label. This is guaranteed when someone says "I got [name] sitting here with me." All speech from that room gets one label.
+- *Feb 11 example:* Michael and Lannis were in the same room. Lannis's entire self-introduction was labeled "Michael Nguyen."
+
+**Scenario B: Similar audio profiles (remote).** Two remote participants sound similar enough that Fireflies can't distinguish them. One gets absorbed into the other's label.
+- *Feb 19 example:* Alex Kaye and Michael D. Nguyen were both remote but Alex got no label — all her speech went under Michael's.
+
+**Signs of either scenario:**
+- Fewer unique speaker labels than known attendees (e.g., 2 labels but 3 people on the call)
 - One label covers both financial AND operational topics (likely two different people)
+- Someone mentions another person being "here with me" or "in the room" (Scenario A)
 
 **IMPORTANT: Consecutive blocks from the same speaker label is NOT a signal of misattribution.** SRT format splits continuous speech into 3-5 second chunks. Two "Michael D Nguyen" blocks in a row usually IS the same person still talking. Do not assume that back-to-back same-label blocks mean two different people.
 
@@ -141,3 +150,18 @@ Summarize the conclusion, not the explanation. The transcript exists for anyone 
 
 ### Attendee joins late or leaves early
 Note in attendees section: "*(Collin Bird joined briefly but stepped out)*"
+
+### Action items from a prior meeting
+Check `meetings/` for earlier calls with the same attendees. If a prior README exists, scan its action items — some may have been resolved, updated, or superseded by this call. Link to the prior meeting for continuity:
+- "Completed — covered in [Feb 19 call](../2026-02-19-stakeholder-call/README.md)"
+- "Superseded by Decision #3 above"
+
+This prevents the same action item from appearing as "Pending" across multiple meeting READMEs when it was actually resolved.
+
+### Fireflies uses inconsistent speaker name formats
+The same person may appear as different labels across meetings:
+- "Michael Nguyen" vs "Michael D Nguyen"
+- "Collin Bird - AIC" (with org suffix) vs "Collin Bird"
+- "Alex Kaye" vs "Alex K"
+
+Always normalize to the canonical name from the cheat sheet. Don't assume different labels mean different people.

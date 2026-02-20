@@ -81,12 +81,18 @@ Process the full transcript and extract four categories. See `references/extract
 3. **Feature requests** — aspirational ideas, not committed work. Need: name, description, requester.
 4. **Key quotes** — memorable lines that capture priorities or sentiment. Max 5-7.
 
-### 7. Check existing project state
+### 7. Check existing project state and prior meetings
 
-Before generating, scan `projects/` checklists to enrich action item statuses:
+Before generating, scan two sources to enrich action items:
+
+**Project checklists** (`projects/`):
 - If an extracted action item already appears in a project checklist, inherit its current status (e.g., "In progress" not "Pending")
 - If a project already exists for a topic discussed, link to it
-- This prevents the README from showing stale statuses when work has already begun
+
+**Prior meeting READMEs** (`meetings/`):
+- Check for earlier meetings with the same attendees
+- If a prior README has action items that were resolved or updated by this call, mark them and link: "Completed — covered in [this call](../2026-MM-DD-*/README.md)"
+- This prevents the same action item appearing as "Pending" across multiple meetings
 
 ### 8. Generate README.md
 
