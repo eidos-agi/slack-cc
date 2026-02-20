@@ -93,9 +93,10 @@ After processing a transcript, extract:
 - **WAM**: Confirmed no API, but Michael says Hometown transitioning to Navusoft "over the next couple months" — may not need WAM integration at all
 
 ### Decisions Made (Feb 19 call)
-1. **First two data sources: Sage Intacct + HubSpot** — confirmed by Michael and Alex
-2. **Michael is de facto tech lead** at Greenmark — manages IT and software
-3. **Expensify already flows through Sage** — no separate connector needed. **Comerica does NOT** — decision tabled, Alex leaning toward flowing through Sage ("let Sage be the Rosetta Stone")
+1. **Sage Intacct is the system of record.** Cerebro reads from it but never writes to it. Other systems (Expensify, potentially Comerica) flow through Sage rather than directly into the warehouse. Alex: "If Sage can be our Rosetta Stone for most things, I'd rather just flow it through Sage." Daniel: "Your auditors will love it. Sage is the system of record. Cerebro just happens to look at it."
+2. **First two data sources: Sage Intacct + HubSpot** — confirmed by Michael and Alex
+3. **Michael is de facto tech lead** at Greenmark — manages IT and software
+4. **Expensify already flows through Sage** — no separate connector needed. **Comerica does NOT** — decision tabled, Alex leaning toward flowing through Sage
 4. **Greenmark billing fully separate from AIC** — Railway, GitHub, all infrastructure
 5. **API keys are read-only** — no agent writes to Sage. Human-in-the-loop for all entries.
 6. **Communication via email + Teams** — not Wrike

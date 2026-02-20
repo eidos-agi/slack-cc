@@ -55,10 +55,12 @@
 - They also have a managed service provider for other IT
 - Travis (AIC/Jetta) dabbles on broader org-hosted stuff
 
-### 4. Expensify already flows through Sage — Comerica does NOT
-- Alex confirmed: "Expensify does. That's already connected. Comerica is not."
-- Comerica decision **tabled** — Alex wants to think about whether to bring it into Cerebro directly or keep flowing through Sage
+### 4. Sage Intacct is the system of record — Cerebro reads, never writes
 - Alex: "If Sage can be kind of our Rosetta Stone for most things, I'd rather just kind of flow it through Sage."
+- Daniel: "Your auditors will love it... Sage is the system of record. Cerebro just happens to look at it."
+- **Architectural principle:** Other systems should flow through Sage where possible, not directly into the warehouse.
+- Expensify already flows through Sage — no separate connector needed.
+- Comerica does NOT — decision **tabled**, Alex leaning toward flowing through Sage.
 
 ### 5. Daniel gets a Sage Intacct user account
 - Not just an API key — a full user account so Daniel can create/manage API keys himself
