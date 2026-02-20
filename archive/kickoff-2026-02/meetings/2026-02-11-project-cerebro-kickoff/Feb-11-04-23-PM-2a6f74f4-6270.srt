@@ -1,0 +1,1393 @@
+
+Meeting created at: 11th Feb, 2026 - 4:23 PM1
+00:00:13,840 --> 00:00:14,400
+Speaker 1: Poor guy.
+
+2
+00:00:15,600 --> 00:00:17,840
+Speaker 1: So we worked at Key Investments together.
+
+3
+00:00:17,840 --> 00:00:22,920
+Speaker 1: I was in, I worked in back office accounting over there and then I moved to the trading desk.
+
+4
+00:00:22,920 --> 00:00:24,000
+Speaker 1: So I was there for nine years.
+
+5
+00:00:24,720 --> 00:00:27,200
+Speaker 1: Then I switched over to software engineering and AI.
+
+6
+00:00:27,360 --> 00:00:35,570
+Speaker 1: Started around six years ago and I've been a data engineer and now an AI engineer for AI engineering for about two or three of the last year.
+
+7
+00:00:36,210 --> 00:00:36,850
+Speaker 2: Few years.
+
+8
+00:00:37,010 --> 00:00:45,090
+Speaker 1: So Luke worked with me at a startup that I operated out of Boo, North Carolina.
+
+9
+00:00:45,570 --> 00:00:50,610
+Speaker 1: And as I like to say, Colin took pity on us and said come on over and do it for me full time.
+
+10
+00:00:51,490 --> 00:00:52,290
+Speaker 1: So here we are.
+
+11
+00:00:53,330 --> 00:00:57,490
+Speaker 1: Luke and I moved to the Fort Worth area from New North Carolina back in September.
+
+12
+00:00:57,970 --> 00:01:06,510
+Speaker 1: And we try our best to build tools that will last a lot longer, meaning we try not to build software.
+
+13
+00:01:06,830 --> 00:01:18,350
+Speaker 1: We try to build like agentic type systems that basically withstand the test of time because I feel like software is one of those depreciating assets, something that loses value over time.
+
+14
+00:01:18,510 --> 00:01:22,230
+Speaker 1: So what kind of business process can you build that will be a little more durable?
+
+15
+00:01:22,230 --> 00:01:25,150
+Speaker 1: And that's kind of how we try to stay down the fairway, Take it away.
+
+16
+00:01:29,800 --> 00:01:30,600
+Speaker 3: Thanks, Daniel.
+
+17
+00:01:31,800 --> 00:01:33,560
+Speaker 3: I mean, yeah, exactly.
+
+18
+00:01:33,560 --> 00:01:44,120
+Speaker 3: Data center came along with him for the ride and have been working on Sable and Meridian here, which is our dashboards for AIC for around.
+
+19
+00:01:44,200 --> 00:01:46,040
+Speaker 3: I mean it's going on nine months now.
+
+20
+00:01:47,160 --> 00:01:53,890
+Speaker 3: And so just I enjoy building things, I enjoy creating and helping automate things with AI.
+
+21
+00:01:53,890 --> 00:01:57,730
+Speaker 3: So that's all for me.
+
+22
+00:01:58,690 --> 00:02:00,770
+Speaker 2: Linus, Alex, y' all want to introduce yourselves?
+
+23
+00:02:00,770 --> 00:02:01,250
+Speaker 2: Yeah.
+
+24
+00:02:02,450 --> 00:02:04,610
+Speaker 4: First of all, nice to meet you, Daniel.
+
+25
+00:02:04,690 --> 00:02:06,130
+Speaker 4: Welcome to the AIC team.
+
+26
+00:02:06,130 --> 00:02:10,289
+Speaker 4: I've got about 6 more months with AIC than y' all two do.
+
+27
+00:02:12,450 --> 00:02:15,570
+Speaker 4: Started my career with waste management.
+
+28
+00:02:17,320 --> 00:02:21,360
+Speaker 4: Worked for them out of Arkansas and left them.
+
+29
+00:02:21,360 --> 00:02:30,840
+Speaker 4: Started my own company with one truck and one container and built into something pretty special and sold it to a mid market level waste company.
+
+30
+00:02:31,560 --> 00:02:57,790
+Speaker 4: And they wanted it more than we did, so went to work for them for about three years, met Mike and William and Colin along the way probably a couple years ago, got to know them, learned what they were building, something pretty special and ultimately made the decision to leave that other company and come over to the AIC team, the Greenmark team.
+
+31
+00:02:57,790 --> 00:03:05,790
+Speaker 4: So yeah, so we're full steam ahead and we really appreciate you two jumping in and helping us build this platform out.
+
+32
+00:03:05,790 --> 00:03:06,670
+Speaker 4: So thank you very much.
+
+33
+00:03:07,710 --> 00:03:08,270
+Speaker 1: Thank you.
+
+34
+00:03:10,010 --> 00:03:10,170
+Speaker 5: Yeah.
+
+35
+00:03:10,170 --> 00:03:21,650
+Speaker 5: Hey guys, this is Alex and I think Luke, I might have met you briefly up at the AIC office in October, but yeah, nice to meet you guys.
+
+36
+00:03:21,650 --> 00:03:27,050
+Speaker 5: And you know recently joined the team relatively recently now in early October.
+
+37
+00:03:28,090 --> 00:03:36,730
+Speaker 5: And my background is kind of in the M and A corporate development, you know, kind of private equity world.
+
+38
+00:03:36,810 --> 00:03:54,780
+Speaker 5: And you know, I have a fair amount of experience, you know, across all kind of different types of companies and industries, but a little bit of a, you know, operational experience in business services and you know, kind of high, you know, skilled labor kind of business service companies.
+
+39
+00:03:54,860 --> 00:03:59,500
+Speaker 5: And you know, I've known Michael for over 15 years now.
+
+40
+00:03:59,500 --> 00:04:39,580
+Speaker 5: Him and I started at Houlihan Loki back in the day and yeah, just super excited to be on the Greenmark team, you know, believing our story and kind of our growth potential here and you know, happy to kind of be working with everybody and yeah, great to meet you guys and you know, look forward to kind of going through some of the things we have in mind, you know, automate and you know, just make everything more efficient for us and you know, also give, you know, you guys and William and Colin kind of a pretty detailed view, hopefully in real time everything that's going on at Greenmark.
+
+41
+00:04:39,580 --> 00:04:44,660
+Speaker 5: So I think that's kind of the overall goal of, you know, a lot of the things we're going to be talking about.
+
+42
+00:04:49,220 --> 00:04:51,780
+Speaker 2: Cool, let's dive in.
+
+43
+00:04:52,900 --> 00:04:57,540
+Speaker 2: You know, I'll just kind of go off the little document that I sent you.
+
+44
+00:04:57,540 --> 00:05:00,220
+Speaker 2: I think, kind of echoing what Alex said.
+
+45
+00:05:00,220 --> 00:05:09,470
+Speaker 2: I think the main kind of goal here is we have a lot of different systems that do a lot of different things and have a lot of different data.
+
+46
+00:05:10,030 --> 00:05:23,310
+Speaker 2: You know, we want to take all that data, you know, and put it into kind of a single database where, you know, where we can kind of build, you know, more or less like kind of real time dashboards off of them.
+
+47
+00:05:23,310 --> 00:05:25,630
+Speaker 2: And you know, there's going to be dashboards for.
+
+48
+00:05:25,870 --> 00:05:35,360
+Speaker 2: And I sent you kind of the example of the metrics that we look at kind of on, you know, that gets sent out to Colin and to William, you know, kind of every single month.
+
+49
+00:05:35,360 --> 00:05:38,880
+Speaker 2: And then internally we look at that, you know, kind of almost every single week.
+
+50
+00:05:38,880 --> 00:05:39,200
+Speaker 2: Right.
+
+51
+00:05:39,200 --> 00:05:46,800
+Speaker 2: And like our, like with our data set too, like you should be able to see kind of like there's daily views.
+
+52
+00:05:46,800 --> 00:05:47,000
+Speaker 2: Right.
+
+53
+00:05:47,000 --> 00:05:51,000
+Speaker 2: Like you should be able to get pretty granular kind of to it.
+
+54
+00:05:51,000 --> 00:05:56,890
+Speaker 2: And, and I think, you know, the data comes from a lot of different kind of systems and I think that's what we're putting it in.
+
+55
+00:05:56,890 --> 00:06:00,690
+Speaker 2: Kind of one unified database is going to kind of be helpful.
+
+56
+00:06:00,690 --> 00:06:03,850
+Speaker 2: But that's, you know, that's kind of Step.
+
+57
+00:06:04,010 --> 00:06:22,450
+Speaker 2: Kind of step one for us is you know, setting up like, I don't know, I'm not sure, kind of what y' all did for calling and, you know, whether it's AWS or Snowflake, like getting an instance, you know, kind of set up and then starting to take a look at all the individual pieces of software we have.
+
+58
+00:06:22,450 --> 00:06:24,090
+Speaker 2: And we can get you whatever access level you.
+
+59
+00:06:24,240 --> 00:06:31,840
+Speaker 2: You need and see, you know, whether we need to build a connector or, you know, there's off the shelf stuff that we can kind of.
+
+60
+00:06:31,840 --> 00:06:32,960
+Speaker 2: That we can use.
+
+61
+00:06:32,960 --> 00:06:33,360
+Speaker 2: And.
+
+62
+00:06:33,840 --> 00:06:40,160
+Speaker 2: And then there's probably going to be a little bit of kind of data engineering, you know, combining tables and things like that, trying to.
+
+63
+00:06:40,880 --> 00:06:44,960
+Speaker 2: That make up the ultimate kind of metrics, you know, dashboard.
+
+64
+00:06:45,360 --> 00:06:47,400
+Speaker 2: But that's kind of, you know, that's step one.
+
+65
+00:06:47,400 --> 00:06:49,120
+Speaker 2: And I'll kind of pause there.
+
+66
+00:06:51,050 --> 00:06:51,170
+Speaker 4: See.
+
+67
+00:06:51,170 --> 00:06:59,050
+Speaker 2: If you have anything else to add kind of Alex to that or Daniel or Luke, if any questions.
+
+68
+00:07:00,970 --> 00:07:01,650
+Speaker 1: Yeah, okay.
+
+69
+00:07:01,650 --> 00:07:06,850
+Speaker 1: I'll go ahead and start by saying thanks for putting together this really detailed document.
+
+70
+00:07:06,850 --> 00:07:07,770
+Speaker 1: It does help a lot.
+
+71
+00:07:08,810 --> 00:07:14,650
+Speaker 1: And I think one of the first questions I have, and I'm sorry, whatever I had on the screen has now disappeared.
+
+72
+00:07:15,450 --> 00:07:16,610
+Speaker 1: Can everybody see my screen?
+
+73
+00:07:16,610 --> 00:07:17,040
+Speaker 2: Okay.
+
+74
+00:07:17,110 --> 00:07:19,350
+Speaker 1: Like, there was this consolidated revenue looks like.
+
+75
+00:07:19,350 --> 00:07:20,270
+Speaker 1: Yeah, et cetera.
+
+76
+00:07:20,270 --> 00:07:20,950
+Speaker 2: Okay, great.
+
+77
+00:07:21,510 --> 00:07:25,110
+Speaker 1: So I assume you guys built this in Excel, and it's probably humming.
+
+78
+00:07:25,990 --> 00:07:28,790
+Speaker 1: And then on that other side, you had a list of all the different applications.
+
+79
+00:07:29,350 --> 00:07:43,350
+Speaker 1: Is there a single pain point that you can think of, kind of like right up front where you're like, if we just had this one thing, it would zoom us an additional 20% and it's okay if the answer is no, but I always like to start with that to do like, emergency triage.
+
+80
+00:07:45,190 --> 00:07:46,430
+Speaker 2: No, I think we have a pretty.
+
+81
+00:07:46,430 --> 00:07:49,470
+Speaker 2: And I'll let Alex chime in, too, but I think we have a fairly efficient system.
+
+82
+00:07:49,470 --> 00:07:58,790
+Speaker 2: Like, you know, Alex has a extremely detailed kind of financial model, you know, down to kind of the GL level, you know, that.
+
+83
+00:07:59,030 --> 00:08:03,230
+Speaker 2: That we can export data out of Sage and kind of into the model.
+
+84
+00:08:03,230 --> 00:08:07,030
+Speaker 2: And it feeds into, you know, a good amount of the data kind of in the.
+
+85
+00:08:07,030 --> 00:08:08,390
+Speaker 2: In the metrics dashboard.
+
+86
+00:08:08,790 --> 00:08:10,230
+Speaker 2: And then, you know, it's just.
+
+87
+00:08:11,290 --> 00:08:12,610
+Speaker 2: I wouldn't even call it a pain point.
+
+88
+00:08:12,610 --> 00:08:13,210
+Speaker 2: We have it down.
+
+89
+00:08:13,210 --> 00:08:21,610
+Speaker 2: Such a science, but it's just then going and exporting kind of the data from all the various systems, you know, that make up the rest of the metrics.
+
+90
+00:08:22,010 --> 00:08:25,250
+Speaker 2: So it's more of like moving, I guess.
+
+91
+00:08:25,250 --> 00:08:26,890
+Speaker 2: Like, to me, it's moving Data around.
+
+92
+00:08:26,970 --> 00:08:27,370
+Speaker 1: Right.
+
+93
+00:08:28,570 --> 00:08:31,130
+Speaker 2: Is kind of what takes time.
+
+94
+00:08:32,330 --> 00:08:33,690
+Speaker 1: Yeah, that makes a lot of sense.
+
+95
+00:08:33,690 --> 00:08:38,730
+Speaker 1: Okay, let's talk a little bit about dashboarding.
+
+96
+00:08:40,120 --> 00:08:45,080
+Speaker 1: Is a more important thing that you had, like, an AI agent where you could ask it questions, it would give you answers?
+
+97
+00:08:45,080 --> 00:08:48,360
+Speaker 1: Or is it more important that you have, like, a written.
+
+98
+00:08:49,480 --> 00:08:57,800
+Speaker 1: Excuse me, Like a standard dashboard set with charts and graphs that are consistent, reliable, updated, you know, within the day?
+
+99
+00:08:58,760 --> 00:08:59,800
+Speaker 2: That's number one.
+
+100
+00:08:59,880 --> 00:09:00,240
+Speaker 2: Right.
+
+101
+00:09:00,240 --> 00:09:01,640
+Speaker 2: Because I think that's what most.
+
+102
+00:09:01,640 --> 00:09:03,960
+Speaker 2: Most people are used to seeing.
+
+103
+00:09:04,610 --> 00:09:09,570
+Speaker 2: You know, the AI agent that can answer questions is kind of like phase two of all of this.
+
+104
+00:09:10,610 --> 00:09:13,170
+Speaker 2: Because, you know, most people aren't really.
+
+105
+00:09:13,330 --> 00:09:17,530
+Speaker 2: Most people aren't used to kind of finding data or getting kind of things that way.
+
+106
+00:09:17,530 --> 00:09:18,130
+Speaker 2: Like, they're.
+
+107
+00:09:18,130 --> 00:09:24,530
+Speaker 2: They are more used to seeing this Excel chart that looks like this, you know, and this is kind of how I view things.
+
+108
+00:09:24,930 --> 00:09:25,690
+Speaker 2: So I think it's.
+
+109
+00:09:25,690 --> 00:09:29,090
+Speaker 2: You know, the dashboards are definitely the most important.
+
+110
+00:09:29,980 --> 00:09:31,580
+Speaker 1: Yeah, that makes a lot of sense.
+
+111
+00:09:31,580 --> 00:09:45,220
+Speaker 1: Another trick, just for future knowledge, or just to know kind of what other people doing out there is if you have a spreadsheet open in your browser and you pull up your Chrome sidebar, you can just say what you see here, your patterns.
+
+112
+00:09:45,220 --> 00:09:47,340
+Speaker 1: So you don't have to actually build the agent part.
+
+113
+00:09:47,340 --> 00:09:48,860
+Speaker 1: It's already been built by client.
+
+114
+00:09:48,860 --> 00:09:51,020
+Speaker 1: You can just ask it to take a look at what you're looking at.
+
+115
+00:09:51,020 --> 00:09:52,860
+Speaker 1: That's also true of dashboards that you build.
+
+116
+00:09:52,860 --> 00:09:57,540
+Speaker 1: So if there's a charge showing a certain uptick or downtick, you can note that correctly.
+
+117
+00:09:57,540 --> 00:09:59,020
+Speaker 1: So I think that's pretty cool as well.
+
+118
+00:10:00,660 --> 00:10:02,980
+Speaker 2: Yeah, and real quick, Daniel, on that, thanks for reminding me.
+
+119
+00:10:02,980 --> 00:10:03,420
+Speaker 2: I didn't.
+
+120
+00:10:03,420 --> 00:10:15,220
+Speaker 2: I didn't mention anything kind of about Claude kind of in this, and I imagine, like, it would be kind of a piece of all this, so getting, you know, Claude set up kind of for, you know, for green mark kind of as well.
+
+121
+00:10:15,540 --> 00:10:16,220
+Speaker 1: Understood.
+
+122
+00:10:16,220 --> 00:10:19,460
+Speaker 1: Okay, well, we're recording this phone call.
+
+123
+00:10:19,460 --> 00:10:20,980
+Speaker 1: Is that a common thing that y' all do?
+
+124
+00:10:21,060 --> 00:10:34,070
+Speaker 1: Because I. I asked that question because it's one of the first things I look at, is if there's not, like, a great record set of what's going on every week, then we can't convert that with AI into, like, action items and things that you're supposed to do next.
+
+125
+00:10:34,070 --> 00:10:35,470
+Speaker 1: Do you need any help with that aspect?
+
+126
+00:10:37,230 --> 00:10:39,710
+Speaker 2: We don't record kind of calls.
+
+127
+00:10:40,030 --> 00:10:41,470
+Speaker 2: I would say, like, we don't.
+
+128
+00:10:42,189 --> 00:10:43,630
+Speaker 2: We don't have a ton of them.
+
+129
+00:10:45,150 --> 00:10:48,470
+Speaker 2: You know, like, they're more internal, if anything.
+
+130
+00:10:48,470 --> 00:10:49,630
+Speaker 2: Like A lot of our business.
+
+131
+00:10:50,270 --> 00:10:51,150
+Speaker 2: And you'll love this.
+
+132
+00:10:51,150 --> 00:10:55,280
+Speaker 2: Daniel is still face to face and shaking hands, you know, I like.
+
+133
+00:10:55,280 --> 00:10:58,400
+Speaker 2: So, yeah, so that's.
+
+134
+00:10:58,640 --> 00:11:05,400
+Speaker 2: Yeah, there's not a lot of, like, let's get on a conference call and discuss, you know, like something with a potential customer.
+
+135
+00:11:05,400 --> 00:11:13,520
+Speaker 2: It's usually, you know, if we're going to discuss something with a customer, like, you know, some combination of us are sitting right in front of them, talking to them, you know, at the side.
+
+136
+00:11:14,000 --> 00:11:14,360
+Speaker 1: Yeah.
+
+137
+00:11:14,360 --> 00:11:15,120
+Speaker 1: Makes a lot of sense.
+
+138
+00:11:15,120 --> 00:11:19,440
+Speaker 1: And they're probably not the kind of personality that's going to want you to pull out your little AI recorder, right?
+
+139
+00:11:19,440 --> 00:11:21,510
+Speaker 1: I mean, am I reading the room correctly?
+
+140
+00:11:21,990 --> 00:11:23,430
+Speaker 2: Yes, very correct.
+
+141
+00:11:24,710 --> 00:11:25,830
+Speaker 1: Well, that's good to know.
+
+142
+00:11:27,110 --> 00:11:28,350
+Speaker 2: Maybe not Alex, though.
+
+143
+00:11:28,350 --> 00:11:28,590
+Speaker 2: He.
+
+144
+00:11:28,590 --> 00:11:29,350
+Speaker 2: He uses a.
+
+145
+00:11:33,510 --> 00:11:38,550
+Speaker 1: It's kind of one of those things where people kind of fight it uphill until it does their job for them, and then they're like, wait, I.
+
+146
+00:11:41,510 --> 00:11:45,590
+Speaker 5: I'm like a. I'm like a elementary school user of it, though.
+
+147
+00:11:45,590 --> 00:11:47,230
+Speaker 5: I'm like, what's two plus two?
+
+148
+00:11:47,230 --> 00:11:48,690
+Speaker 5: And I make sure it's part.
+
+149
+00:11:49,890 --> 00:11:50,650
+Speaker 1: Oh, my gosh.
+
+150
+00:11:50,650 --> 00:11:52,290
+Speaker 1: Well, then it'll ask you, well, are you.
+
+151
+00:11:52,370 --> 00:11:54,690
+Speaker 1: Are you asking as a rocket scientist, a philosopher?
+
+152
+00:11:56,450 --> 00:11:57,010
+Speaker 5: Answer.
+
+153
+00:11:57,730 --> 00:12:05,930
+Speaker 1: Okay, so as I scroll kind of through this, Luke, any thoughts on how you want to triage something like this, or William or Caller?
+
+154
+00:12:05,930 --> 00:12:10,130
+Speaker 1: Like anybody who's seeing something where you say, like, this is the clear order that I would want to go.
+
+155
+00:12:13,490 --> 00:12:20,860
+Speaker 3: For me, you'd be getting their data warehouse set up and kind of researching where each of these connectors are going to come in.
+
+156
+00:12:22,460 --> 00:12:50,050
+Speaker 3: My first jump to is Supabase for postgres, but at the same time, they need probably a lot larger of a data warehouse than it could be supporting and finding the kind of the balance between whether we want to spin up an AWS database or Snowflake and just seeing which connections, how the connections are going to flow within to into the database.
+
+157
+00:12:50,450 --> 00:12:59,490
+Speaker 1: I think it's a really good point from the nerd perspective, having that fourth column over here, if everyone can see this, that says how easy is it to get data in or out of it?
+
+158
+00:12:59,490 --> 00:12:59,730
+Speaker 1: Right.
+
+159
+00:12:59,730 --> 00:13:01,810
+Speaker 1: Does it have API connectivity, things like that?
+
+160
+00:13:02,530 --> 00:13:04,930
+Speaker 1: Because that's kind of where you get limited, of course.
+
+161
+00:13:05,250 --> 00:13:07,010
+Speaker 1: And any thoughts on that, Michael?
+
+162
+00:13:08,060 --> 00:13:10,140
+Speaker 2: There, you know, and I agree with you.
+
+163
+00:13:10,140 --> 00:13:12,780
+Speaker 2: I think some of this stuff, you know, at the top of my head, right.
+
+164
+00:13:12,780 --> 00:13:19,340
+Speaker 2: Like, you know, navisoft, our main operating system, they have started building out kind of an API kind of on it.
+
+165
+00:13:19,340 --> 00:13:28,460
+Speaker 2: You know, Sage is a pretty ubiquitous product and I think they have, they don't have their own, I guess, but they do have connectors that they work with.
+
+166
+00:13:28,540 --> 00:13:42,270
+Speaker 2: So most, I don't, you know, most of this stuff is pretty, you know, it's all web based, pretty readily available except I would say like Third Eye, which is kind of our camera and telemetrics system.
+
+167
+00:13:42,510 --> 00:13:46,550
+Speaker 2: That one, I don't know, kind of, you know how that was built.
+
+168
+00:13:46,550 --> 00:13:53,950
+Speaker 2: But most of this stuff is all web based so it shouldn't be too difficult to get things in and out.
+
+169
+00:13:54,590 --> 00:14:00,270
+Speaker 1: Luke and I also love to think it's make it so kind of our favorite trick is to try to get.
+
+170
+00:14:00,720 --> 00:14:01,360
+Speaker 2: Go end to end.
+
+171
+00:14:02,720 --> 00:14:11,120
+Speaker 1: You have a specific business question that you need answered and you kind of just hand it to one of us and we like stitch together prompts until we get you that.
+
+172
+00:14:11,360 --> 00:14:14,080
+Speaker 1: And then when we hand it over you're like, yeah, that's what I was looking for.
+
+173
+00:14:14,080 --> 00:14:19,760
+Speaker 1: And then we can go backward from there and then re engineer the system to do that kind of on a more repeated basis.
+
+174
+00:14:19,840 --> 00:14:25,520
+Speaker 1: It proves out within a day that we're delivering what you need without spending a week building something that you do.
+
+175
+00:14:25,600 --> 00:14:26,360
+Speaker 1: Any thoughts on that?
+
+176
+00:14:26,360 --> 00:14:26,720
+Speaker 1: Yeah.
+
+177
+00:14:28,540 --> 00:14:42,140
+Speaker 2: Yet, you know, most, I would say like most of that stuff though, like, you know, it's kind of secondary to getting just the, you know, the database like and the dashboard set up.
+
+178
+00:14:42,300 --> 00:14:49,100
+Speaker 2: Like there's not a ton of, like there's not a ton of different kind of unique work processes.
+
+179
+00:14:49,100 --> 00:14:59,620
+Speaker 2: Like, it is extremely repetitive and I think like once we get kind of the database set up, like a lot of the things will be, a lot of the stuff will be using kind of this data.
+
+180
+00:14:59,620 --> 00:15:03,220
+Speaker 2: Like everything's going to be coming out of this database, if that makes sense.
+
+181
+00:15:03,380 --> 00:15:03,780
+Speaker 2: Right.
+
+182
+00:15:08,980 --> 00:15:13,380
+Speaker 1: Anybody here have any experience at all in using GitHub or have you seen it?
+
+183
+00:15:14,260 --> 00:15:16,340
+Speaker 1: It's okay if you haven't seen it.
+
+184
+00:15:16,580 --> 00:15:17,220
+Speaker 2: Haven't really.
+
+185
+00:15:17,220 --> 00:15:18,580
+Speaker 2: Can't say that I've used it.
+
+186
+00:15:18,580 --> 00:15:23,740
+Speaker 2: Like I've looked at it, but haven't used it.
+
+187
+00:15:24,060 --> 00:15:27,900
+Speaker 1: I'll show you why I brought it up and how it helps us here.
+
+188
+00:15:28,540 --> 00:15:32,020
+Speaker 1: So let's go for example to the AIC organization.
+
+189
+00:15:32,020 --> 00:15:32,660
+Speaker 1: This is GitHub.
+
+190
+00:15:32,660 --> 00:15:33,740
+Speaker 1: It's owned by Microsoft.
+
+191
+00:15:33,980 --> 00:15:37,980
+Speaker 1: It's where we put different organizations and then inside of each organization with code.
+
+192
+00:15:38,140 --> 00:15:39,340
+Speaker 1: But it's not just code.
+
+193
+00:15:39,340 --> 00:15:43,420
+Speaker 1: You can also be like, here's our governance docs for AIC Holdings.
+
+194
+00:15:43,660 --> 00:15:47,130
+Speaker 1: It would be the place that we maintain compliance documents.
+
+195
+00:15:47,130 --> 00:15:47,490
+Speaker 2: Right.
+
+196
+00:15:47,650 --> 00:15:48,370
+Speaker 1: What's really Cool.
+
+197
+00:15:48,370 --> 00:15:52,370
+Speaker 1: You can see the last time somebody changed something, so it's a file system in itself.
+
+198
+00:15:52,690 --> 00:15:55,010
+Speaker 1: However, what I wanted to show you was this infra.
+
+199
+00:15:55,170 --> 00:15:56,730
+Speaker 1: And I know the text is real small.
+
+200
+00:15:56,730 --> 00:16:00,770
+Speaker 1: I'm going to make this a little bigger here so everybody can read it if you're looking at your screen.
+
+201
+00:16:00,930 --> 00:16:03,370
+Speaker 1: Infra is short for infrastructure.
+
+202
+00:16:03,370 --> 00:16:07,730
+Speaker 1: And so it helps us to understand all the different things that we manage in home here at aic.
+
+203
+00:16:08,050 --> 00:16:10,770
+Speaker 1: And then we might have little to dos of things to do.
+
+204
+00:16:11,580 --> 00:16:13,180
+Speaker 1: What kind of databases do we have?
+
+205
+00:16:13,180 --> 00:16:14,060
+Speaker 1: How do they all work?
+
+206
+00:16:14,060 --> 00:16:16,780
+Speaker 1: All of this is written down and all of it was managed by AI.
+
+207
+00:16:16,780 --> 00:16:26,140
+Speaker 1: So I think probably one of the first projects I would ask us to do is to build out this infra chart based on everything that you've provided to us as Project Cerebro.
+
+208
+00:16:26,140 --> 00:16:27,260
+Speaker 1: Who named that, by the way.
+
+209
+00:16:29,340 --> 00:16:31,180
+Speaker 2: Love that I did.
+
+210
+00:16:31,740 --> 00:16:35,660
+Speaker 2: If you can know, if you can guess where I got it from, even more brownie points.
+
+211
+00:16:37,480 --> 00:16:40,120
+Speaker 1: I, I, I wouldn't be able to do it without looking up.
+
+212
+00:16:40,440 --> 00:16:42,200
+Speaker 1: Okay, okay.
+
+213
+00:16:42,440 --> 00:16:43,800
+Speaker 1: So if that makes sense.
+
+214
+00:16:43,800 --> 00:16:48,520
+Speaker 1: It's kind of like our version of, you know, where is everything?
+
+215
+00:16:48,600 --> 00:16:49,880
+Speaker 1: Like, what's the lay of the land?
+
+216
+00:16:50,360 --> 00:16:57,880
+Speaker 1: Because once you get it into here, AI can start helping you chew through, like what things cost and, you know, how you're going to do security, all that stuff.
+
+217
+00:16:57,960 --> 00:17:00,400
+Speaker 1: And as I said, it's also got these commits.
+
+218
+00:17:00,400 --> 00:17:06,160
+Speaker 1: So I can see every single time that one of us made a change to like our infrastructure and how it was all going to work.
+
+219
+00:17:06,319 --> 00:17:13,280
+Speaker 1: That would actually be my first suggestion because then we could come back and have a meeting in a day or two and I could say, does this match your expectation?
+
+220
+00:17:13,440 --> 00:17:22,400
+Speaker 1: And then if somehow we find that like APIs aren't well developed on something, restoring all those notes and keeping them together, this is kind of like how you land the plane first.
+
+221
+00:17:22,720 --> 00:17:28,200
+Speaker 1: I can be the one to help work on this and I can do anything you guys want, really.
+
+222
+00:17:28,200 --> 00:17:31,280
+Speaker 1: But I am also going to throw Luke's name in the hat.
+
+223
+00:17:31,610 --> 00:17:34,250
+Speaker 1: Somebody who's incredibly good at like front end type work.
+
+224
+00:17:34,410 --> 00:17:41,370
+Speaker 1: So you can usually take what somebody says and turn it into a vision very quickly.
+
+225
+00:17:42,010 --> 00:17:43,050
+Speaker 1: That's what we do.
+
+226
+00:17:43,850 --> 00:17:45,370
+Speaker 1: Most of it comes from our voice.
+
+227
+00:17:45,610 --> 00:17:53,210
+Speaker 1: So literally anything you say in this call is going to be converted later on into a list of to dos and an email that goes out taking the very next steps together.
+
+228
+00:17:54,330 --> 00:17:56,730
+Speaker 1: I guess I'll stop there, see a.
+
+229
+00:17:56,730 --> 00:18:07,830
+Speaker 1: If there's any questions be if there was like a. I always like to ask, like, what does success look like, meaning what dashboard do you know of that exists out there today where you're like, that's the one I don't want.
+
+230
+00:18:07,830 --> 00:18:08,950
+Speaker 1: And it's okay if there is.
+
+231
+00:18:10,950 --> 00:18:15,070
+Speaker 2: You know, I think dashboards are, you know, they're not one size fits.
+
+232
+00:18:15,070 --> 00:18:15,590
+Speaker 2: All right.
+
+233
+00:18:16,390 --> 00:18:26,200
+Speaker 2: So it's gonna, it's kind of using what we have right now and then probably getting it into a little bit better of a chart form.
+
+234
+00:18:26,200 --> 00:18:35,120
+Speaker 2: But like between Alex and I, like we've, you know, we can help you kind of, we can help you design and design it, the look and all that stuff.
+
+235
+00:18:35,120 --> 00:18:36,960
+Speaker 2: Like it's something we've done kind of.
+
+236
+00:18:36,960 --> 00:18:38,480
+Speaker 1: A lot of excellent.
+
+237
+00:18:39,120 --> 00:18:49,980
+Speaker 1: And just like when you go in to buy dishes for your wedding and they got them all laying up on the wall, this is what we kind of do is go through people like his.
+
+238
+00:18:50,130 --> 00:18:51,090
+Speaker 1: This what you want is this.
+
+239
+00:18:51,090 --> 00:18:52,290
+Speaker 1: You know which one you want here?
+
+240
+00:18:52,930 --> 00:18:56,050
+Speaker 1: I try to stay away from the complicated stuff because it's harder to read.
+
+241
+00:18:56,610 --> 00:18:57,650
+Speaker 1: The simpler the better.
+
+242
+00:18:57,650 --> 00:18:57,970
+Speaker 1: Right.
+
+243
+00:18:58,210 --> 00:19:02,370
+Speaker 1: But it can be your menu board of like, oh, I want this one or I want that.
+
+244
+00:19:02,610 --> 00:19:04,250
+Speaker 1: It's a really easy way to do that.
+
+245
+00:19:04,250 --> 00:19:06,690
+Speaker 1: So we'll send that out as well to the team.
+
+246
+00:19:07,090 --> 00:19:07,490
+Speaker 2: Yeah.
+
+247
+00:19:07,490 --> 00:19:07,970
+Speaker 2: Okay.
+
+248
+00:19:09,650 --> 00:19:14,290
+Speaker 1: Anything else again that you guys feel we haven't covered yet?
+
+249
+00:19:15,170 --> 00:19:24,060
+Speaker 2: No, I think that's it to me because I think like I said all the other kind of automation and processes like pump out kind of this, you know, these, this data.
+
+250
+00:19:24,060 --> 00:19:28,300
+Speaker 2: So like we're going to need to be able to connect kind of to it, to, you know, to start.
+
+251
+00:19:29,260 --> 00:19:29,820
+Speaker 1: Okay.
+
+252
+00:19:30,860 --> 00:19:36,860
+Speaker 1: Colin, William, what does success look like for us as an AI team working with Green Bar?
+
+253
+00:19:36,860 --> 00:19:38,020
+Speaker 1: Like what do y' all want to see?
+
+254
+00:19:38,020 --> 00:19:40,140
+Speaker 1: I'd say end of month or end of course.
+
+255
+00:19:45,190 --> 00:19:50,830
+Speaker 2: I mean I, I think it's keep our eye on the task at hand, the first thing.
+
+256
+00:19:50,830 --> 00:20:00,270
+Speaker 2: So like get this KPI dashboard figured out, you know, and then success is wrapping that up in some timeline.
+
+257
+00:20:00,270 --> 00:20:06,030
+Speaker 2: I don't know what that is, but completing that and then getting an idea of what the next thing is.
+
+258
+00:20:06,030 --> 00:20:13,760
+Speaker 2: So just one thing at a time and keep kind of peeling back next, the next opportunity to become more efficient.
+
+259
+00:20:15,920 --> 00:20:32,080
+Speaker 2: And Daniel, I'm, you know, you'll find this, you know, once you start working kind of with us and with me, like I'm pretty process oriented and we're going to have very frequent check ins and you know, we won't let you kind of run on anything.
+
+260
+00:20:34,010 --> 00:20:41,170
+Speaker 2: I think kind of once you wrap your Head kind of around this and we can start spitballing about timelines.
+
+261
+00:20:41,170 --> 00:20:43,250
+Speaker 2: Like we'll kind of set some internal goals, right.
+
+262
+00:20:43,250 --> 00:20:44,170
+Speaker 2: Like on.
+
+263
+00:20:44,170 --> 00:20:48,010
+Speaker 2: On X date, we're going to have all the connect, you know, we'll have the database set up.
+
+264
+00:20:49,130 --> 00:20:52,570
+Speaker 2: You know, we'll have things done, things like that.
+
+265
+00:20:52,650 --> 00:20:53,050
+Speaker 2: So.
+
+266
+00:20:53,370 --> 00:20:53,970
+Speaker 1: Excellent.
+
+267
+00:20:53,970 --> 00:20:54,570
+Speaker 3: Okay.
+
+268
+00:20:57,050 --> 00:21:07,290
+Speaker 1: I'm estimates if you go ask quad how long it'll take to do something, he'll say two weeks and it might be 30 minutes and other times it'll say 30 minutes.
+
+269
+00:21:10,090 --> 00:21:13,770
+Speaker 1: We'll be in concert with y' all about realistic expectation on that.
+
+270
+00:21:14,089 --> 00:21:15,210
+Speaker 1: Code is easy.
+
+271
+00:21:15,370 --> 00:21:16,490
+Speaker 1: Governance is hard.
+
+272
+00:21:17,210 --> 00:21:18,810
+Speaker 1: Yeah, that's where we are now.
+
+273
+00:21:18,810 --> 00:21:30,580
+Speaker 1: It's like if I have a list of rules of a thousand things we're not supposed to do and find anything, we are true block code can build just about whatever you want, but if it doesn't know what you want, that's where we get photos.
+
+274
+00:21:30,580 --> 00:21:32,820
+Speaker 1: So hopefully just another phone call.
+
+275
+00:21:33,300 --> 00:21:38,020
+Speaker 1: I mean, we can just build like two or three fake dashboards like now if you want.
+
+276
+00:21:38,020 --> 00:21:38,420
+Speaker 2: Yeah.
+
+277
+00:21:38,420 --> 00:21:40,740
+Speaker 1: And then just turn around and be like, what do you like and what.
+
+278
+00:21:40,740 --> 00:21:41,299
+Speaker 5: Do you not like?
+
+279
+00:21:41,299 --> 00:21:44,820
+Speaker 1: And that interaction right there might just get the ball rolling down the hill.
+
+280
+00:21:45,460 --> 00:21:45,940
+Speaker 2: Yeah.
+
+281
+00:21:47,140 --> 00:21:47,620
+Speaker 2: Okay.
+
+282
+00:21:47,620 --> 00:21:52,310
+Speaker 2: And I think kind of one other thing when as you're talking about like just the infrastructure in general, right.
+
+283
+00:21:52,310 --> 00:22:02,590
+Speaker 2: Like, I think having, you know, checks and balances in the sense of like having warnings kind of like come up, like if things aren't loading correctly, you know, if there's errors kind of in stuff.
+
+284
+00:22:02,590 --> 00:22:19,860
+Speaker 2: I think that's kind of the big piece for us is like having like a good, you know, a good audit trail because like, as we automate kind of some of these processes and stuff, I think what we don't want to have is like it, you know, it just spit out something and we don't know, like there's no way to kind of check its work.
+
+285
+00:22:19,860 --> 00:22:20,220
+Speaker 2: Right.
+
+286
+00:22:21,100 --> 00:22:26,940
+Speaker 2: And, and not know kind of where it come from and just try to, you know, just have to trust that this is the right thing.
+
+287
+00:22:27,980 --> 00:22:30,540
+Speaker 2: We're a kind of trust would verify type group.
+
+288
+00:22:31,660 --> 00:22:35,060
+Speaker 1: So just for those that don't know me, Michael does know this about me.
+
+289
+00:22:35,060 --> 00:22:40,220
+Speaker 1: I used to have a history of working in data quality in some of the largest hospital systems in the country.
+
+290
+00:22:40,220 --> 00:22:42,500
+Speaker 1: That's where I kind of got my cut my teeth in data science.
+
+291
+00:22:42,500 --> 00:22:45,160
+Speaker 1: So like, for me, data quality is near and dear to my heart.
+
+292
+00:22:45,160 --> 00:22:49,840
+Speaker 1: I think that when people don't get that right, like whatever you got in your down room or doesn't matter.
+
+293
+00:22:50,240 --> 00:22:52,280
+Speaker 1: So just know that I'll probably.
+
+294
+00:22:52,280 --> 00:22:56,800
+Speaker 1: You'll probably get tired of me talking about data quality at some point during our work together.
+
+295
+00:22:58,000 --> 00:23:01,160
+Speaker 1: I'm all about building systems outside of the original system.
+
+296
+00:23:01,160 --> 00:23:05,520
+Speaker 1: It's a second one that's ugly, but its whole job is to check that the first one is correct.
+
+297
+00:23:06,720 --> 00:23:08,080
+Speaker 1: Talking more about that, too.
+
+298
+00:23:09,040 --> 00:23:09,440
+Speaker 1: All right.
+
+299
+00:23:09,440 --> 00:23:10,080
+Speaker 1: Anything else.
+
+300
+00:23:12,570 --> 00:23:12,890
+Speaker 2: Alex?
+
+301
+00:23:12,890 --> 00:23:13,330
+Speaker 3: Lennon?
+
+302
+00:23:13,330 --> 00:23:13,810
+Speaker 2: Anything?
+
+303
+00:23:13,810 --> 00:23:18,610
+Speaker 5: No, no.
+
+304
+00:23:18,610 --> 00:23:19,050
+Speaker 5: I mean.
+
+305
+00:23:21,690 --> 00:23:31,210
+Speaker 5: I mean, I imagine at some point we'll want to, like, just show you guys kind of what all the kind of detailed data looks like, if that.
+
+306
+00:23:31,770 --> 00:23:32,610
+Speaker 5: If that makes sense.
+
+307
+00:23:32,610 --> 00:23:35,370
+Speaker 5: I mean, do you guys need to see that any point in time?
+
+308
+00:23:35,370 --> 00:23:36,330
+Speaker 5: Obviously, like.
+
+309
+00:23:36,690 --> 00:23:38,530
+Speaker 5: Because the way I envision this, I mean, I.
+
+310
+00:23:38,770 --> 00:23:45,210
+Speaker 5: You know, I'm not like a programmer or anything, but, you know, just kind of with everything, you know, Michael.
+
+311
+00:23:45,210 --> 00:23:49,170
+Speaker 5: I have similar experiences working with, you know, large data sets.
+
+312
+00:23:50,610 --> 00:24:07,810
+Speaker 5: You know, I'm kind of envisioning this showing you guys sort of the data dump of everything kind of coming out of our systems and then working with y' all to just basically map that and put rules around it to.
+
+313
+00:24:07,810 --> 00:24:12,730
+Speaker 5: To get what we need, whether it's these dashboards or KPIs or.
+
+314
+00:24:14,010 --> 00:24:18,530
+Speaker 5: Or, you know, asking the AI bot questions about kind of that.
+
+315
+00:24:18,530 --> 00:24:19,369
+Speaker 5: That data set.
+
+316
+00:24:19,369 --> 00:24:19,610
+Speaker 2: Right.
+
+317
+00:24:19,610 --> 00:24:22,930
+Speaker 5: So I imagine at some point we'll kind of need to walk through that with you guys.
+
+318
+00:24:22,930 --> 00:24:25,050
+Speaker 1: Is that right, Alex?
+
+319
+00:24:25,050 --> 00:24:25,410
+Speaker 5: We're.
+
+320
+00:24:25,410 --> 00:24:33,280
+Speaker 1: We're going to get a long break because that infra idea and the map, they're so part parcel to how you're even going to prove that this can work.
+
+321
+00:24:33,280 --> 00:24:33,560
+Speaker 2: Right.
+
+322
+00:24:33,720 --> 00:24:36,040
+Speaker 1: And what they might cost and how you keep it all together.
+
+323
+00:24:36,120 --> 00:24:42,240
+Speaker 1: So I'd be happy to turn around a map and then you just look at it and go, well, that isn't right.
+
+324
+00:24:42,240 --> 00:24:47,160
+Speaker 1: And, you know, if we can get you guys set up on some kind of cloth system so you can work on your own maps, that's even better.
+
+325
+00:24:47,800 --> 00:24:48,520
+Speaker 2: Yeah, yeah.
+
+326
+00:24:49,000 --> 00:24:49,720
+Speaker 1: Our goal is.
+
+327
+00:24:49,720 --> 00:24:56,040
+Speaker 1: My goal always is to empower y', all, because I don't think we're in a world where a engineer should gatekeeping.
+
+328
+00:24:56,410 --> 00:24:59,450
+Speaker 1: It's more like, what tools can we build so everyone else can kind of play the same.
+
+329
+00:24:59,850 --> 00:25:06,970
+Speaker 2: So, yeah, I think we're going to be pretty involved kind of throughout the whole process and, you know, want to learn kind of each of the steps.
+
+330
+00:25:06,970 --> 00:25:08,330
+Speaker 2: But I agree with Alex.
+
+331
+00:25:08,330 --> 00:25:17,770
+Speaker 2: I think one of the biggest pieces of, like, what's going to take time is, you know, looking at all the underlying database tables and mapping them and basically joining tables, right?
+
+332
+00:25:17,770 --> 00:25:26,260
+Speaker 2: Like this we need this metric and we get it from this, you know, this table and this table and this is how we calculate it.
+
+333
+00:25:26,820 --> 00:25:28,260
+Speaker 1: Okay, Excellent.
+
+334
+00:25:31,140 --> 00:25:32,020
+Speaker 1: This is what we do.
+
+335
+00:25:32,100 --> 00:25:33,300
+Speaker 1: I feel good about this one.
+
+336
+00:25:33,380 --> 00:25:37,540
+Speaker 1: You know, you haven't said anything where I'm like, I don't, I have no clue what to do next.
+
+337
+00:25:37,940 --> 00:25:38,740
+Speaker 1: We generally have.
+
+338
+00:25:38,740 --> 00:25:39,860
+Speaker 2: I told you can, you should.
+
+339
+00:25:39,860 --> 00:25:40,900
+Speaker 1: Be able to do this next week.
+
+340
+00:25:41,220 --> 00:25:42,580
+Speaker 2: We'll see something next week.
+
+341
+00:25:43,060 --> 00:25:47,550
+Speaker 1: I haven't woken up yet finished, so I don't know about doing sleep, but.
+
+342
+00:25:50,270 --> 00:26:02,910
+Speaker 1: All right, if there's nothing else, then I will make it my responsibility to get an email back to you here in the next hour or so with kind of like some ideas on where to go next and then get your approval on them.
+
+343
+00:26:02,910 --> 00:26:03,230
+Speaker 1: Okay?
+
+344
+00:26:03,630 --> 00:26:04,910
+Speaker 2: Yeah, sounds good, man.
+
+345
+00:26:05,070 --> 00:26:05,950
+Speaker 2: Thank you, sir.
+
+346
+00:26:06,830 --> 00:26:08,030
+Speaker 1: All right, thanks everybody.
+
+347
+00:26:08,190 --> 00:26:08,910
+Speaker 5: Thanks guys.
+
+348
+00:26:10,590 --> 00:26:11,070
+Speaker 2: Thanks.
+

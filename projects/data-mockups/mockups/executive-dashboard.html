@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greenmark Waste - Executive Dashboard (Mockup)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; }
+        .header { background: #1a1a2e; color: white; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 20px; font-weight: 600; }
+        .header .subtitle { font-size: 13px; color: #8b8fa3; }
+        .header .badge { background: #e74c3c; color: white; font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; }
+        .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 24px 32px; }
+        .kpi-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .kpi-card .label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .kpi-card .value { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+        .kpi-card .change { font-size: 13px; margin-top: 4px; }
+        .kpi-card .change.up { color: #10b981; }
+        .kpi-card .change.down { color: #ef4444; }
+        .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; padding: 0 32px 24px; }
+        .chart-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .chart-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: #374151; }
+        .charts-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 32px 24px; }
+        .entity-toggle { display: flex; gap: 8px; padding: 0 32px 16px; }
+        .entity-toggle button { padding: 6px 16px; border-radius: 20px; border: 1px solid #d1d5db; background: white; cursor: pointer; font-size: 13px; }
+        .entity-toggle button.active { background: #1a1a2e; color: white; border-color: #1a1a2e; }
+        .table-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin: 0 32px 24px; }
+        .table-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #374151; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #e5e7eb; color: #6b7280; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
+        .watermark { text-align: center; padding: 16px; font-size: 11px; color: #9ca3af; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Greenmark Waste Solutions</h1>
+            <div class="subtitle">Executive Dashboard &mdash; December 2025</div>
+        </div>
+        <div class="badge">MOCKUP</div>
+    </div>
+
+    <div class="entity-toggle">
+        <button class="active">Consolidated</button>
+        <button>Greenmark NTX</button>
+        <button>Greenmark Hometown</button>
+    </div>
+
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="label">Monthly Revenue</div>
+            <div class="value">$948K</div>
+            <div class="change up">+7.5% vs Nov</div>
+        </div>
+        <div class="kpi-card">
+            <div class="label">Total Tonnage</div>
+            <div class="value">3,671</div>
+            <div class="change up">+25.4% vs Nov</div>
+        </div>
+        <div class="kpi-card">
+            <div class="label">Drivers</div>
+            <div class="value">20</div>
+            <div class="change">4 NTX + 16 HTN</div>
+        </div>
+        <div class="kpi-card">
+            <div class="label">Avg Productivity</div>
+            <div class="value">91%</div>
+            <div class="change up">NTX 90.9% | HTN 101.7%</div>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>Consolidated Revenue (Monthly)</h3>
+            <canvas id="revenueChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Revenue by Line of Business (Dec)</h3>
+            <canvas id="lobChart"></canvas>
+        </div>
+    </div>
+
+    <div class="charts-row2">
+        <div class="chart-card">
+            <h3>NTX Revenue Growth</h3>
+            <canvas id="ntxGrowth"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>R&M Cost per Driver Hour</h3>
+            <canvas id="rmChart"></canvas>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <h3>Revenue per Front-Line Truck (Monthly)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>LOB</th><th>Trucks</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Annualized</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Front End Commercial</td><td>1</td><td>$3,360</td><td>$5,299</td><td>$7,263</td><td>$87,152</td></tr>
+                <tr><td>Portable Toilets</td><td>2</td><td>$5,649</td><td>$4,886</td><td>$7,530</td><td>$90,363</td></tr>
+                <tr><td>Roll-Off</td><td>3</td><td>$33,938</td><td>$22,835</td><td>$18,741</td><td>$224,890</td></tr>
+                <tr><td>Residential</td><td>14</td><td>$57,818</td><td>$58,633</td><td>$62,111</td><td>$745,329</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="watermark">MOCKUP — Built from Greenmark_Metrics_2.11.26.pdf — For layout/style feedback only</div>
+
+    <script>
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const ntxRev = [0.6, 5.1, 12.5, 12.3, 12.0, 51.7, 91.0, 86.3, 80.6, 82.5, 60.7, 75.2];
+        const htnRev = [0, 0, 0, 844.7, 843.8, 833.0, 847.1, 843.6, 825.1, 844.1, 820.9, 872.9];
+        const totalRev = ntxRev.map((v, i) => v + htnRev[i]);
+
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'NTX', data: ntxRev, backgroundColor: '#3b82f6', borderRadius: 4 },
+                    { label: 'Hometown', data: htnRev, backgroundColor: '#10b981', borderRadius: 4 }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top' } },
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true, ticks: { callback: v => '$' + v + 'K' } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('lobChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Residential', 'Roll-Off', 'Portable Toilets', 'Front End Commercial'],
+                datasets: [{
+                    data: [869.6, 56.2, 15.1, 7.3],
+                    backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 11 } } },
+                    tooltip: { callbacks: { label: ctx => ctx.label + ': $' + ctx.raw + 'K' } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('ntxGrowth'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'NTX Revenue ($K)',
+                    data: ntxRev,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { ticks: { callback: v => '$' + v + 'K' } } }
+            }
+        });
+
+        const ntxRM = [533.9, 77.0, 70.4, 40.3, 12.8, 29.4, 11.1, 10.7, 17.2, 19.7, 11.0, 17.9];
+        const htnRM = [0, 0, 0, 42.7, 30.7, 38.3, 42.5, 45.4, 24.9, 35.0, 26.3, 22.2];
+
+        new Chart(document.getElementById('rmChart'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'NTX', data: ntxRM, borderColor: '#3b82f6', tension: 0.3 },
+                    { label: 'Hometown', data: htnRM, borderColor: '#10b981', tension: 0.3 }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { ticks: { callback: v => '$' + v } } }
+            }
+        });
+    </script>
+</body>
+</html>

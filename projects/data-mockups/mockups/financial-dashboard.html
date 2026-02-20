@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greenmark Waste - Financial Dashboard (Mockup)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; background: #fafafa; color: #333; }
+        .header { background: #2d3436; color: white; padding: 16px 32px; display: flex; justify-content: space-between; }
+        .header h1 { font-size: 16px; letter-spacing: 2px; text-transform: uppercase; }
+        .header .badge { background: #d63031; font-size: 10px; padding: 2px 8px; border-radius: 3px; }
+        .row { display: flex; gap: 0; border-bottom: 1px solid #dfe6e9; }
+        .col { flex: 1; padding: 16px 24px; border-right: 1px solid #dfe6e9; }
+        .col:last-child { border-right: none; }
+        .metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #636e72; margin-bottom: 4px; }
+        .metric-value { font-size: 22px; font-weight: bold; }
+        .metric-sub { font-size: 11px; color: #636e72; }
+        .chart-section { padding: 16px 24px; border-bottom: 1px solid #dfe6e9; }
+        .chart-section h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #636e72; margin-bottom: 12px; }
+        .spreadsheet { width: 100%; border-collapse: collapse; font-size: 11px; font-family: 'Courier New', monospace; }
+        .spreadsheet th { text-align: right; padding: 4px 8px; border-bottom: 2px solid #2d3436; font-size: 10px; text-transform: uppercase; color: #636e72; }
+        .spreadsheet th:first-child { text-align: left; }
+        .spreadsheet td { text-align: right; padding: 4px 8px; border-bottom: 1px solid #f1f3f5; }
+        .spreadsheet td:first-child { text-align: left; font-weight: bold; }
+        .spreadsheet tr.total td { border-top: 2px solid #2d3436; font-weight: bold; }
+        .watermark { text-align: center; padding: 12px; font-size: 10px; color: #b2bec3; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Greenmark Financial</h1>
+        <span class="badge">MOCKUP C</span>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="metric-label">Total Revenue (Dec)</div>
+            <div class="metric-value">$948,096</div>
+            <div class="metric-sub">vs Nov: $881,605 (+7.5%)</div>
+        </div>
+        <div class="col">
+            <div class="metric-label">Total Disposal Cost</div>
+            <div class="metric-value">$124,787</div>
+            <div class="metric-sub">13.2% of revenue</div>
+        </div>
+        <div class="col">
+            <div class="metric-label">Total R&M Cost</div>
+            <div class="metric-value">$79,379</div>
+            <div class="metric-sub">NTX: $12.3K | HTN: $67.0K</div>
+        </div>
+        <div class="col">
+            <div class="metric-label">Cost per Driver Hr</div>
+            <div class="metric-value">$543 / $254</div>
+            <div class="metric-sub">NTX / Hometown</div>
+        </div>
+    </div>
+
+    <div class="chart-section">
+        <h3>Revenue by Entity &amp; LOB (full year 2025)</h3>
+        <table class="spreadsheet">
+            <thead>
+                <tr>
+                    <th>Line of Business</th>
+                    <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th>
+                    <th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>FY 2025</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Front End Commercial</td>
+                    <td>$0</td><td>$93</td><td>$152</td><td>$152</td><td>$427</td><td>$1,825</td>
+                    <td>$2,560</td><td>$3,407</td><td>$2,238</td><td>$3,360</td><td>$5,299</td><td>$7,263</td><td>$26,775</td>
+                </tr>
+                <tr>
+                    <td>Portable Toilets</td>
+                    <td>$0</td><td>$40</td><td>$1,045</td><td>$760</td><td>$1,742</td><td>$3,802</td>
+                    <td>$3,672</td><td>$8,150</td><td>$1,891</td><td>$11,298</td><td>$9,771</td><td>$15,061</td><td>$57,231</td>
+                </tr>
+                <tr>
+                    <td>Roll-Off</td>
+                    <td>$628</td><td>$4,942</td><td>$11,343</td><td>$11,035</td><td>$9,957</td><td>$47,635</td>
+                    <td>$84,788</td><td>$74,782</td><td>$76,458</td><td>$67,877</td><td>$45,670</td><td>$56,223</td><td>$491,337</td>
+                </tr>
+                <tr>
+                    <td>Residential</td>
+                    <td>-</td><td>-</td><td>-</td><td>$844,721</td><td>$843,795</td><td>$833,487</td>
+                    <td>$847,137</td><td>$843,579</td><td>$825,107</td><td>$844,141</td><td>$820,865</td><td>$869,551</td><td>$7,572,383</td>
+                </tr>
+                <tr class="total">
+                    <td>TOTAL</td>
+                    <td>$628</td><td>$5,075</td><td>$12,540</td><td>$856,668</td><td>$855,920</td><td>$886,749</td>
+                    <td>$938,156</td><td>$929,919</td><td>$905,695</td><td>$926,675</td><td>$881,605</td><td>$948,096</td><td>$8,147,726</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="chart-section">
+        <h3>Disposal Cost Breakdown (full year 2025)</h3>
+        <table class="spreadsheet">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th>
+                    <th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>FY 2025</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>NTX Total</td>
+                    <td>$0</td><td>$1,105</td><td>$2,273</td><td>$2,617</td><td>$2,599</td><td>$14,080</td>
+                    <td>$26,866</td><td>$11,538</td><td>$13,317</td><td>$9,710</td><td>$9,230</td><td>$11,112</td><td>$104,448</td>
+                </tr>
+                <tr>
+                    <td>HTN Total</td>
+                    <td>-</td><td>-</td><td>-</td><td>$99,077</td><td>$103,900</td><td>$95,729</td>
+                    <td>$106,379</td><td>$89,050</td><td>$87,989</td><td>$89,387</td><td>$83,850</td><td>$113,675</td><td>$869,037</td>
+                </tr>
+                <tr class="total">
+                    <td>TOTAL DISPOSAL</td>
+                    <td>$0</td><td>$1,105</td><td>$2,273</td><td>$101,694</td><td>$106,499</td><td>$109,810</td>
+                    <td>$133,245</td><td>$100,588</td><td>$101,307</td><td>$99,098</td><td>$93,080</td><td>$124,787</td><td>$973,485</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="chart-section">
+        <h3>Margin Visualization</h3>
+        <canvas id="marginChart" height="80"></canvas>
+    </div>
+
+    <div class="watermark">MOCKUP C &mdash; Spreadsheet-style for finance team &mdash; Mirrors existing Excel workflow</div>
+
+    <script>
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const totalRev = [0.6, 5.1, 12.5, 856.7, 855.9, 886.7, 938.2, 929.9, 905.7, 926.7, 881.6, 948.1];
+        const totalDisposal = [0, 1.1, 2.3, 101.7, 106.5, 109.8, 133.2, 100.6, 101.3, 99.1, 93.1, 124.8];
+        const totalRM = [22.3, 5.0, 9.4, 132.6, 89.8, 120.1, 126.9, 117.0, 77.9, 110.3, 72.8, 79.4];
+
+        new Chart(document.getElementById('marginChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'Revenue', data: totalRev, backgroundColor: '#00b894' },
+                    { label: 'Disposal', data: totalDisposal.map(v => -v), backgroundColor: '#d63031' },
+                    { label: 'R&M', data: totalRM.map(v => -v), backgroundColor: '#fdcb6e' }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true, ticks: { callback: v => (v >= 0 ? '$' : '-$') + Math.abs(v) + 'K' } }
+                },
+                plugins: { legend: { labels: { font: { size: 11 } } } }
+            }
+        });
+    </script>
+</body>
+</html>

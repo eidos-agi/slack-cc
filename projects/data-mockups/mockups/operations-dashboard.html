@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greenmark Waste - Operations Dashboard (Mockup)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f9fa; color: #212529; }
+        .header { background: white; border-bottom: 3px solid #198754; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 18px; font-weight: 700; color: #198754; }
+        .header .date { font-size: 13px; color: #6c757d; }
+        .header .badge { background: #dc3545; color: white; font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; }
+        .section { padding: 20px 32px 8px; }
+        .section h2 { font-size: 15px; font-weight: 700; color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 8px; }
+        .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding: 16px 32px; }
+        .kpi { background: white; border-radius: 8px; padding: 16px; border-left: 4px solid #198754; }
+        .kpi .label { font-size: 11px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi .value { font-size: 24px; font-weight: 700; margin-top: 4px; }
+        .kpi .sub { font-size: 11px; color: #6c757d; margin-top: 2px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 8px 32px 16px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; padding: 8px 32px 16px; }
+        .card { background: white; border-radius: 8px; padding: 16px; }
+        .card h3 { font-size: 13px; font-weight: 600; color: #495057; margin-bottom: 12px; }
+        .driver-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .driver-table th { text-align: left; padding: 6px 8px; border-bottom: 2px solid #dee2e6; color: #6c757d; font-size: 10px; text-transform: uppercase; }
+        .driver-table td { padding: 6px 8px; border-bottom: 1px solid #f1f3f5; }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .status-green { background: #198754; }
+        .status-yellow { background: #ffc107; }
+        .status-red { background: #dc3545; }
+        .watermark { text-align: center; padding: 16px; font-size: 11px; color: #adb5bd; }
+        .alert-bar { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; margin: 0 32px 16px; padding: 12px 16px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>GREENMARK OPERATIONS</h1>
+            <div class="date">December 2025 &mdash; Daily View</div>
+        </div>
+        <div class="badge">MOCKUP</div>
+    </div>
+
+    <div class="alert-bar">
+        <span class="status-dot status-yellow"></span>
+        <strong>Alert:</strong> NTX Roll-Off revenue/haul dropped to $425.90 (Nov was $528.00) &mdash; investigate pricing or mix
+    </div>
+
+    <div class="section"><h2>Fleet & Volume (December 2025)</h2></div>
+    <div class="kpi-row">
+        <div class="kpi">
+            <div class="label">Roll-Off Hauls</div>
+            <div class="value">132</div>
+            <div class="sub">+52.6% vs Nov (86.5)</div>
+        </div>
+        <div class="kpi">
+            <div class="label">FE Commercial Lifts</div>
+            <div class="value">239</div>
+            <div class="sub">+60.4% vs Nov (149)</div>
+        </div>
+        <div class="kpi">
+            <div class="label">Portable Toilet Svc</div>
+            <div class="value">464</div>
+            <div class="sub">-2.3% vs Nov (475)</div>
+        </div>
+        <div class="kpi">
+            <div class="label">Residential Carts</div>
+            <div class="value">32,157</div>
+            <div class="sub">+0.5% vs Nov (32,091)</div>
+        </div>
+        <div class="kpi">
+            <div class="label">Total Tonnage</div>
+            <div class="value">3,671</div>
+            <div class="sub">NTX: 343 | HTN: 3,328</div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <h3>Volume by LOB (Monthly Trend)</h3>
+            <canvas id="volumeChart"></canvas>
+        </div>
+        <div class="card">
+            <h3>Revenue per Haul/Lift/Service</h3>
+            <canvas id="unitEconChart"></canvas>
+        </div>
+    </div>
+
+    <div class="section"><h2>Driver Performance</h2></div>
+    <div class="grid-3">
+        <div class="card">
+            <h3>Revenue per Driver Hour</h3>
+            <canvas id="revPerHour"></canvas>
+        </div>
+        <div class="card">
+            <h3>Weekly Productivity</h3>
+            <canvas id="productivityChart"></canvas>
+        </div>
+        <div class="card">
+            <h3>Driver Hours (Productive)</h3>
+            <table class="driver-table">
+                <thead>
+                    <tr><th>Entity</th><th>Hours</th><th>Avg/Wk</th><th>Drivers</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class="status-dot status-green"></span>NTX</td><td>688.5</td><td>43.0</td><td>4</td></tr>
+                    <tr><td><span class="status-dot status-green"></span>Hometown</td><td>3,025.2</td><td>47.3</td><td>16</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section"><h2>Fleet Maintenance</h2></div>
+    <div class="grid-2">
+        <div class="card">
+            <h3>R&M Cost Trend</h3>
+            <canvas id="rmTrend"></canvas>
+        </div>
+        <div class="card">
+            <h3>Fleet Status</h3>
+            <table class="driver-table">
+                <thead>
+                    <tr><th>LOB</th><th>Trucks</th><th>Rev/Truck/Day</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Front End Commercial</td><td>1</td><td>$315.80</td><td><span class="status-dot status-green"></span>Good</td></tr>
+                    <tr><td>Portable Toilets</td><td>2</td><td>$327.40</td><td><span class="status-dot status-green"></span>Good</td></tr>
+                    <tr><td>Roll-Off (NTX)</td><td>3</td><td>$814.80</td><td><span class="status-dot status-yellow"></span>Rev declining</td></tr>
+                    <tr><td>Residential (HTN)</td><td>14</td><td>$2,700.50</td><td><span class="status-dot status-green"></span>Good</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="watermark">MOCKUP &mdash; Style B: Operations-focused, data-dense, alert-driven &mdash; For feedback only</div>
+
+    <script>
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        new Chart(document.getElementById('volumeChart'), {
+            type: 'bar',
+            data: {
+                labels: months.slice(5),
+                datasets: [
+                    { label: 'Roll-Off Hauls', data: [85, 175.5, 149, 151.5, 135, 86.5, 132], backgroundColor: '#3b82f6' },
+                    { label: 'FE Lifts', data: [43, 88, 75, 67, 91, 149, 239], backgroundColor: '#8b5cf6' },
+                    { label: 'PT Services', data: [169, 271, 242, 382, 519, 475, 464], backgroundColor: '#f59e0b' }
+                ]
+            },
+            options: { responsive: true, scales: { x: { stacked: false } }, plugins: { legend: { labels: { font: { size: 11 } } } } }
+        });
+
+        new Chart(document.getElementById('unitEconChart'), {
+            type: 'line',
+            data: {
+                labels: months.slice(5),
+                datasets: [
+                    { label: 'Roll-Off $/Haul', data: [560.4, 483.1, 501.9, 504.7, 502.8, 528.0, 425.9], borderColor: '#3b82f6', tension: 0.3 },
+                    { label: 'FE $/Lift', data: [42.4, 29.1, 45.4, 33.4, 36.9, 35.6, 30.4], borderColor: '#8b5cf6', tension: 0.3 },
+                    { label: 'PT $/Service', data: [22.5, 13.5, 33.7, 4.9, 21.8, 20.6, 32.5], borderColor: '#f59e0b', tension: 0.3 }
+                ]
+            },
+            options: { responsive: true, scales: { y: { ticks: { callback: v => '$' + v } } }, plugins: { legend: { labels: { font: { size: 11 } } } } }
+        });
+
+        new Chart(document.getElementById('revPerHour'), {
+            type: 'bar',
+            data: {
+                labels: months.slice(5),
+                datasets: [
+                    { label: 'NTX', data: [121.8, 137.5, 124.2, 114.7, 116.5, 91.2, 109.3], backgroundColor: '#3b82f6' },
+                    { label: 'Hometown', data: [296.3, 301.5, 349.7, 312.4, 306.2, 330.0, 288.5], backgroundColor: '#10b981' }
+                ]
+            },
+            options: { responsive: true, scales: { y: { ticks: { callback: v => '$' + v } } }, plugins: { legend: { labels: { font: { size: 11 } } } } }
+        });
+
+        new Chart(document.getElementById('productivityChart'), {
+            type: 'line',
+            data: {
+                labels: months.slice(5),
+                datasets: [
+                    { label: 'NTX %', data: [93.1, 101.0, 68.5, 87.6, 74.3, 84.3, 90.9], borderColor: '#3b82f6', tension: 0.3, fill: true, backgroundColor: 'rgba(59,130,246,0.1)' },
+                    { label: 'Hometown %', data: [97.1, 99.8, 68.3, 93.2, 74.0, 87.4, 101.7], borderColor: '#10b981', tension: 0.3, fill: true, backgroundColor: 'rgba(16,185,129,0.1)' }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { ticks: { callback: v => v + '%' }, suggestedMin: 50 } },
+                plugins: { legend: { labels: { font: { size: 11 } } } }
+            }
+        });
+
+        new Chart(document.getElementById('rmTrend'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'NTX R&M', data: [22.3, 5.0, 9.4, 6.1, 2.6, 12.5, 7.4, 7.4, 12.1, 14.0, 7.4, 12.3], backgroundColor: '#3b82f6' },
+                    { label: 'Hometown R&M', data: [0, 0, 0, 126.4, 87.2, 107.7, 119.6, 109.6, 65.8, 96.4, 65.4, 67.0], backgroundColor: '#10b981' }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => '$' + v + 'K' } } },
+                plugins: { legend: { labels: { font: { size: 11 } } } }
+            }
+        });
+    </script>
+</body>
+</html>
