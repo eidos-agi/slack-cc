@@ -107,9 +107,22 @@ How to identify and extract each category from a meeting transcript.
 This is common when two speakers have similar audio profiles or when Fireflies can't distinguish remote participants. Signs:
 - Only 2 speaker labels but 3+ known attendees
 - One label covers both financial AND operational topics (likely two different people)
-- A speaker "agrees with themselves" (actually two people in dialogue)
 
-**Resolution:** Use the decision authority matrix from the cheat sheet. Finance/accounting topics (Sage, journal entries, budgets) → CFO. Operations/IT topics (Navusoft, fleet, hiring) → President. Technical architecture → tech lead. Annotate every inferred reattribution with the line number and reasoning.
+**IMPORTANT: Consecutive blocks from the same speaker label is NOT a signal of misattribution.** SRT format splits continuous speech into 3-5 second chunks. Two "Michael D Nguyen" blocks in a row usually IS the same person still talking. Do not assume that back-to-back same-label blocks mean two different people.
+
+**Strong signals for reattribution (use these, not consecutive blocks):**
+1. **Third-person references** — speaker says "Mike said it in his notes" → cannot be Michael, must be someone else referring to him
+2. **Explicit name addressing** — Daniel says "Alex, question for you" and the reply is labeled "Michael D Nguyen" → that reply is Alex
+3. **Cross-speaker confirmation** — Daniel later says "I love the quote from Alex just there" → the preceding quote was Alex
+4. **Topic authority** — Sage provisioning, journal entries, "de minimis" = CFO language; fleet, drivers, Navusoft = operations language
+5. **"He/she" pronoun references** — "He had to walk out for a second" when labeled as Michael → speaker is referring to someone else (likely Alex speaking about Michael, or vice versa)
+
+**Weak signals (use only to corroborate strong signals):**
+- Topic area (could be anyone asking about any topic)
+- Speaking style or vocabulary
+- Conversation flow
+
+**Resolution:** Start with strong signals only. Use the decision authority matrix from the cheat sheet for topic-based inference, but only when corroborated by at least one strong signal. Annotate every inferred reattribution with the block number, timestamp, and reasoning.
 
 ### Action items from outside the transcript
 Some action items arise from email chains, follow-up conversations, or institutional knowledge that isn't in the transcript. The skill's "Gather external context" step (step 9) catches these. Mark them distinctly so reviewers know the source.
