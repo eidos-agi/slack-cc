@@ -89,7 +89,7 @@ Use this template for the generated README. Replace placeholders with extracted 
 4. **Status values:** Pending, Blocked on #N, In progress, Completed, Noted. Inherit from existing project checklists when available (step 7).
 5. **Quotes use blockquote** — `> **Speaker on topic:** "quote"`
 6. **Links to project checklists** — action items that map to existing projects should link: `[plans created](../../projects/project-name/README.md)`
-7. **Attendee roles from cheat sheet** — use org and title from `diarize-cheatsheet.md`
+7. **Attendee roles from cheat sheet** — use org and title from `people.md`
 8. **Partial attendance noted** — italicized parenthetical: `*(joined briefly)*`
 9. **Inferred attributions annotated** — when speaker was reattributed in step 4, add *(line N, attributed to X but Y topic = likely Z)* after the quote
 10. **Chain of custody is optional** — only include "How We Got This Transcript" if user provides this context in step 9

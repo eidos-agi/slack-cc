@@ -1,8 +1,8 @@
-# Diarize Cheat Sheet — Known Meeting Participants
+# People
 
-Used by the `/diarize` skill as context when processing transcripts. Helps with speaker attribution, decision authority, and action item routing.
+Known meeting participants — names, roles, decision authority, and speaker resolution rules. Part of the [Greenmark glossary](README.md).
 
-For full org details: [greenmark-org.md](greenmark-org.md)
+Used by the diarize skill for speaker attribution, decision validation, and action item routing.
 
 ---
 

@@ -34,7 +34,7 @@ A transcript is unprocessed if no `README.md` exists alongside it.
 
 Load these references before doing anything else:
 ```
-reference/stakeholders/diarize-cheatsheet.md    — speaker names, roles, authority
+reference/glossary/people.md                     — speaker names, roles, authority
 reference/glossary/transcription-corrections.md — Fireflies mishearings → correct terms
 references/extraction-guide.md                  — signal words, quality checks, edge cases
 references/output-template.md                   — README template

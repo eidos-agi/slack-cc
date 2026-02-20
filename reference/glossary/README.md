@@ -12,10 +12,7 @@ Canonical terms, spellings, and definitions for Greenmark Waste Solutions. Used 
 | [technology.md](technology.md) | Tech stack — Cerebro, data-daemon, Railway, etc. | Daniel, engineers |
 | [financial.md](financial.md) | Accounting/finance terms Alex uses | Diarize skill, onboarding |
 | [industry.md](industry.md) | Waste management vocabulary | Diarize skill, onboarding |
-
-## People
-
-People names, variants, and roles are in the [diarize cheat sheet](../stakeholders/diarize-cheatsheet.md). That file covers name misspellings (Lana → Lannis), decision authority, and speaker resolution rules.
+| [people.md](people.md) | Names, roles, decision authority, speaker resolution rules | Diarize skill, everyone |
 
 ## How Diarize Uses This
 

@@ -107,7 +107,7 @@ After generating the README, suggest updates to existing project checklists:
 ## Extraction Categories
 
 ### Speaker Context
-The skill loads `reference/stakeholders/diarize-cheatsheet.md` before processing. This provides:
+The skill loads `reference/glossary/people.md` before processing. This provides:
 - Name variants for speaker matching (e.g., "Michael D Nguyen" → Michael D. Nguyen, President)
 - Decision authority matrix — who can actually decide what
 - Systems owned by each person — for context on technical discussions
