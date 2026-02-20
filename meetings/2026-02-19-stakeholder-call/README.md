@@ -16,8 +16,12 @@
 - [x] Recording requested from Winnie Makama — 2026-02-20
 - [x] Transcript received (Pages format from Fireflies)
 - [x] Converted to plain text
+- [x] SRT transcript downloaded from Fireflies
+- [x] Speaker attribution audited — 31 blocks reattributed (Alex misattributed as Michael), see `attribution-corrections.md`
+- [x] Corrected SRT produced (`transcript-corrected.srt`)
 - [x] Decisions extracted
 - [x] Action items logged to project checklists
+- [x] Validated: corrected SRT confirms all attributions in this README
 
 ## How We Got This Transcript
 1. Call recorded to **Collin Bird's Fireflies account** (not Daniel's)
@@ -47,6 +51,9 @@ All 5 members can see the Greenmark Waste channel (channels are team-wide by def
 ## Artifacts
 - `Project-Cerebro transcript.pages` — original file from Winnie
 - `transcript.txt` — plain text conversion (320 lines, ~85KB)
+- `transcript.srt` — Fireflies SRT export (5981 lines, only Daniel + Michael labeled — Alex missing)
+- `transcript-corrected.srt` — SRT with 31 blocks reattributed from Michael → Alex using strong signals
+- `attribution-corrections.md` — documents each correction with signal type and reasoning
 
 ---
 
