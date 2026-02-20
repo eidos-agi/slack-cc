@@ -24,7 +24,7 @@ Per Daniel Shanklin's decision (greenmark-aic-collab Slack): Greenmark will be a
 
 ## Infrastructure Separation
 - [ ] Transfer Railway project to Greenmark billing (Pro account, $20/mo) — Michael agreed on Feb 19 call
-- [ ] Get Daniel a Fireflies account (dshanklin@aicholdings.com) and add to AIC company team — Collin approved
+- [x] Get Daniel a Fireflies account (dshanklin@aicholdings.com) and add to AIC company team — Winnie sent invite, Daniel confirmed access
 
 ## Ongoing
 - [ ] Monthly in-person at Greenmark office — new office opening ~early March 2026

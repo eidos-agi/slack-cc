@@ -26,7 +26,7 @@
 4. Collin Bird approved adding Daniel (dshanklin@aicholdings.com) to AIC Fireflies team
 
 ### Process Improvements Needed
-- [ ] **Get Daniel a Fireflies account** (dshanklin@aicholdings.com) and add to AIC company team
+- [x] **Get Daniel a Fireflies account** (dshanklin@aicholdings.com) and add to AIC company team — ✓ Winnie sent invite, Daniel confirmed access
 - **Export as plain text or markdown** — Pages format required AppleScript conversion
 - **Standardize transcript format** — Fireflies does speaker attribution, but format varies by export type
 
@@ -110,7 +110,7 @@
 | 6 | Transfer Railway project to Greenmark billing (Pro account, $20/mo) | Daniel + Michael | Pending — needs Greenmark Railway account |
 | 7 | Make Michael admin in GitHub org | Daniel | Pending — Michael just created account |
 | 8 | Alex to create GitHub account | Alex | Pending |
-| 9 | Add Daniel to AIC Fireflies team | Winnie/Collin | Approved by Collin |
+| 9 | Add Daniel to AIC Fireflies team | Winnie/Collin | Complete — Winnie sent invite, Daniel confirmed access |
 | 10 | Build customer + prospect map page in Cerebro (from HubSpot data) | Daniel | Noted — after HubSpot connected |
 | 11 | Document what's shared vs. Greenmark-only billing (diagram for Alex as CFO) | Daniel | Pending |
 | 12 | Get permissions/access matrix from Michael ("who gets permission to what") | Daniel | Pending |

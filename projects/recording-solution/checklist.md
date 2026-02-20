@@ -8,7 +8,7 @@ Teams recordings have no transcripts. Only Collin Bird had a Fireflies account f
 ## Getting Transcripts (Infrastructure)
 - [x] Get Fireflies transcript from Collin for Feb 19 call — received via Winnie Makama
 - [x] Collin approved adding Daniel to AIC Fireflies team (dshanklin@aicholdings.com)
-- [ ] Get Daniel a Fireflies account and add to AIC company team
+- [x] Get Daniel a Fireflies account and add to AIC company team — Winnie sent invite, Daniel confirmed access
 - [ ] Evaluate transcript options for future meetings
   - [ ] Fireflies for all participants?
   - [ ] Enable Teams transcription?
