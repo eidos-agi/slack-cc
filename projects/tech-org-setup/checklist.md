@@ -11,3 +11,5 @@ Per Daniel Shanklin's decision (greenmark-aic-collab Slack): Greenmark will be a
 - [ ] Evaluate Greenmark's current tech stack (per Project Cerebro notes)
 - [ ] Identify high-priority systems to build/migrate
 - [ ] Set up any needed infrastructure (domains, email, cloud accounts)
+- [ ] Get Daniel a Fireflies account (dshanklin@aicholdings.com) and add to AIC company team — currently depends on Winnie/Collin for transcript access
+- [ ] Transfer Railway project to Greenmark billing (Pro account, $20/mo) — Michael agreed to separate billing on Feb 19 call

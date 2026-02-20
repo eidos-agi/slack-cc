@@ -24,7 +24,7 @@
 4. Collin Bird approved adding Daniel (dshanklin@aicholdings.com) to AIC Fireflies team
 
 ### Process Improvements Needed
-- **Daniel should be on the Fireflies account directly** — Winnie is adding dshanklin@aicholdings.com to AIC team
+- [ ] **Get Daniel a Fireflies account** (dshanklin@aicholdings.com) and add to the AIC company team — formalizes access, eliminates handoff dependency
 - **Export as plain text or markdown** — Pages format required AppleScript conversion; text/markdown would be immediate
 - **Standardize transcript format** — Fireflies already does speaker attribution, but format varies by export type
 
