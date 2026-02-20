@@ -9,6 +9,7 @@ Teams recordings have no transcripts. Only Collin Bird had a Fireflies account f
 - [x] Get Fireflies transcript from Collin for Feb 19 call — received via Winnie Makama
 - [x] Collin approved adding Daniel to AIC Fireflies team (dshanklin@aicholdings.com)
 - [x] Get Daniel a Fireflies account and add to AIC company team — Winnie sent invite, Daniel confirmed access
+- [x] Create "Greenmark Waste" channel in Fireflies — groups all Greenmark meetings, visible to full AIC team (5 members)
 - [ ] Evaluate transcript options for future meetings
   - [ ] Fireflies for all participants?
   - [ ] Enable Teams transcription?

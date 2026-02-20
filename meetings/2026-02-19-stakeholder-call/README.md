@@ -27,8 +27,22 @@
 
 ### Process Improvements Needed
 - [x] **Get Daniel a Fireflies account** (dshanklin@aicholdings.com) and add to AIC company team — ✓ Winnie sent invite, Daniel confirmed access
+- [x] **Created "Greenmark Waste" channel in Fireflies** — organizes all Greenmark meetings in one place. Contains 2 meetings so far:
+  - Project Cerebro (Feb 19, 92 min)
+  - Project Cerebro / Greenmark - Kick Off (Feb 11, 29 min)
 - **Export as plain text or markdown** — Pages format required AppleScript conversion
 - **Standardize transcript format** — Fireflies does speaker attribution, but format varies by export type
+
+### AIC Fireflies Team Members
+All 5 members can see the Greenmark Waste channel (channels are team-wide by default):
+
+| Name | Email | Role |
+|------|-------|------|
+| Collin Bird | cbird@aicholdings.com | Admin |
+| Daniel Shanklin | dshanklin@aicholdings.com | Member |
+| Slate DeMuth | sdemuth@aicholdings.com | Member |
+| William Holloway | wholloway@aicholdings.com | Member |
+| Winnie Makama | wmakama@aicholdings.com | Member |
 
 ## Artifacts
 - `Project-Cerebro transcript.pages` — original file from Winnie
