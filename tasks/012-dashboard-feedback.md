@@ -21,7 +21,7 @@ Daniel built 3 HTML prototype dashboards after the Feb 11 kickoff: executive, op
 
 - **2026-02-11** — Dashboards built after kickoff. Shared with team.
 - **2026-02-19** — Still no feedback. Implicitly re-raised in stakeholder call discussion.
-- **2026-02-20** — Draft follow-up prepared but item was trimmed from sent email to Michael. Not yet formally requested via email.
+- **2026-02-20** — Intentionally deferred. Not included in follow-up email.
 
 ## Comments
 

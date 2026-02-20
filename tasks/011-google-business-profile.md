@@ -20,7 +20,7 @@ Daniel needs access to Google Business Profile listings for both Greenmark Waste
 ## History
 
 - **2026-02-19** — Identified during SEO planning. Blocker surfaced from project checklist.
-- **2026-02-20** — Draft follow-up prepared but item was trimmed from sent email to Michael. Not yet formally requested via email.
+- **2026-02-20** — Covered in email to Michael as part of SEO ownership question: asked whether Michael wants to handle SEO himself or have Daniel do it. GBP falls under that same question.
 
 ## Comments
 

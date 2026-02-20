@@ -33,13 +33,13 @@ Central view of all cross-project work items. Each task has its own file with fu
 | 003 | [Claude Team seat](003-claude-team-seat.md) | **Feb 11** | RAISED TWICE — emailed Feb 20. Invite received, accepting. |
 | 005 | [Webflow login](005-webflow-login.md) | Feb 19 | Not yet emailed |
 | 009 | [Railway account](009-railway-account.md) | Feb 19 | Emailed Feb 20 |
-| 011 | [Google Business Profile login](011-google-business-profile.md) | Feb 19 | Not yet emailed |
+| 011 | [Google Business Profile login](011-google-business-profile.md) | Feb 19 | Covered in SEO ownership Q to Michael |
 
 ## Pending — waiting on Michael + Alex (1)
 
 | ID | Task | Since | Follow-up |
 |----|------|-------|-----------|
-| 012 | [Dashboard mockup feedback](012-dashboard-feedback.md) | **Feb 11** | RAISED TWICE — not yet emailed |
+| 012 | [Dashboard mockup feedback](012-dashboard-feedback.md) | **Feb 11** | RAISED TWICE — deferred |
 
 ## Completed
 
