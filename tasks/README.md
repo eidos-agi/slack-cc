@@ -30,7 +30,7 @@ Central view of all cross-project work items. Each task has its own file with fu
 
 | ID | Task | Since | Follow-up |
 |----|------|-------|-----------|
-| 003 | [Claude Team seat](003-claude-team-seat.md) | **Feb 11** | RAISED TWICE — emailed Feb 20. Invite received, accepting. |
+| ~~003~~ | ~~Claude Team seat~~ | | ✅ Done — moved to [archive](archive/003-claude-team-seat.md) |
 | 005 | [Webflow login](005-webflow-login.md) | Feb 19 | Not yet emailed |
 | 009 | [Railway account](009-railway-account.md) | Feb 19 | Separate email sent with details |
 | 011 | [Google Business Profile login](011-google-business-profile.md) | Feb 19 | Covered in SEO ownership Q to Michael |
@@ -43,7 +43,9 @@ Central view of all cross-project work items. Each task has its own file with fu
 
 ## Completed
 
-_(none yet — completed tasks move to [archive/](archive/))_
+| ID | Task | Completed |
+|----|------|-----------|
+| 003 | [Claude Team seat](archive/003-claude-team-seat.md) | Feb 20 |
 
 ---
 
@@ -52,10 +54,10 @@ _(none yet — completed tasks move to [archive/](archive/))_
 | Person | Open tasks | Oldest |
 |--------|-----------|--------|
 | **Alex Kaye** | 4 | Feb 19 (1 day) |
-| **Michael Nguyen** | 4 | Feb 11 (9 days) |
+| **Michael Nguyen** | 3 | Feb 19 |
 | **Daniel Shanklin** | 3 (1 self-unblockable, 2 blocked) | Feb 19 |
 | **Michael + Alex** | 1 | Feb 11 (9 days) |
-| **Total** | **12** | |
+| **Total** | **11** (1 completed) | |
 
 ## How this works
 
