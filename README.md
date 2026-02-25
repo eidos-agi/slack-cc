@@ -1,4 +1,4 @@
-# Greenmark Planning
+# Greenmark
 
 Shared planning hub for Greenmark Waste Solutions leadership.
 

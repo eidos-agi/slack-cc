@@ -1,4 +1,4 @@
-# CLAUDE.md — Greenmark Planning
+# CLAUDE.md — Greenmark
 
 This is the shared planning hub for Greenmark Waste Solutions leadership. It is NOT a code repo. It contains projects, decisions, meeting records, and reference material.
 
