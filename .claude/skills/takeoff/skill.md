@@ -4,11 +4,11 @@
 Start of every session. This is the first thing you run.
 
 ## What It Does
-Pre-flight check in 3 cheap reads, then a concise briefing. No questions asked — just show the state and wait for orders.
+Pre-flight check in 2 cheap reads (git state is already in context), then a concise briefing. No questions asked — just show the state and wait for orders.
 
 ## Execution Steps
 
-### 1. Read State (3 parallel reads, all local)
+### 1. Read State (2 reads + context reuse)
 
 **A. state.json** — from the cockpit root
 - Get `watermarks.last_land` (when was the last session?)
@@ -19,10 +19,10 @@ Pre-flight check in 3 cheap reads, then a concise briefing. No questions asked �
 - If found: read it for `lifecycle_state`, `context.summary`, `next_actions`, `blockers`, `confidence`
 - If not found: note "No previous bookmark for this cockpit"
 
-**C. Git state** — run `git status --porcelain` and `git branch --show-current` and `git log --oneline -3`
-- Current branch
-- Dirty files count
-- Last 3 commits (for orientation)
+**C. Git state** — use the `gitStatus` block injected at session start
+- Current branch, dirty files, recent commits are **already in context**
+- **Do NOT re-run** `git status`, `git branch`, or `git log` — they're already there
+- Only run git commands if `gitStatus` is missing from context (fallback)
 
 ### 2. Detect Drift
 
@@ -34,12 +34,23 @@ Compare current git state to bookmark's `workspace_state`:
 
 ### 3. Output Briefing
 
-Output ONE concise block. Format:
+Output ONE concise block with ASCII art header:
 
 ```
-TAKEOFF: <cockpit name> | Branch: <branch> | Session #<N+1>
-Last session: <bookmark summary or "first session"> | <time ago>
-State: <lifecycle_state or "fresh"> | Dirty: <yes/no> (<N> files)
+    __
+   / /______ _/ /_____  ____  ____
+  / __/ __ `/ //_/ _ \/ __ \/ __ \
+ / /_/ /_/ / ,< /  __/ /_/ / /_/ /
+ \__/\__,_/_/|_|\___/\____/\____/
+
+ COCKPIT   <cockpit name>
+ BRANCH    <branch>          DIRTY  <yes (N) | clean>
+ SESSION   #<N+1>            LAST   <time since last land>
+```
+
+If there's a bookmark summary:
+```
+ RESUME    <bookmark summary>
 ```
 
 If there are next_actions from the bookmark:
@@ -78,9 +89,11 @@ Ready for orders.
 And wait for the user to tell you what to do.
 
 ## Rules
-- Maximum 3 file reads + 2 git commands. Keep it fast.
+- Maximum 2 file reads. Reuse gitStatus from session context. Keep it fast.
+- Never re-fetch git state that's already in session context.
 - Never ask questions during takeoff. Just show state.
 - If the previous session was `lifecycle_state: done`, just note "Previous session completed" and move on.
 - If the previous session was `lifecycle_state: blocked`, highlight the blocker prominently.
-- Keep the briefing to 5-8 lines max. The user is here to work, not read.
+- Keep the briefing to 5-10 lines max. The user is here to work, not read.
 - If no bookmark exists and no state.json exists, this is a fresh cockpit — say "First flight. Cockpit initialized." and create state.json.
+- If bookmark file is corrupted or unreadable, note "Bookmark corrupted — starting fresh" and continue without it.
