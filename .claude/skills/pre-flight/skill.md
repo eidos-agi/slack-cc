@@ -45,30 +45,38 @@ When called by `/takeoff`, this runs as a subagent (Explore type) to keep the ma
 
 ### 2. Compose the Briefing
 
-Output EXACTLY this format. Keep each section to 1-4 lines. Write like you're briefing a busy person.
+Output EXACTLY this format. Each section should be **3-8 lines** — long enough to deliver real intel, short enough to scan. Write like you're briefing a busy person who needs to make decisions, not just skim headlines.
 
 ```
 WHERE WE WERE
   <What got done recently — in plain English. Synthesize from commits,
    bookmark, and project state. Focus on outcomes, not process.>
+  <What did we learn or prove? What moved the needle?>
+  <What got started but didn't finish? What's dangling?>
   <If first session: "First session — fresh start.">
   <If auto-closed with no bookmark context: "Last session ended without
    a debrief. Reconstructing from commits and project state.">
 
 WHERE WE ARE
   <Big picture: what phase is the engagement/project in?>
-  <What's moving? What's stalled? What's waiting on someone?>
-  <Keep it strategic — the pilot can drill into details themselves.>
+  <What's moving? What momentum do we have? What's the trajectory?>
+  <What's stalled or drifting? Why?>
+  <What's waiting on someone else? Who, and how long?>
+  <Any recent wins, risks, or shifts in direction worth noting?>
 
 WHERE WE'RE GOING
-  1. <Most impactful thing to do next — plain English, not a task ID>
-  2. <Second priority>
-  3. <Third priority>
+  1. <Most impactful thing to do next — plain English, and WHY it matters>
+  2. <Second priority — what it unlocks>
+  3. <Third priority — what it unlocks>
+  <If something external unblocks, note what reprioritizes.>
   <These should be actionable session goals, not backlog items.>
 
 BLOCKERS
-  <Who owes us what? How long have they owed it?>
+  <Who owes us what? How long have they owed it? Is it getting stale?>
   <What can't move until something external happens?>
+  <Any workarounds available, or are we truly stuck?>
+  <Distinguish "waiting on a person" from "waiting on information"
+   from "genuinely stuck with no path forward".>
   <Or "None" if clear skies.>
 ```
 
