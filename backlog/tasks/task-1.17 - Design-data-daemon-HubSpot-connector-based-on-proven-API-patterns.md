@@ -5,11 +5,14 @@ status: To Do
 assignee:
   - '@Daniel'
 created_date: '2026-02-24 22:40'
+updated_date: '2026-02-25 07:44'
 labels:
   - hubspot
   - data-daemon
   - architecture
-dependencies: []
+dependencies:
+  - TASK-1.3
+  - TASK-1.11
 references:
   - data-daemon-testing/hubspot-testing/EXPLORATION.md
   - 'https://github.com/greenmark-waste-solutions/data-daemon'
@@ -58,3 +61,9 @@ Design the data-daemon connector for HubSpot CRM using the API patterns proven d
 - [ ] #4 Incremental extraction approach using search API date filters
 - [ ] #5 Mapped against existing data-daemon connector patterns (Sage, etc.)
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+2026-02-25: Added formal dependencies on TASK-1.3 (exploration) and TASK-1.11 (capability map) — both Done, so this task is unblocked.
+<!-- SECTION:NOTES:END -->

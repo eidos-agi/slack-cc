@@ -5,7 +5,7 @@ status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 21:35'
-updated_date: '2026-02-24 22:39'
+updated_date: '2026-02-25 07:44'
 labels:
   - hubspot
   - data-integration
@@ -27,10 +27,10 @@ Once the CLI is authenticated, explore what real data exists in Greenmark's HubS
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 List of HubSpot objects available in Greenmark account with record counts
-- [ ] #2 Comparison against proposed bronze tables from infra vendor research
-- [ ] #3 Sample data pulled for at least contacts, companies, and deals
-- [ ] #4 Notes on data quality, completeness, and any surprises
+- [x] #1 List of HubSpot objects available in Greenmark account with record counts
+- [x] #2 Comparison against proposed bronze tables from infra vendor research
+- [x] #3 Sample data pulled for at least contacts, companies, and deals
+- [x] #4 Notes on data quality, completeness, and any surprises
 <!-- AC:END -->
 
 ## Implementation Notes

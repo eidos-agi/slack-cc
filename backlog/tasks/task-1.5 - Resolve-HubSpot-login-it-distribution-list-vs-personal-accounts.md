@@ -5,6 +5,7 @@ status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 21:36'
+updated_date: '2026-02-25 07:44'
 labels:
   - hubspot
   - admin
@@ -23,7 +24,7 @@ Daniel resolved the HubSpot login issue today. `it@greenmarkwaste.com` is a Micr
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 HubSpot login working via password auth
-- [ ] #2 2FA configured with authenticator app
-- [ ] #3 Documented: it@greenmarkwaste.com is a distribution list, not a user account
+- [x] #1 HubSpot login working via password auth
+- [x] #2 2FA configured with authenticator app
+- [x] #3 Documented: it@greenmarkwaste.com is a distribution list, not a user account
 <!-- AC:END -->

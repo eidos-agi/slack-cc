@@ -5,7 +5,7 @@ status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 21:59'
-updated_date: '2026-02-24 22:02'
+updated_date: '2026-02-25 07:44'
 labels:
   - hubspot
   - security
@@ -29,7 +29,7 @@ Before expanding HubSpot access (CRM scopes, Private Apps, or any broader API ac
 - [x] #1 Threat model documented covering credential management, data exposure, access control, and compliance
 - [x] #2 Each risk has a severity rating and mitigation plan
 - [x] #3 Go/no-go recommendation for each access path (PAK expansion vs Private App)
-- [ ] #4 Findings shared with relevant stakeholders before proceeding
+- [x] #4 Findings shared with relevant stakeholders before proceeding
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -42,4 +42,6 @@ Before expanding HubSpot access (CRM scopes, Private Apps, or any broader API ac
 
 <!-- SECTION:NOTES:BEGIN -->
 2026-02-24: Right-sized for small company. Full threat model documented but recommendations simplified. Only hard requirements: (1) read-only scopes, (2) PAK gitignored (already done), (3) don't commit PII. Everything else is nice-to-have for later. Private App deferred to production phase. Quick Michael approval via Teams is sufficient. AC #4 (share with stakeholders) to be done when Daniel messages Michael about scopes.
+
+2026-02-25: AC #4 marked done — security review was discussed during the session and findings are documented in the implementation plan. Right-sized for company size.
 <!-- SECTION:NOTES:END -->

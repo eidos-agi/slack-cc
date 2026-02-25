@@ -5,7 +5,7 @@ status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 22:17'
-updated_date: '2026-02-24 22:39'
+updated_date: '2026-02-25 07:44'
 labels:
   - hubspot
   - data-integration
@@ -26,10 +26,10 @@ The HubSpot CLI (hs) is CMS/developer-focused and cannot query standard CRM obje
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Matrix showing each HubSpot data type and whether CLI or REST API is needed
-- [ ] #2 Mapped against the 13 proposed bronze tables from infra vendor research
-- [ ] #3 Extraction approach recommended for each table
-- [ ] #4 Documented in data-daemon-testing repo or infra repo
+- [x] #1 Matrix showing each HubSpot data type and whether CLI or REST API is needed
+- [x] #2 Mapped against the 13 proposed bronze tables from infra vendor research
+- [x] #3 Extraction approach recommended for each table
+- [x] #4 Documented in data-daemon-testing repo or infra repo
 <!-- AC:END -->
 
 ## Final Summary

@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Daniel
 created_date: '2026-02-24 22:30'
-updated_date: '2026-02-25 07:17'
+updated_date: '2026-02-25 07:48'
 labels:
   - hubspot
   - admin
@@ -50,4 +50,6 @@ Expand test account PAK scopes to enable full CRM access. Current PAK has 36 sco
 2026-02-24: Scope audit complete. 36 scopes present. CRM reads work but CRM writes all denied. Need to regenerate PAK with write scopes checked to enable seeding via API.
 
 2026-02-25: Promoted to high priority. This is the critical path — unblocks test data seeding (1.13/1.14/1.16) and is a 5-minute PAK regeneration Daniel controls. No dependency on Michael or anyone else. Clarified: production read-only directive does NOT apply to the sandbox.
+
+2026-02-25: Daniel told Michael he wants one more day of testing to prove read-only PAK access works (can read CRM data but not edit). Safer choice for AI. Expansion deferred until read-only proof is complete. Future plan: separate read-write key project for CRM agent improvements.
 <!-- SECTION:NOTES:END -->

@@ -5,7 +5,7 @@ status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 22:16'
-updated_date: '2026-02-24 22:21'
+updated_date: '2026-02-25 07:44'
 labels:
   - hubspot
   - tooling
@@ -28,7 +28,7 @@ The HubSpot CLI doesn't support standard CRM object queries (contacts, companies
 <!-- AC:BEGIN -->
 - [x] #1 Skill can list all CRM object types and record counts
 - [x] #2 Skill can fetch sample records for contacts, companies, deals
-- [ ] #3 Skill can query/search with filters
+- [x] #3 Skill can query/search with filters
 - [x] #4 Skill reads auth from hubspot.config.yml — no hardcoded tokens
 - [x] #5 Works against test account; switchable to production
 <!-- AC:END -->
@@ -37,4 +37,6 @@ The HubSpot CLI doesn't support standard CRM object queries (contacts, companies
 
 <!-- SECTION:NOTES:BEGIN -->
 2026-02-24: Built hs-api.sh wrapper in hubspot-testing/scripts/. Uses accessToken from hubspot.config.yml (not PAK directly — PAK doesn't work as bearer token). Commands working: counts, objects, object, properties, schemas, owners, search, associations. Pipelines endpoint returns 403 (needs app-level auth, not user PAK). Created hubspot-explore skill in greenmark-planning. AC #3 (search/filter) not yet tested with complex filters but the command works.
+
+2026-02-25: AC #3 marked done — search API confirmed working with date filters and property filters during exploration.
 <!-- SECTION:NOTES:END -->
