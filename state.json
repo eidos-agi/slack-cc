@@ -5,14 +5,23 @@
     "created": "2026-02-25",
     "template": "rhea-impact/ai-cockpit-template"
   },
+  "theme": {
+    "primary": "#3fb950",
+    "danger": "#f85149",
+    "warning": "#d29922",
+    "bg": "#0d1117",
+    "surface": "#161b22",
+    "text": "#e6edf3",
+    "muted": "#8b949e"
+  },
   "watermarks": {
-    "last_takeoff": "2026-02-25T17:15:00Z",
+    "last_takeoff": "2026-02-25T21:15:00Z",
     "last_land": null,
     "last_status_check": null
   },
   "counters": {
-    "sessions": 1,
-    "takeoffs": 1,
+    "sessions": 3,
+    "takeoffs": 3,
     "landings": 0
   },
   "custom": {
