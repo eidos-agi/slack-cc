@@ -34,7 +34,11 @@ Compare current git state to bookmark's `workspace_state`:
 
 ### 3. Output Briefing
 
-Output ONE concise block with ASCII art header:
+Output ONE concise block with two-line ASCII art header:
+
+**Line 1: Cockpit name** — Generate the `cockpit.name` from state.json as bold Unicode block letters (same style as TAKEOFF below). This is dynamic per cockpit.
+
+**Line 2: TAKEOFF** — Always this exact text:
 
 ```
   ████████╗ █████╗ ██╗  ██╗███████╗ ██████╗ ███████╗███████╗
@@ -43,11 +47,19 @@ Output ONE concise block with ASCII art header:
      ██║   ██╔══██║██╔═██╗ ██╔══╝  ██║   ██║██╔══╝  ██╔══╝
      ██║   ██║  ██║██║  ██╗███████╗╚██████╔╝██║     ██║
      ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝     ╚═╝
+```
 
-  COCKPIT   <cockpit name>
+**Then the status block:**
+```
   BRANCH    <branch>          DIRTY  <yes (N) | clean>
   SESSION   #<N+1>            LAST   <time since last land>
 ```
+
+**Block letter reference** — use this character set for generating the cockpit name:
+```
+█ ═ ╗ ╔ ╚ ╝ ║ ╠ ╣ ╦ ╩ ╬ ▀ ▄
+```
+Match the exact same visual weight and style as the TAKEOFF text above. Each letter should be 6-7 chars wide and 6 lines tall.
 
 If there's a bookmark summary:
 ```

@@ -93,7 +93,11 @@ Write to `state.json`:
 
 ### 5. Confirm Landing
 
-Output with ASCII art:
+Output with two-line ASCII art header:
+
+**Line 1: Cockpit name** — Generate the `cockpit.name` from state.json as bold Unicode block letters (same style as LAND below). This is dynamic per cockpit.
+
+**Line 2: LAND** — Always this exact text:
 
 ```
   ██╗      █████╗ ███╗   ██╗██████╗
@@ -102,8 +106,10 @@ Output with ASCII art:
   ██║     ██╔══██║██║╚██╗██║██║  ██║
   ███████╗██║  ██║██║ ╚████║██████╔╝
   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝
+```
 
-  COCKPIT   <cockpit name>
+**Then the status block:**
+```
   STATE     <lifecycle_state>
   SUMMARY   <1-line summary>
   NEXT      <top priority for next session>
