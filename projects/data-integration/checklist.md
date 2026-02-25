@@ -25,13 +25,30 @@ Code lives in external repos: [data-daemon](https://github.com/greenmark-waste-s
 - [x] 82 tests passing
 - [x] Bronze schemas proposed (65 tables across 4 sources)
 - [ ] Connect first real source (Sage) — blocked on credentials
-- [ ] Connect second real source (HubSpot) — blocked on API access
+- [ ] Connect second real source (HubSpot) — blocked on CRM read permissions
 
 ## Data Quality (cerebro-qa)
 - [x] QA repo created
 - [ ] Validation rules for bronze data
 - [ ] Anomaly detection baseline
 
+## HubSpot Setup Progress
+- [x] Developer Portal access
+- [x] CLI installed and authenticated (data-daemon-testing repo)
+- [x] Security review — read-only only
+- [x] Test account created (Greenmark Dev, 245316113, Enterprise tier)
+- [x] REST API wrapper built (`hs-api.sh` — 9 commands)
+- [x] Data exploration complete — 36 scopes mapped, all API patterns proven
+- [x] CLI vs REST API capability map documented
+- [x] Property groups analyzed: contacts (369/14), companies (245/12), deals (199/9)
+- [x] Associations verified: v3, v4, inline all work
+- [x] Batch read + search APIs confirmed for data-daemon extraction
+- [ ] CRM read permissions on **production** enabled by Michael — [setup instructions](hubspot-setup.md)
+- [ ] Expand test PAK scopes for CRM writes (to seed test data)
+- [ ] Seed test account with waste industry data
+- [ ] Design data-daemon HubSpot connector (TASK-1.17)
+
 ## Blocked On
 - Sage user account for Daniel (Alex) → API key → real data
-- HubSpot API access for Daniel (Alex/Michael) → second source
+- HubSpot CRM read permissions for Daniel (Michael) → [setup instructions](hubspot-setup.md)
+- HubSpot pipeline endpoint needs Private App auth (PAK won't work) — deferred
