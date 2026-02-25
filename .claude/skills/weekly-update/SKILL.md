@@ -348,11 +348,46 @@ Prioritized list of what should happen next week, based on:
 ## After Writing
 
 1. Show Daniel the final report for approval
-2. If approved, save both files:
+2. If approved, save all three files:
    - `reports/YYYY-WNN.md` (the report)
    - `reports/YYYY-WNN-fixes.md` (the interview record)
-3. Commit both to the weekly-updates repo
+   - `reports/YYYY-WNN-notebooklm.md` (podcast/audio source — see below)
+3. Commit all three to the weekly-updates repo
 4. Push to remote
+
+### Stage 8: NotebookLM Podcast Source
+
+**Always produce this as the final step.** This file is NOT a script — it's a raw data document with front-matter instructions that NotebookLM uses to generate an audio overview (podcast-style recording).
+
+Output: `~/repos-greenmark-waste-solutions/weekly-updates/reports/YYYY-WNN-notebooklm.md`
+
+**Structure:**
+
+1. **Front-matter instructions** — Tell NotebookLM how to structure the ~3 minute audio:
+   - Where we were (30s) — starting position entering this week
+   - Where we are now (60s) — what happened, outcomes not implementation
+   - Where we're going (45s) — near-term roadmap
+   - Blockers and who can fix them (30s) — names and actions
+   - How we're tracking this (15s) — GitHub now, Wrike/Cerebro later
+   - Tone: conversational, plain English, small company leadership audience
+
+2. **Full context section** — Everything NotebookLM needs to draw from:
+   - Company background (who Greenmark is, what Project Cerebro is, the 2+2+2 strategy)
+   - Where we were (pull from last week's report)
+   - Where we are now (pull from this week's report — full detail, don't shorten)
+   - Where we're going (from interview Stage 5, question 12)
+   - Blockers table with owners, timelines, impact
+   - Communications log
+   - Metrics comparison (this week vs last week)
+   - Vendor system overview for context
+   - Any thematic emphasis (e.g., safety-first approach, stakeholder engagement)
+
+**Key rules for NotebookLM file:**
+- Do NOT shorten the content — the goal is maximum context for the AI to draw from
+- Do NOT write a script — write raw data with instructions. NotebookLM generates the audio.
+- DO include last week's context so the "where we were" section is grounded
+- DO emphasize the narrative arc (blocked → unblocked → what's next)
+- DO include the note about task tracking moving to Wrike/Cerebro in future
 
 ## Key Rules
 
