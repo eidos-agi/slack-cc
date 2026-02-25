@@ -37,15 +37,16 @@ Compare current git state to bookmark's `workspace_state`:
 Output ONE concise block with ASCII art header:
 
 ```
-    __
-   / /______ _/ /_____  ____  ____
-  / __/ __ `/ //_/ _ \/ __ \/ __ \
- / /_/ /_/ / ,< /  __/ /_/ / /_/ /
- \__/\__,_/_/|_|\___/\____/\____/
+  ████████╗ █████╗ ██╗  ██╗███████╗ ██████╗ ███████╗███████╗
+  ╚══██╔══╝██╔══██╗██║ ██╔╝██╔════╝██╔═══██╗██╔════╝██╔════╝
+     ██║   ███████║█████╔╝ █████╗  ██║   ██║█████╗  █████╗
+     ██║   ██╔══██║██╔═██╗ ██╔══╝  ██║   ██║██╔══╝  ██╔══╝
+     ██║   ██║  ██║██║  ██╗███████╗╚██████╔╝██║     ██║
+     ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝     ╚═╝
 
- COCKPIT   <cockpit name>
- BRANCH    <branch>          DIRTY  <yes (N) | clean>
- SESSION   #<N+1>            LAST   <time since last land>
+  COCKPIT   <cockpit name>
+  BRANCH    <branch>          DIRTY  <yes (N) | clean>
+  SESSION   #<N+1>            LAST   <time since last land>
 ```
 
 If there's a bookmark summary:

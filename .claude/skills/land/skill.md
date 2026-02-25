@@ -96,18 +96,19 @@ Write to `state.json`:
 Output with ASCII art:
 
 ```
-    __                __
-   / /___ _____  ___/ /
-  / / __ `/ __ \/ __  /
- / / /_/ / / / / /_/ /
-/_/\__,_/_/ /_/\__,_/
+  ██╗      █████╗ ███╗   ██╗██████╗
+  ██║     ██╔══██╗████╗  ██║██╔══██╗
+  ██║     ███████║██╔██╗ ██║██║  ██║
+  ██║     ██╔══██║██║╚██╗██║██║  ██║
+  ███████╗██║  ██║██║ ╚████║██████╔╝
+  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝
 
- COCKPIT   <cockpit name>
- STATE     <lifecycle_state>
- SUMMARY   <1-line summary>
- NEXT      <top priority for next session>
+  COCKPIT   <cockpit name>
+  STATE     <lifecycle_state>
+  SUMMARY   <1-line summary>
+  NEXT      <top priority for next session>
 
- Bookmark written. Safe to close.
+  Bookmark written. Safe to close.
 ```
 
 ## Rules

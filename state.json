@@ -6,13 +6,13 @@
     "template": "rhea-impact/ai-cockpit-template"
   },
   "watermarks": {
-    "last_takeoff": null,
+    "last_takeoff": "2026-02-25T17:15:00Z",
     "last_land": null,
     "last_status_check": null
   },
   "counters": {
-    "sessions": 0,
-    "takeoffs": 0,
+    "sessions": 1,
+    "takeoffs": 1,
     "landings": 0
   },
   "custom": {
