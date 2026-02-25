@@ -32,12 +32,43 @@ Michael, Alex, and Robert browse this in GitHub's web UI. Keep files readable as
 | **2+2+2** | Integration strategy: connect 2 vendor systems at a time, ordered by business value |
 | **Elephant Carpaccio** | Thin-slicing delivery so stakeholders approve each increment before proceeding |
 
+## Cockpit Primitives
+
+This workspace is an **AI Cockpit** — built from [rhea-impact/ai-cockpit-template](https://github.com/rhea-impact/ai-cockpit-template).
+
+| Skill | When | What |
+|-------|------|------|
+| `/takeoff` | Start of session | Boot sequence: bookmark → drift check → priorities → wait for orders |
+| `/land` | End of session | Capture outcomes → write bookmark → clean exit |
+| `/cockpit-status` | Anytime | Active workstreams, blockers, ages, who owes what |
+
+### Session Protocol
+1. Every session starts with `/takeoff`
+2. Work using domain-specific skills (see below)
+3. Every session ends with `/land`
+4. If a session crashes without `/land`, the next `/takeoff` detects drift and flags it
+
+### Domain Skills
+| Skill | What It Does |
+|-------|-------------|
+| `/diarize` | Process meeting transcripts into structured README with decisions + action items |
+| `/task-out` | Route action items from meetings to project checklists and the Waiting On table |
+| `/weekly-update` | 7-stage subagent pipeline: collect → analyze → interview → synthesize |
+| `/take-notes` | Clipboard capture (pbpaste) for raw notes processing |
+| `/vendor-research` | Deep research on vendor APIs → structured api-data-model.md |
+| `/hubspot-explore` | CRM data exploration via REST API wrapper |
+
+### State Files
+- **`state.json`** — Watermarks, counters, last-run timestamps. Skills read/write this.
+- **Bookmarks** — Written to `~/.claude/bookmarks/` by `/land`. Read by `/takeoff`. Bridge between sessions.
+
 ## Repo Structure
 
 ```
 greenmark-planning/
 ├── CLAUDE.md              ← you are here
 ├── README.md              ← dashboard: active projects, status, links
+├── state.json             ← cockpit state: watermarks, counters
 ├── projects/              ← active work with checklists and deliverables
 │   ├── seo-improvement/   ← SEO plans for both websites
 │   ├── data-mockups/      ← 3 HTML dashboard prototypes
