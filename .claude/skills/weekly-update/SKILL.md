@@ -348,46 +348,86 @@ Prioritized list of what should happen next week, based on:
 ## After Writing
 
 1. Show Daniel the final report for approval
-2. If approved, save all three files:
+2. If approved, save these files:
    - `reports/YYYY-WNN.md` (the report)
    - `reports/YYYY-WNN-fixes.md` (the interview record)
-   - `reports/YYYY-WNN-notebooklm.md` (podcast/audio source — see below)
-3. Commit all three to the weekly-updates repo
+   - `reports/YYYY-WNN-notebooklm.md` (NotebookLM source) — if using NotebookLM mode
+   - `reports/YYYY-WNN-podcast.md` (voice script) — if using script mode
+3. Commit all to the weekly-updates repo
 4. Push to remote
 
-### Stage 8: NotebookLM Podcast Source
+### Stage 8: Podcast Generation
 
-**Always produce this as the final step.** This file is NOT a script — it's a raw data document with front-matter instructions that NotebookLM uses to generate an audio overview (podcast-style recording).
+**Always produce this as the final step.** Two output modes:
+
+#### Mode A: NotebookLM Source (default when `--podcast` style is `boardroom` or unspecified)
+
+Writes a raw data document with front-matter instructions for NotebookLM to generate audio.
 
 Output: `~/repos-greenmark-waste-solutions/weekly-updates/reports/YYYY-WNN-notebooklm.md`
 
-**Structure:**
+#### Mode B: Voice Script (when `--podcast` specifies a style, or `--script`)
 
-1. **Front-matter instructions** — Tell NotebookLM how to structure the ~3 minute audio:
-   - Where we were (30s) — starting position entering this week
-   - Where we are now (60s) — what happened, outcomes not implementation
-   - Where we're going (45s) — near-term roadmap
-   - Blockers and who can fix them (30s) — names and actions
-   - How we're tracking this (15s) — GitHub now, Wrike/Cerebro later
-   - Tone: conversational, plain English, small company leadership audience
+Writes a full voice transcript designed for text-to-speech rendering.
 
-2. **Full context section** — Everything NotebookLM needs to draw from:
-   - Company background (who Greenmark is, what Project Cerebro is, the 2+2+2 strategy)
-   - Where we were (pull from last week's report)
-   - Where we are now (pull from this week's report — full detail, don't shorten)
-   - Where we're going (from interview Stage 5, question 12)
-   - Blockers table with owners, timelines, impact
-   - Communications log
-   - Metrics comparison (this week vs last week)
-   - Vendor system overview for context
-   - Any thematic emphasis (e.g., safety-first approach, stakeholder engagement)
+Output: `~/repos-greenmark-waste-solutions/weekly-updates/reports/YYYY-WNN-podcast.md`
 
-**Key rules for NotebookLM file:**
-- Do NOT shorten the content — the goal is maximum context for the AI to draw from
-- Do NOT write a script — write raw data with instructions. NotebookLM generates the audio.
-- DO include last week's context so the "where we were" section is grounded
+**Podcast styles are defined in `podcast-styles.md`** (same directory as this skill). Read that file for all available styles, their audiences, tones, durations, and prompt templates.
+
+**Available styles:** `boardroom` (default), `deep-dive`, `momentum`, `investor`, `standup`, `storytime`
+
+**Usage:** `/weekly-update --podcast storytime` or just `/weekly-update` for default boardroom.
+
+#### Voice Script Format (Mode B)
+
+When generating a script (not a NotebookLM source), write a production-ready transcript:
+
+```markdown
+# Podcast Script: Greenmark Weekly — W{NN}
+# Style: {style name}
+# Duration: ~{X} minutes
+# Voices: {voice assignments}
+
+---
+
+[INTRO — 5s ambient / music fade]
+
+**HOST 1:** {opening line}
+
+**HOST 2:** {response}
+
+[BEAT — 1s pause]
+
+**HOST 1:** {continues}
+
+...
+
+[OUTRO — music fade]
+```
+
+**Script rules:**
+- Write EXACTLY what should be spoken — no stage directions except [BEAT], [PAUSE], [INTRO], [OUTRO]
+- Mark speaker changes with bold names
+- Include natural speech patterns: contractions, filler acknowledgments ("Right.", "Exactly."), callbacks to earlier points
+- Time each section to hit the target duration
+- Every technical term gets an inline plain-English equivalent on first use
+- Real names, real quotes, real numbers — never generic placeholders
+
+#### TTS Rendering (future)
+
+The script can be rendered to audio via:
+1. **Offline first:** Local TTS model (e.g., Piper, Bark, or Coqui) — test quality
+2. **Upgrade path:** ElevenLabs, Play.ht, or OpenAI TTS if offline quality isn't good enough
+3. **Output:** `~/repos-greenmark-waste-solutions/weekly-updates/reports/YYYY-WNN-podcast.mp3`
+
+This is tracked as a future enhancement. For now, scripts are written for human reading or manual TTS upload.
+
+#### Context Rules (apply to both modes)
+- Do NOT shorten the content — the goal is maximum context
+- DO include last week's context so "where we were" is grounded
 - DO emphasize the narrative arc (blocked → unblocked → what's next)
 - DO include the note about task tracking moving to Wrike/Cerebro in future
+- For scripts: DO write full natural dialogue, not bullet points reformatted as speech
 
 ## Key Rules
 
