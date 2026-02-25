@@ -167,7 +167,26 @@
 
   <div class="header">
     <div class="cockpit-name">{{COCKPIT_NAME}}</div>
-    <div class="takeoff-label">Takeoff &mdash; Session #{{SESSION_NUMBER}}</div>
+    <div class="takeoff-label">Takeoff #{{TAKEOFF_NUMBER}}</div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="status-label">Pilot</div>
+      <div class="status-value">{{PILOT}}</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Date</div>
+      <div class="status-value">{{DATE}}</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Time</div>
+      <div class="status-value">{{TIME}}</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Takeoff</div>
+      <div class="status-value">#{{TAKEOFF_NUMBER}}</div>
+    </div>
   </div>
 
   <div class="status-bar">

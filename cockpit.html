@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Greenmark Planning — Cockpit</title>
+  <style>
+    :root {
+      --primary: #3fb950;
+      --danger: #f85149;
+      --warning: #d29922;
+      --bg: #0d1117;
+      --surface: #161b22;
+      --text: #e6edf3;
+      --muted: #8b949e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      padding: 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .cockpit-name {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+    }
+    .takeoff-label {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Status bar */
+    .status-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .status-bar + .status-bar { margin-top: 0; }
+    .status-item {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+    .status-label {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+    .status-value {
+      font-size: 1.125rem;
+      font-weight: 600;
+      font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+    }
+    .status-value.clean { color: var(--primary); }
+    .status-value.dirty { color: var(--warning); }
+    .status-value.never { color: var(--muted); font-style: italic; }
+
+    /* Drift alert */
+    .drift {
+      background: rgba(210, 153, 34, 0.08);
+      border: 1px solid var(--warning);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+    .drift-badge {
+      background: var(--warning);
+      color: var(--bg);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.2em 0.6em;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .drift-text { font-size: 0.9375rem; }
+
+    /* Resume line */
+    .resume {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+      border-left: 3px solid var(--muted);
+      font-style: italic;
+      color: var(--muted);
+      font-size: 0.9375rem;
+    }
+
+    /* Briefing sections */
+    .section {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border-left: 3px solid var(--primary);
+    }
+    .section.blockers { border-left-color: var(--danger); }
+    .section h2 {
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    .section.blockers h2 { color: var(--danger); }
+    .section p {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      margin-bottom: 0.75rem;
+    }
+    .section p:last-child { margin-bottom: 0; }
+    .section ol, .section ul {
+      padding-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .section ol:last-child, .section ul:last-child { margin-bottom: 0; }
+    .section li {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      margin-bottom: 0.5rem;
+    }
+    .section li:last-child { margin-bottom: 0; }
+    .blocker-item { margin-bottom: 1rem; }
+    .blocker-item:last-child { margin-bottom: 0; }
+    .blocker-name { font-weight: 700; color: var(--danger); }
+    .workaround {
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Footer */
+    .timestamp {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--surface);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="cockpit-name">Greenmark Planning</div>
+    <div class="takeoff-label">Takeoff #4</div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="status-label">Pilot</div>
+      <div class="status-value">Daniel Shanklin</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Date</div>
+      <div class="status-value">Feb 25, 2026</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Time</div>
+      <div class="status-value">9:45 PM</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Takeoff</div>
+      <div class="status-value">#4</div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="status-label">Branch</div>
+      <div class="status-value">main</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Working Tree</div>
+      <div class="status-value clean">Clean</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Session</div>
+      <div class="status-value">#4</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Last Landing</div>
+      <div class="status-value never">Never landed</div>
+    </div>
+  </div>
+
+  <div class="resume">
+    Previous session auto-closed without landing. No debrief captured.
+  </div>
+
+  <div class="section">
+    <h2>Where We Were</h2>
+    <p>Last session built the cockpit infrastructure &mdash; added the strategic pre-flight briefing skill, HTML dashboard generation, and established the universal cockpit primitives across all 6 cockpits. The session focused on automating the situational awareness layer so every cockpit can take off quickly and maintain a persistent visual dashboard.</p>
+    <p>Before that, HubSpot integration work had real momentum: REST API patterns proven, data-daemon-testing repo fully operational with authenticated CLI and live CRM data access. The engagement is in its second week &mdash; infrastructure is in place for sustained work.</p>
+  </div>
+
+  <div class="section">
+    <h2>Where We Are</h2>
+    <p>The Greenmark Planning cockpit is fully operational: 6 projects tracked, 2 meetings processed, 6 of 15 vendor systems deep-researched. Cerebro (the data warehouse initiative) is in the research-and-prove-concept phase &mdash; Sage Intacct and HubSpot are confirmed as the first two data sources, APIs are under investigation, and vendor credentials are being provisioned.</p>
+    <p>SEO work is planned for both greenmarkwaste.com and htdisposal.com, but baseline audits haven't been run yet &mdash; without a baseline, we can't track progress. The tech org setup is in flight: GitHub is done, Sage and HubSpot access are pending from Alex and Michael.</p>
+    <p>Four Greenmark leaders are actively engaged: Michael (President), Alex (CFO), Lannis (CRO), and Robert (GM). No momentum loss &mdash; execution is moving at a deliberate pace, held up on credential provisioning, not on design or strategy.</p>
+  </div>
+
+  <div class="section">
+    <h2>Where We're Going</h2>
+    <ol>
+      <li><strong>Expand HubSpot test account API scopes to unlock write operations</strong> &mdash; Proves the sandbox is safe and reduces friction for seeding realistic test data. This is parallel work that doesn't depend on Sage.</li>
+      <li><strong>Seed the test account with waste industry companies, contacts, and deals</strong> &mdash; Gives data-daemon a real schema to design against and proves extraction patterns work at scale. Converts sandbox confidence into production readiness.</li>
+      <li><strong>Design and document the data-daemon HubSpot connector spec</strong> &mdash; Converts proven API patterns from sandbox experimentation into a production-ready engineering specification. The connector is the bridge between HubSpot and Cerebro.</li>
+    </ol>
+    <p>If Sage unblocks (Alex provisions Daniel's read-only account), that becomes the top priority &mdash; it's the critical path for Cerebro.</p>
+  </div>
+
+  <div class="section blockers">
+    <h2>Blockers</h2>
+    <div class="blocker-item">
+      <p><span class="blocker-name">Sage Intacct credentials</span> &mdash; Alex is provisioning Daniel a read-only user account and API key. Michael said "48 hours" on Feb 19, but no handoff yet as of Feb 25. This is the critical path blocker for Cerebro.</p>
+      <div class="workaround">Workaround: Continue HubSpot research in parallel.</div>
+    </div>
+    <div class="blocker-item">
+      <p><span class="blocker-name">HubSpot production access</span> &mdash; Test account is proven and read-only flow validated. Can't move to production until sandbox validation is documented and the safety proof is presented to Michael.</p>
+    </div>
+    <div class="blocker-item">
+      <p><span class="blocker-name">3rd Eye vendor</span> &mdash; Complete unknown. No API documentation, no vendor contact, no way to evaluate. Michael says it's important operationally, but there's no path forward until he provides a contact.</p>
+      <div class="workaround">No workaround available.</div>
+    </div>
+    <div class="blocker-item">
+      <p><span class="blocker-name">SEO baseline audits</span> &mdash; Webflow access needed to run audits on both sites. Michael needs to provide access. The 90-day optimization plan can't start without a baseline.</p>
+    </div>
+  </div>
+
+  <div class="timestamp">
+    Generated Feb 25, 2026 at 9:45 PM by /takeoff &mdash; Pilot: Daniel Shanklin
+  </div>
+
+</body>
+</html>

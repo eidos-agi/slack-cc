@@ -25,6 +25,8 @@ Shows the ASCII art header, status bar, and drift detection. Composes `/pre-flig
 - Current branch, dirty files, recent commits are **already in context**
 - **Do NOT re-run** `git status`, `git branch`, or `git log` — they're already there
 
+**D. Pilot identity** — run `git config user.name` to get the name of who is taking off
+
 ### 2. Output ASCII Art Header
 
 **Line 1: Cockpit name** — Generate the `cockpit.name` from state.json as bold Unicode block letters (same style as TAKEOFF below). This is dynamic per cockpit.
@@ -94,7 +96,9 @@ This is the persistent, git-friendly version of the takeoff briefing. It should 
 Format:
 
 ```markdown
-# <Cockpit Name> — Takeoff
+# <Cockpit Name> — Takeoff #N
+
+**Pilot** <name> &nbsp;|&nbsp; **Date** Feb 25, 2026 &nbsp;|&nbsp; **Time** 9:45 PM
 
 **Session** #N &nbsp;|&nbsp; **Branch** `main` &nbsp;|&nbsp; **Working tree** clean &nbsp;|&nbsp; **Last landing** never / 2h ago / etc.
 
@@ -145,6 +149,10 @@ Replace all `{{PLACEHOLDER}}` tokens with actual values:
 | `{{SURFACE}}` | `state.json → theme.surface` |
 | `{{TEXT}}` | `state.json → theme.text` |
 | `{{MUTED}}` | `state.json → theme.muted` |
+| `{{PILOT}}` | `git config user.name` |
+| `{{DATE}}` | Human-readable date (e.g., "Feb 25, 2026") |
+| `{{TIME}}` | Human-readable time (e.g., "9:45 PM") |
+| `{{TAKEOFF_NUMBER}}` | `counters.takeoffs + 1` |
 | `{{SESSION_NUMBER}}` | `counters.sessions + 1` |
 | `{{BRANCH}}` | Current git branch |
 | `{{DIRTY_CLASS}}` | `clean` or `dirty` (CSS class) |
