@@ -1,11 +1,11 @@
 ---
 name: weekly-update
-description: "Generate comprehensive weekly intelligence report across all Greenmark repos. Use when Daniel says 'weekly update', 'weekly report', 'what happened this week', or '/weekly-update'. Collects commits, backlog changes, communications, cross-references everything, reconciles the backlog, and produces a report with no cracks."
+description: "Generate comprehensive weekly intelligence report across all Greenmark repos. Use when Daniel says 'weekly update', 'weekly report', 'what happened this week', or '/weekly-update'. Collects commits, backlog changes, communications, cross-references everything, reconciles the backlog, interviews Daniel about ambiguities, and produces a report with no cracks."
 ---
 
 # Weekly Update — Comprehensive Intelligence Report
 
-Generate a full-spectrum weekly report covering all Greenmark Waste Solutions engineering activity. This goes beyond commit summaries — it cross-references, reconciles, and surfaces gaps.
+Generate a full-spectrum weekly report covering all Greenmark Waste Solutions engineering activity. This goes beyond commit summaries — it cross-references, reconciles, interviews, and surfaces gaps.
 
 ## Audience
 
@@ -41,15 +41,9 @@ gh repo list greenmark-waste-solutions --limit 50 --json name,isPrivate,updatedA
     --jq '.[] | .name'
 ```
 
-If a repo exists on GitHub but not locally, note it in the report under "Repo Inventory Issues" and clone it:
-```bash
-cd ~/repos-greenmark-waste-solutions
-git clone git@github.com:greenmark-waste-solutions/<repo>.git
-```
+If a repo exists on GitHub but not locally, clone it. If a local directory has no remote, flag it as stale/orphaned.
 
-If a local directory exists but has no remote (like `planning/`), note it as a stale/orphaned directory.
-
-### Before collecting commits, fetch all remotes:
+### Before collecting, fetch all remotes:
 ```bash
 for dir in "$REPOS_DIR"/*/ "$REPOS_DIR"/.*/; do
     [ -d "$dir/.git" ] || continue
@@ -58,29 +52,54 @@ done
 wait
 ```
 
-Skip repos with zero commits that week. Always include `greenmark-planning` if backlog changed.
+## Architecture — Subagent Pipeline
+
+This skill uses **subagents (Task tool)** to avoid burning through the main agent's context. Each subagent works in isolation, writes a structured intermediate report, and the main agent synthesizes at the end.
+
+### Pipeline Overview
+
+```
+Stage 1: Setup (main agent)
+    ↓
+Stage 2: Data Collection (main agent — git commands, lightweight)
+    ↓
+Stage 3: Analysis (PARALLEL subagents — one per domain)
+    ├── Subagent A: Per-repo commit analysis (one per active repo)
+    ├── Subagent B: Backlog & task analysis
+    └── Subagent C: Communications & stakeholder scan
+    ↓
+Stage 4: Cross-reference & Reconcile (main agent — reads subagent outputs)
+    ↓
+Stage 5: Interview Daniel (main agent — interactive)
+    ↓
+Stage 6: Fixes Report (main agent — captures interview answers)
+    ↓
+Stage 7: Final Synthesis (main agent — writes report incorporating fixes)
+```
 
 ## Execution — 7 Stages
 
-### Stage 1: Determine Date Range
+### Stage 1: Setup & Date Range
 
 Default: Monday through Sunday of the current week.
 If Daniel specifies a date or range, use that.
 
 ```bash
-# Calculate current week boundaries
 DOW=$(date +%u)
 SINCE=$(date -j -v-$((DOW-1))d "+%Y-%m-%d")
 UNTIL=$(date -j -v+$((7-DOW))d "+%Y-%m-%d")
 ```
 
-### Stage 2: Collect Commits (All Repos)
+Also read the previous week's report from `~/repos-greenmark-waste-solutions/weekly-updates/reports/` for trend comparison.
 
-For each repo directory, collect commits in the date range:
+### Stage 2: Data Collection (Main Agent)
 
+Lightweight — just git commands to gather raw data. Do this in the main agent since it's fast and low-context.
+
+**Collect commits per repo:**
 ```bash
 REPOS_DIR=~/repos-greenmark-waste-solutions
-for repo in "$REPOS_DIR"/*/; do
+for repo in "$REPOS_DIR"/*/ "$REPOS_DIR"/.*/; do
     [ -d "$repo/.git" ] || continue
     name=$(basename "$repo")
     git -C "$repo" log --since="$SINCE" --until="$UNTIL" \
@@ -88,104 +107,154 @@ for repo in "$REPOS_DIR"/*/; do
 done
 ```
 
-For repos with significant commits (5+ or architecturally important), also collect:
+**Also check for uncommitted work** (this is important — it catches work-in-progress that hasn't been committed):
 ```bash
-git -C "$repo" log --since="$SINCE" --until="$UNTIL" --stat --no-merges
+for repo in "$REPOS_DIR"/*/ "$REPOS_DIR"/.*/; do
+    [ -d "$repo/.git" ] || continue
+    name=$(basename "$repo")
+    changes=$(git -C "$repo" status --short | wc -l | tr -d ' ')
+    [ "$changes" -gt 0 ] && echo "$name: $changes uncommitted files"
+done
 ```
 
-Count commits per repo. Note which repos had zero activity.
-
-### Stage 3: Collect Backlog & Planning Changes
-
-From `greenmark-planning`:
-
+**Collect planning folder changes:**
 ```bash
 PLANNING=~/repos-greenmark-waste-solutions/greenmark-planning
-
-# Backlog task changes this week
-git -C "$PLANNING" log --since="$SINCE" --until="$UNTIL" \
-    --format="%h %s" -- backlog/
-
-# Specific files changed in backlog/
-git -C "$PLANNING" diff $(git -C "$PLANNING" log --since="$SINCE" --format="%H" --reverse -- backlog/ | head -1)^..HEAD -- backlog/ --stat
-
-# New/changed meetings
-git -C "$PLANNING" log --since="$SINCE" --until="$UNTIL" \
-    --format="%h %s" -- meetings/
-
-# New/changed decisions
-git -C "$PLANNING" log --since="$SINCE" --until="$UNTIL" \
-    --format="%h %s" -- decisions/
-
-# New notes
-git -C "$PLANNING" log --since="$SINCE" --until="$UNTIL" \
-    --format="%h %s" -- notes/
-
-# Project checklist changes
-git -C "$PLANNING" log --since="$SINCE" --until="$UNTIL" \
-    --format="%h %s" -- projects/
+git -C "$PLANNING" log --since="$SINCE" --until="$UNTIL" --format="%h %s" -- backlog/ meetings/ decisions/ notes/ projects/
 ```
 
-Also read every task file in `backlog/tasks/` to get current status snapshot:
-```bash
-# Read all task files to build status snapshot
-ls "$PLANNING/backlog/tasks/"
+Save all raw data as context for the subagents.
+
+### Stage 3: Parallel Subagent Analysis
+
+Launch these subagents **in parallel** using the Task tool. Each subagent gets the relevant raw data and writes a structured analysis.
+
+#### Subagent A: Per-Repo Commit Analysis (one per active repo)
+
+For each repo with commits this week, launch a subagent:
+
+```
+Task tool:
+  subagent_type: "haiku" or "general-purpose"
+  prompt: "Analyze the following commits for repo {name}.
+           Commits: {commit list with stats}
+           Produce a structured summary:
+           1. What changed (2-5 bullets, plain English)
+           2. Key files touched and why they matter
+           3. Contributors
+           4. Impact assessment (active dev / maintenance / dormant)
+           5. Any task IDs referenced in commit messages
+           6. Any ambiguities or things that seem incomplete"
 ```
 
-Use the Backlog MCP `task_search` and `task_list` to get the current state of all tasks.
+#### Subagent B: Backlog & Task Analysis
 
-### Stage 4: Collect Communications
+One subagent reads ALL task files and produces:
 
-Check for evidence of stakeholder communications this week:
+```
+Task tool:
+  subagent_type: "general-purpose"
+  prompt: "Read all task files in {backlog/tasks/} and the Backlog MCP.
+           Produce:
+           1. Status snapshot (count by status)
+           2. Tasks completed this week (check updated dates)
+           3. Tasks started this week
+           4. New tasks created this week
+           5. Dependency chain analysis — is the critical path healthy?
+           6. Zombie check — any In Progress tasks with no recent notes?
+           7. Stale check — any To Do tasks whose dependencies are all Done?
+           8. Priority drift — any Low tasks getting work while High tasks idle?
+           9. Specific reconciliation recommendations"
+```
 
-- **Emails sent** — look in notes/ for mentions of "sent", "emailed", "replied"
-- **Meetings held** — new folders in meetings/
-- **Decisions made** — new/updated files in decisions/
-- **Setup instructions sent** — check projects/ for stakeholder-facing docs updated this week
+#### Subagent C: Communications & Stakeholder Scan
 
-Build a communications log: who was contacted, about what, what response (if any).
+One subagent scans notes/, meetings/, decisions/, and project files:
 
-### Stage 5: Cross-Reference & Deep Dive
+```
+Task tool:
+  subagent_type: "general-purpose"
+  prompt: "Scan these locations for stakeholder communications this week:
+           - notes/ files (look for mentions of sent, emailed, replied, called)
+           - meetings/ folders (new meetings held)
+           - decisions/ (new or updated decisions)
+           - projects/ (stakeholder-facing docs updated)
+           Produce a communications log:
+           1. Who was contacted, about what, via what channel
+           2. Who responded and what they said
+           3. Who is still waiting for a response
+           4. Any commitments made with deadlines
+           5. Draft emails or setup guides that exist but haven't been sent"
+```
 
-This is the critical stage. For each significant commit or group of commits:
+### Stage 4: Cross-Reference & Reconcile (Main Agent)
 
-1. **Match to tasks** — Does this commit relate to a backlog task? Look for:
-   - Task IDs in commit messages (e.g., "TASK-1.3")
-   - File paths that match task descriptions
-   - Themes that match task titles
+Read all subagent outputs. This stage runs in the main agent because it needs to correlate across domains.
 
-2. **Find untracked work** — Commits that don't match any task. This is work that happened but isn't in the backlog. Flag it.
+1. **Match commits to tasks** — Do commits reference task IDs? Do file paths match task descriptions?
+2. **Find untracked work** — Commits that don't match any task. Flag for backlog creation.
+3. **Find stale tasks** — Tasks with no commits this week. Flag for review.
+4. **Check blockers** — For each known blocker, has anything changed? Who needs to act?
+5. **Reconciliation table** — Combine task analysis with commit analysis to find gaps.
 
-3. **Find stale tasks** — Tasks marked "In Progress" or "To Do" with NO commits this week across any repo. Are they truly blocked, or just forgotten?
+Write a **draft findings document** (not the final report) summarizing:
+- Everything that happened (from subagents)
+- Cross-reference results
+- Reconciliation issues found
+- **Ambiguities and questions** — things that don't add up, seem incomplete, or need human context
 
-4. **Check blocker status** — For each known blocker:
-   - Is it still blocked? Check if the blocking condition changed.
-   - Was any progress made toward unblocking?
-   - Who needs to act?
+### Stage 5: Interview Daniel
 
-5. **Dependency chain** — Which tasks are blocking others? Is the critical path healthy?
+**This is the quality gate.** Present the draft findings to Daniel and ask about every ambiguity. Do NOT proceed to the final report until this stage is complete.
 
-### Stage 6: Reconcile Backlog
+Use `AskUserQuestion` or direct conversation to cover:
 
-Perform a full backlog health check:
+**Categories of questions to ask:**
 
-| Check | What to Look For |
-|-------|-----------------|
-| **Zombie tasks** | "In Progress" for 2+ weeks with no recent commits or notes |
-| **Orphan work** | Commits that don't correspond to any task |
-| **Missing tasks** | Work areas with activity but no backlog coverage |
-| **Stale To Do** | Tasks in "To Do" that should have started based on dependencies being met |
-| **Done but unclosed** | Work clearly completed but task still open |
-| **Dependency violations** | Tasks in progress whose dependencies aren't Done |
-| **Priority drift** | Low-priority tasks getting work while High-priority tasks are idle |
+1. **Ambiguities** — "Commit X mentions Y but there's no task for it. Was this planned work or ad-hoc?"
+2. **Missing context** — "TASK-1.7 has no commits this week. Is it blocked, deferred, or just not started?"
+3. **Communications gaps** — "The setup email for Michael is drafted but not sent. Should we mark this as 'pending send' or 'deferred'?"
+4. **Blocker updates** — "Alex said Sage credentials would come Monday. Did that happen? Should we escalate?"
+5. **Priority corrections** — "The reconciliation found X is low priority but got work. Is that intentional?"
+6. **Things to add** — "Is there anything that happened this week that isn't captured in any repo? Meetings, calls, decisions made verbally?"
+7. **Things to remove or correct** — "The subagent flagged X as a concern. Is that actually fine?"
+8. **Next week priorities** — "What should the 'What's Next' section say? What are YOUR priorities?"
 
-Produce a reconciliation table with specific recommendations (close task X, create task for Y, update status of Z).
+**Format the interview as a numbered list.** Present all questions at once so Daniel can answer efficiently. If answers raise follow-up questions, ask those too.
 
-### Stage 7: Write the Report
+### Stage 6: Fixes Report
 
-Output location: `~/repos-greenmark-waste-solutions/weekly-updates/reports/YYYY-WNN.md`
+Capture Daniel's answers into a fixes report saved alongside the weekly update:
 
-Use this format:
+Output: `~/repos-greenmark-waste-solutions/weekly-updates/reports/YYYY-WNN-fixes.md`
+
+```markdown
+# W{NN} Fixes Report
+
+*Interview date: {date}*
+
+## Ambiguities Resolved
+| # | Question | Answer | Action Taken |
+|---|----------|--------|--------------|
+| 1 | {question} | {Daniel's answer} | {Updated report / created task / corrected status} |
+
+## Corrections Made
+- {What was wrong} → {What was fixed}
+
+## Context Added
+- {What Daniel provided that wasn't in any repo}
+
+## Backlog Updates Applied
+- {Task status changes, new tasks created, tasks closed based on interview}
+```
+
+**Apply the fixes** — update backlog tasks, create new tasks, correct statuses, add notes. Do this BEFORE writing the final report so the backlog is clean.
+
+### Stage 7: Final Synthesis (Main Agent)
+
+NOW write the final report, incorporating all fixes from the interview.
+
+Output: `~/repos-greenmark-waste-solutions/weekly-updates/reports/YYYY-WNN.md`
 
 ```markdown
 # Weekly Intelligence Report — {Week Label}
@@ -258,6 +327,7 @@ Prioritized list of what should happen next week, based on:
 1. Critical path tasks
 2. Unblocked items
 3. Upcoming deadlines or stakeholder commitments
+(Informed by Daniel's interview answers from Stage 5)
 
 ## Metrics
 
@@ -272,33 +342,28 @@ Prioritized list of what should happen next week, based on:
 ---
 *Generated by /weekly-update skill from greenmark-planning.*
 *Sources: GitHub commits, Backlog.md tasks, project files, meeting notes.*
+*Quality gate: Interview with Daniel on {date} — see YYYY-WNN-fixes.md*
 ```
 
 ## After Writing
 
-1. Show Daniel a preview of the report
-2. Ask if he wants to adjust anything before publishing
-3. If approved, save to `~/repos-greenmark-waste-solutions/weekly-updates/reports/YYYY-WNN.md`
-4. Optionally commit to the weekly-updates repo
-
-## Comparing to Existing Pipeline
-
-The `weekly-updates` repo has a `generate.sh` pipeline that does commit collection + AI summarization. This skill **supersedes** that pipeline by adding:
-- Backlog awareness (task status tracking)
-- Cross-referencing (commits ↔ tasks)
-- Communications tracking
-- Reconciliation
-- Deeper per-commit research when needed
-
-The existing `generate.sh` can still run independently for quick commit-only reports. This skill is the comprehensive version.
+1. Show Daniel the final report for approval
+2. If approved, save both files:
+   - `reports/YYYY-WNN.md` (the report)
+   - `reports/YYYY-WNN-fixes.md` (the interview record)
+3. Commit both to the weekly-updates repo
+4. Push to remote
 
 ## Key Rules
 
 - **No cracks** — every commit must be accounted for. Every task must be checked. Every blocker must have a path forward.
+- **Subagents for research, main agent for synthesis** — don't burn context reading every task file in the main conversation.
+- **Interview BEFORE final report** — the report should never contain ambiguities that could have been resolved by asking Daniel.
 - **Cross-reference everything** — if a commit touches a file related to a task, link them.
 - **Plain English for executives** — Michael and Alex are not engineers. Write for them.
 - **Technical depth for Daniel** — include task IDs, commit hashes, file paths in the detail sections.
 - **Flag gaps loudly** — untracked work, stale tasks, and reconciliation issues go in dedicated sections, not buried in prose.
-- **Don't invent** — only report what the evidence shows. If something is ambiguous, say so.
-- **Include last week's metrics** — read the previous week's report from `weekly-updates/reports/` to calculate trends.
+- **Don't invent** — only report what the evidence shows. If something is ambiguous, ask Daniel in Stage 5 rather than guessing.
+- **Include last week's metrics** — read the previous week's report for trends.
 - **Reconcile honestly** — if the backlog is messy, say so. The point is to fix it, not hide it.
+- **The fixes report is permanent record** — it captures institutional knowledge that only exists in Daniel's head. This is the "no cracks" guarantee.
