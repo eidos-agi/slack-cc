@@ -4,54 +4,64 @@
 End of every session. Last thing you run before closing.
 
 ## What It Does
-Captures the session outcome, writes a bookmark for next session, updates state, and exits cleanly.
+Wraps up the session automatically: commits uncommitted work, pushes to remote, writes a bookmark for next session, updates state, and exits cleanly.
+
+## Core Principle
+**Landing is automated, not an interview.** Infer everything from git state and session context. Only ask the pilot if something is genuinely ambiguous (e.g., uncommitted changes with no obvious commit message).
 
 ## Invocation Modes
 
-- **`/land`** — Interactive. Asks one question, waits for response.
-- **`/land <debrief>`** — Scripted. Uses the provided text as the debrief, skips asking.
-- **`/land clean`** — Silent. Infers everything from git log and session context. No question.
+- **`/land`** — Automatic. Infers everything, commits, pushes, bookmarks.
+- **`/land <note>`** — Automatic with a note. Adds the note to the bookmark summary.
+- **`/land blocked <reason>`** — Marks session as blocked with the given reason.
 
 ## Execution Steps
 
-### 1. Gather Session State
+### 1. Gather State (parallel)
 
-**A. Git state** — run `git status --porcelain`, `git log --oneline -1`, `git diff --stat`
-- Current branch (reuse from session context if available)
-- Dirty files (list them)
-- Last commit hash + message
-- Diff summary
+Run these in parallel — one message, multiple tool calls:
 
-**B. Read state.json** — get current counters and watermarks
+- `git status --porcelain` — dirty files
+- `git log --oneline -5` — recent commits (to infer what happened)
+- `git branch --show-current` — current branch
+- Read `state.json` — counters and watermarks
 
-### 2. Get Debrief
+### 2. Commit & Push Uncommitted Work
 
-**If arguments were provided:** Use them as the debrief. Skip to step 3.
+**If there are uncommitted changes:**
 
-**If "clean" was provided:** Infer summary from git log and dirty files. Skip to step 3.
+a. Stage all relevant files (skip secrets, .env, credentials)
+b. Generate a commit message from the changes — summarize what changed and why
+c. Commit
+d. Push
 
-**Otherwise:** Ask the user (inline, not a separate tool):
+**If clean:** Skip to step 3.
 
-```
-Landing checklist:
-- What did we accomplish?
-- What's next?
-- Any blockers?
-- Confidence: high / medium / low?
+**If commit fails (pre-commit hook):** Fix the issue, re-commit. If it fails twice, note it as a blocker and continue landing.
 
-(Answer all at once, or just say "clean" and I'll infer from context.)
-```
+**If push fails (no remote, auth issue):** Note it in the bookmark but don't block the landing.
 
-Wait for the user's response before proceeding.
+### 3. Infer Session Summary
 
-### 3. Write Bookmark
+From the session context (conversation history + git log), determine:
 
-Write to `~/.claude/bookmarks/<session-id>-bookmark.json`:
+- **What was accomplished** — summarize from commits and conversation
+- **What's next** — infer from open threads, TODOs mentioned, backlog state
+- **Blockers** — anything explicitly flagged or that failed
+- **Confidence** — high (clean session, goals met), medium (partial), low (lots of unknowns)
+- **Lifecycle state:**
+  - `done` — session goal was completed or natural stopping point
+  - `paused` — work in progress, stopping by choice
+  - `blocked` — can't continue without external input
+
+### 4. Write Bookmark
+
+Write to `~/.claude/bookmarks/<project-name>-<date>-bookmark.json`:
 
 ```json
 {
   "schema_version": "1.1",
-  "session_id": "<current session ID>",
+  "session_id": "<project-name>-<YYYYMMDD>",
   "timestamp": "<ISO 8601 UTC>",
   "lifecycle_state": "<done|paused|blocked>",
   "project": {
@@ -59,39 +69,40 @@ Write to `~/.claude/bookmarks/<session-id>-bookmark.json`:
     "git_branch": "<current branch>"
   },
   "context": {
-    "summary": "<user's accomplishments, condensed to 1-2 sentences>",
-    "goal": "<what we were trying to do>",
+    "summary": "<what we accomplished, 1-3 sentences>",
+    "goal": "<what we were working toward>",
     "current_step": "<where we stopped>"
   },
   "workspace_state": {
-    "dirty": <true|false>,
-    "uncommitted_files": [<list of dirty files>],
+    "dirty": false,
+    "uncommitted_files": [],
     "last_commit": "<hash> <message>",
-    "diff_summary": "<git diff --stat output>"
+    "diff_summary": "clean"
   },
   "next_actions": [
     "<action 1>",
     "<action 2>",
     "<action 3>"
   ],
-  "blockers": [<blockers if lifecycle_state is "blocked">],
+  "blockers": [],
   "confidence": {
     "level": "<high|medium|low>",
-    "risk_areas": [<any risks mentioned>]
+    "risk_areas": []
   },
   "meta": {
-    "created_by": "manual"
+    "created_by": "land-skill",
+    "commits_this_session": "<count from git log>"
   }
 }
 ```
 
-### 4. Update State
+### 5. Update State
 
 Write to `state.json`:
 - Set `watermarks.last_land` to current ISO timestamp
 - Increment `counters.landings` by 1
 
-### 5. Confirm Landing
+### 6. Confirm Landing
 
 Output with two-line ASCII art header:
 
@@ -110,21 +121,29 @@ Output with two-line ASCII art header:
 
 **Then the status block:**
 ```
-  STATE     <lifecycle_state>
-  SUMMARY   <1-line summary>
-  NEXT      <top priority for next session>
+  BRANCH    <branch>        STATE  <lifecycle_state>
+  COMMITS   <N this session>   PUSHED  yes|no
 
-  Bookmark written. Safe to close.
+  ─── ACCOMPLISHED ─────────────────────
+  • <bullet 1>
+  • <bullet 2>
+  • <bullet 3>
+
+  ─── NEXT TAKEOFF ─────────────────────
+  1. <action>  2. <action>  3. <action>
+
+  ─── BLOCKERS ─────────────────────────
+  <list OR "None — clear skies">
+
+  Bookmark saved. Safe to close.
 ```
 
 ## Rules
-- Maximum 2 tool calls for the landing itself (bookmark write + state update). Keep it fast.
-- Only ONE question to the user. Don't interrogate.
-- If the user says "just land", "clean", or gives a terse response, infer what you can from the session context and fill in the bookmark.
-- If the user doesn't respond to the question (e.g., they just want to close), write the bookmark with what you know from the session. Use `confidence.level: "low"` and note "Auto-inferred from session context" in the summary.
-- Always write the bookmark. Even a low-confidence bookmark is better than nothing.
-- Keep the confirmation to 5-6 lines. The user is leaving.
-- lifecycle_state:
-  - `done` — session goal was completed
-  - `paused` — work in progress, stopping by choice
-  - `blocked` — can't continue without external input
+- **Automate everything.** Don't ask the pilot unless something is genuinely ambiguous.
+- **Always commit and push** before writing the bookmark. The workspace should be clean on landing.
+- **Always write the bookmark.** Even if something fails, write what you know.
+- **Keep it fast.** Parallel tool calls where possible. Target 3-4 tool calls total.
+- **Keep output concise.** The pilot is leaving — 10-15 lines max after the ASCII art.
+- **Infer, don't interrogate.** You have the full conversation history. Use it.
+- If the pilot provides a note with `/land <note>`, incorporate it into the summary.
+- If push fails, still write the bookmark — note "unpushed" in workspace_state.
