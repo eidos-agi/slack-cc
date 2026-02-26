@@ -1,6 +1,6 @@
-# Greenmark
+# Greenmark Cockpit
 
-Shared planning hub for Greenmark Waste Solutions leadership.
+AI Cockpit for Greenmark Waste Solutions — projects, decisions, meetings, and session orchestration.
 
 ## Active Projects
 

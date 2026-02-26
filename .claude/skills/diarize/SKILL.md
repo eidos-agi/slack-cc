@@ -5,7 +5,7 @@ description: "Process meeting transcripts into structured project artifacts. Use
 
 # Diarize — Meeting Transcript Processor
 
-Extract structured intelligence from meeting transcripts: decisions, action items, feature requests, and key quotes. Output follows the greenmark-planning meeting convention.
+Extract structured intelligence from meeting transcripts: decisions, action items, feature requests, and key quotes. Output follows the greenmark-cockpit meeting convention.
 
 ## Autonomous by default
 

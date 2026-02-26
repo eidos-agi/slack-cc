@@ -1,4 +1,4 @@
-project_name: "greenmark-planning"
+project_name: "greenmark-cockpit"
 default_status: "To Do"
 statuses: ["To Do", "In Progress", "Done"]
 labels: []

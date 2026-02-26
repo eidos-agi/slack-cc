@@ -1,6 +1,8 @@
-# CLAUDE.md — Greenmark
+# CLAUDE.md — Greenmark Cockpit
 
-This is the shared planning hub for Greenmark Waste Solutions leadership. It is NOT a code repo. It contains projects, decisions, meeting records, and reference material.
+AI Cockpit for Greenmark Waste Solutions. Orchestrates technology leadership, vendor integration, and project delivery. Built from [rhea-impact/ai-cockpit-template](https://github.com/rhea-impact/ai-cockpit-template).
+
+This is NOT a code repo. It contains projects, decisions, meeting records, reference material, and the session lifecycle for the Greenmark engagement.
 
 ## Who's Who
 
@@ -65,7 +67,7 @@ This workspace is an **AI Cockpit** — built from [rhea-impact/ai-cockpit-templ
 ## Repo Structure
 
 ```
-greenmark-planning/
+greenmark-cockpit/
 ├── CLAUDE.md              ← you are here
 ├── README.md              ← dashboard: active projects, status, links
 ├── state.json             ← cockpit state: watermarks, counters

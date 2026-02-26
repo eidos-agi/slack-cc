@@ -14,7 +14,7 @@ ADRs document significant technology, infrastructure, and operational decisions 
 
 ## Where ADRs Live
 
-- **Template**: `greenmark-planning/reference/adr-template.md` (this file)
+- **Template**: `greenmark-cockpit/reference/adr-template.md` (this file)
 - **Records**: `infra/decisions/ADR-YYYY-NN.md` (one file per decision)
 - **Index**: `infra/decisions.md` (lightweight log linking to full ADRs)
 
