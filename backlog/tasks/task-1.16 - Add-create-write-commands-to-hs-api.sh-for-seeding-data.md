@@ -1,11 +1,11 @@
 ---
 id: TASK-1.16
 title: Add create/write commands to hs-api.sh for seeding data
-status: To Do
+status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 22:30'
-updated_date: '2026-02-24 22:39'
+updated_date: '2026-02-26 08:43'
 labels:
   - hubspot
   - tooling
@@ -37,3 +37,9 @@ Commands to add:
 - [ ] #4 create-property command creates custom properties
 - [ ] #5 Safety check: warns if default account is production
 <!-- AC:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Superseded: Write commands were for sandbox seeding. Production HubSpot is read-only by policy. No write commands needed.
+<!-- SECTION:FINAL_SUMMARY:END -->

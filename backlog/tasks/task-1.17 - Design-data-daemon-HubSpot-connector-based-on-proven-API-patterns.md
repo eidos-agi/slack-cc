@@ -5,14 +5,13 @@ status: To Do
 assignee:
   - '@Daniel'
 created_date: '2026-02-24 22:40'
-updated_date: '2026-02-25 07:44'
+updated_date: '2026-02-27 00:44'
 labels:
   - hubspot
   - data-daemon
   - architecture
 dependencies:
-  - TASK-1.3
-  - TASK-1.11
+  - TASK-1.6
 references:
   - data-daemon-testing/hubspot-testing/EXPLORATION.md
   - 'https://github.com/greenmark-waste-solutions/data-daemon'
@@ -66,4 +65,8 @@ Design the data-daemon connector for HubSpot CRM using the API patterns proven d
 
 <!-- SECTION:NOTES:BEGIN -->
 2026-02-25: Added formal dependencies on TASK-1.3 (exploration) and TASK-1.11 (capability map) — both Done, so this task is unblocked.
+
+Feb 26: Now actionable. Daniel has admin access to production HubSpot. Security review in AM, then connector design proceeds with real schema knowledge.
+
+Feb 27: **Second opinion (GPT-5.2)** — Four design decisions resolved: (1) Full vs incremental: incremental after first full load, `lastmodifieddate >= (last_sync - 5 min)` overlap window, weekly full resync as backstop. (2) Properties: store ALL in JSONB in bronze, auto-discover property names from HubSpot metadata endpoint — don't hand-maintain 300 names in YAML. (3) Associations: separate edge table `(from_type, from_id, to_type, to_id, association_type, fetched_at)`, refresh edges only for changed objects. (4) Token: PAK doesn't expire, focus on rate-limit handling (429 + exponential backoff), scope minimization, quarterly rotation. Also handle `archived` flag via periodic reconciliation.
 <!-- SECTION:NOTES:END -->

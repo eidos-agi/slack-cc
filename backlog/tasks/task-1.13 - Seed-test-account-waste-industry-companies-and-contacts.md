@@ -1,11 +1,11 @@
 ---
 id: TASK-1.13
 title: 'Seed test account: waste industry companies and contacts'
-status: To Do
+status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 22:30'
-updated_date: '2026-02-24 22:40'
+updated_date: '2026-02-26 08:43'
 labels:
   - hubspot
   - data-integration
@@ -50,3 +50,9 @@ Seed test account with waste industry companies and contacts matching Greenmark'
 <!-- SECTION:NOTES:BEGIN -->
 2026-02-24: API writes confirmed denied. Two paths: expand PAK scopes, or use UI CSV import.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Superseded: Production HubSpot has real Greenmark data. Sandbox seeding no longer needed.
+<!-- SECTION:FINAL_SUMMARY:END -->

@@ -1,0 +1,731 @@
+1
+00:00:00,011 --> 00:00:02,470
+Welcome in. Let's talk about Railway.
+
+2
+00:00:02,872 --> 00:00:06,607
+There's lots of different ways to host miniature servers out there on the web,
+
+3
+00:00:06,678 --> 00:00:08,599
+and they can get as big as you need them to be or as
+
+4
+00:00:08,600 --> 00:00:10,776
+small as you need them to be. They're dynamic in size.
+
+5
+00:00:12,084 --> 00:00:15,851
+Railway is one of my favorite providers because it's really simple to deploy to.
+
+6
+00:00:16,274 --> 00:00:18,314
+So, how does a Railway work? Well,
+
+7
+00:00:18,459 --> 00:00:21,491
+let's first log in so we can see how to get into the system,
+
+8
+00:00:21,775 --> 00:00:23,899
+and then I'll show you how you can play around and also make sure
+
+9
+00:00:24,075 --> 00:00:28,084
+that you're, uh, taking care of the monthly invoices and just managing the panel
+
+10
+00:00:28,085 --> 00:00:32,353
+in general. So, Railway will log in here by clicking Sign In,
+
+11
+00:00:32,503 --> 00:00:36,176
+and then there's a little hidden element down here where you can choose to
+
+12
+00:00:36,177 --> 00:00:42,994
+use the email to sign in. I'll go ahead and use it at greenmarkwaste.com,
+
+13
+00:00:43,837 --> 00:00:46,475
+continue with email, and over on another screen,
+
+14
+00:00:46,476 --> 00:00:49,154
+I'll go ahead and get that six-digit code. And I'll put it in.
+
+15
+00:00:49,703 --> 00:00:54,259
+I am enforcing two-factor authentication for all new accounts that I set up for
+
+16
+00:00:54,260 --> 00:00:59,027
+Greenmark, and I'm always doing them under the IT at greenmarkwaste.com email address.
+
+17
+00:00:59,470 --> 00:01:03,684
+So that way, anybody, uh, who's in that email address is able to access
+
+18
+00:01:03,685 --> 00:01:05,827
+it. At present, that's two people. It's me,
+
+19
+00:01:05,828 --> 00:01:08,327
+uh, Daniel Shanklin, and it's also Michael N.
+
+20
+00:01:08,328 --> 00:01:11,664
+So, here we go. Two, one eight,
+
+21
+00:01:11,665 --> 00:01:16,140
+six, nine, three, and that's going to get me inside of the railway system.
+
+22
+00:01:18,693 --> 00:01:22,497
+There we go. And because I forced it to use two-factor authentication,
+
+23
+00:01:22,498 --> 00:01:25,679
+I'm going to have to go ahead and set up my Authenticator app right
+
+24
+00:01:25,680 --> 00:01:28,196
+now. I'll do that, and everyone else can,
+
+25
+00:01:28,197 --> 00:01:31,099
+uh, share and set up in this when they come in the office.
+
+26
+00:01:31,412 --> 00:01:34,316
+So that's not a big deal, and we'll also have some recovery codes that
+
+27
+00:01:34,317 --> 00:01:36,917
+we can do as well. So, I, uh, keep a,
+
+28
+00:01:36,918 --> 00:01:39,828
+uh, Duo on my phone.
+
+29
+00:01:40,403 --> 00:01:43,202
+The Duo is what we use at Jetta and also at AIC,
+
+30
+00:01:43,203 --> 00:01:47,734
+so I like to just add the apps that I use at work
+
+31
+00:01:47,735 --> 00:01:50,202
+into Duo. So I'm going to click the Add button up here in the
+
+32
+00:01:50,203 --> 00:01:54,253
+corner, and then I'm going to go to Use QR Code,
+
+33
+00:01:54,637 --> 00:01:56,780
+and it's going to ask me to take a picture of this QR code
+
+34
+00:01:56,781 --> 00:02:00,331
+we see on the screen, and it's going to add my account name.
+
+35
+00:02:00,332 --> 00:02:02,411
+right there, and give me a six-digit code,
+
+36
+00:02:02,419 --> 00:02:06,248
+and now any time I'm on my iPhone, I can get this code and
+
+37
+00:02:06,249 --> 00:02:06,760
+type it in. So, we'll click Enable right here, and it looks like it
+
+38
+00:02:06,761 --> 00:02:09,559
+went away really quickly, those backup codes, so I'll go back and get those
+
+39
+00:02:09,560 --> 00:02:12,048
+in another time. Alright, so first things first,
+
+40
+00:02:12,049 --> 00:02:14,479
+let's take a look at how Railway works. Uh,
+
+41
+00:02:14,490 --> 00:02:16,542
+they organize things in terms of projects,
+
+42
+00:02:16,543 --> 00:02:19,085
+and you can either do them as a list, or you can do them,
+
+43
+00:02:19,086 --> 00:02:24,518
+uh, as these cards right here. And then the number of
+
+44
+00:02:24,826 --> 00:02:27,886
+services inside of a project is something you can easily see if you go
+
+45
+00:02:27,887 --> 00:02:30,621
+inside of it. And it reads just like a board,
+
+46
+00:02:30,622 --> 00:02:32,658
+uh, that, where you would,
+
+47
+00:02:32,659 --> 00:02:36,438
+like, be doing flowcharts or diagrams, and that's because sometimes things link together.
+
+48
+00:02:36,842 --> 00:02:41,043
+So, Rebro, that is one of the three projects that we're working on right
+
+49
+00:02:41,044 --> 00:02:44,093
+now. We also have a Greenmark portal, which I may shut down,
+
+50
+00:02:44,094 --> 00:02:46,113
+because I don't think we need it. Um,
+
+51
+00:02:46,124 --> 00:02:48,160
+and then there's the QA website as well.
+
+52
+00:02:48,161 --> 00:02:51,497
+So, these are all three different websites that run as part of the Greenmark
+
+53
+00:02:51,498 --> 00:02:54,739
+Waste Solutions Project. If I wanted to be able to see what it looks
+
+54
+00:02:54,740 --> 00:02:57,325
+like in production, I could come over here to settings,
+
+55
+00:02:58,134 --> 00:03:01,322
+and then scroll down, and I could click on this link right here,
+
+56
+00:03:01,323 --> 00:03:04,149
+and it would actually open up the tab, and I could see that site.
+
+57
+00:03:04,669 --> 00:03:06,925
+I'll talk a little bit about deployment here in just a second,
+
+58
+00:03:06,926 --> 00:03:09,740
+but I'll also show you the same thing over here. If I change to
+
+59
+00:03:09,741 --> 00:03:14,005
+this, I can now click on Sarebo, and I can see a different login.
+
+60
+00:03:14,006 --> 00:03:17,149
+This is for the Sarebo website, the other one is for the QA website.
+
+61
+00:03:17,375 --> 00:03:20,242
+The portal's a third option, and I think this is just something we'll shut
+
+62
+00:03:20,243 --> 00:03:22,597
+down, or use in a different way.
+
+63
+00:03:23,143 --> 00:03:25,466
+Okay, one thing to mention. Uhm,
+
+64
+00:03:25,477 --> 00:03:29,943
+these generally should connect directly to repositories in GitHub,
+
+65
+00:03:30,340 --> 00:03:33,553
+and you do that so that whenever there's any code changes that a developer
+
+66
+00:03:33,554 --> 00:03:36,587
+makes, that those changes go directly out to the website.
+
+67
+00:03:36,588 --> 00:03:40,729
+So you can see the changes live. Sometimes you don't connect them if you
+
+68
+00:03:40,730 --> 00:03:44,029
+want to make sure that your site is static and it doesn't get accidentally
+
+69
+00:03:44,030 --> 00:03:48,056
+updated, but 99.9% of the time you're going to want to connect to repo.
+
+70
+00:03:48,243 --> 00:03:50,703
+So this would be the perfect time to do this. I'm going to click
+
+71
+00:03:50,704 --> 00:03:54,392
+connect repo, and it's going to say that there are no repos found,
+
+72
+00:03:54,393 --> 00:03:56,503
+because it's not configured, uh,
+
+73
+00:03:56,514 --> 00:03:58,686
+that our GitHub account is actually linked through.
+
+74
+00:03:59,054 --> 00:04:01,103
+Because I, Daniel, set up these,
+
+75
+00:04:01,136 --> 00:04:03,689
+I can go log in to my,
+
+76
+00:04:03,690 --> 00:04:05,982
+uh, log in for this, uh, Greenmark Waste,
+
+77
+00:04:05,983 --> 00:04:08,748
+and I can go fix that, but that's not going to solve the problem
+
+78
+00:04:08,749 --> 00:04:11,222
+in the long run. So this is a task that I'll have to complete,
+
+79
+00:04:11,436 --> 00:04:13,503
+and I'll make sure I log how that works.
+
+80
+00:04:13,941 --> 00:04:18,445
+Just to reiterate, if you want to get code from one system
+
+81
+00:04:18,446 --> 00:04:21,052
+into another, you have to set up a connector,
+
+82
+00:04:21,287 --> 00:04:24,560
+and to set up that connector, you need a GitHub account under the same
+
+83
+00:04:24,561 --> 00:04:27,001
+email. as what you have for Greenmark Waste.
+
+84
+00:04:27,493 --> 00:04:30,014
+However, that brings me to the next discussion,
+
+85
+00:04:30,015 --> 00:04:32,775
+which is the project space itself. So if we,
+
+86
+00:04:32,776 --> 00:04:35,562
+uh, look right here, Greenmark Waste is a company,
+
+87
+00:04:35,884 --> 00:04:38,479
+and we can go to Railway, and we can go back to Home,
+
+88
+00:04:38,480 --> 00:04:41,704
+and we can see different projects. The Greenmark Toolkit might be something,
+
+89
+00:04:41,705 --> 00:04:44,684
+a different project you could work on, but when you click inside of a
+
+90
+00:04:44,685 --> 00:04:47,781
+project, it's also worth mentioning that we have production sites,
+
+91
+00:04:47,815 --> 00:04:50,531
+and we have, we could have a demo developer site, we could have a
+
+92
+00:04:50,801 --> 00:04:54,957
+experimental, like if I was doing A-B testing on a marketing site,
+
+93
+00:04:54,958 --> 00:04:57,792
+I might want to know, like, which one's driving in more traffic,
+
+94
+00:04:57,827 --> 00:05:01,200
+you could set up a lot of different copies of a website and give
+
+95
+00:05:01,201 --> 00:05:03,325
+them different domains and just kind of play around with things,
+
+96
+00:05:03,574 --> 00:05:06,158
+but for the most part, production is all you need when you're first starting
+
+97
+00:05:06,159 --> 00:05:09,808
+out on a project. As we progress and get further into this,
+
+98
+00:05:10,152 --> 00:05:12,773
+we'll end up setting up what we call a develop environment,
+
+99
+00:05:12,774 --> 00:05:16,741
+it. And then we'll set up a production. This is a classic two-stage rollout,
+
+100
+00:05:17,027 --> 00:05:19,144
+and that means any code changes that you want to make,
+
+101
+00:05:19,145 --> 00:05:21,357
+you would first have to make in the develop branch,
+
+102
+00:05:21,537 --> 00:05:24,577
+test them on that link, go to that URL,
+
+103
+00:05:24,852 --> 00:05:26,959
+you know, open up a tab to it, take a look, make sure it
+
+104
+00:05:26,960 --> 00:05:29,684
+passes all the tests, and then you would push it to production.
+
+105
+00:05:29,938 --> 00:05:32,087
+You intentionally slow down the development,
+
+106
+00:05:32,088 --> 00:05:36,224
+uh, like, life cycle, you slow it down and stretch it out to make
+
+107
+00:05:36,225 --> 00:05:38,938
+sure that fewer mistakes are make it to the, to the front end.
+
+108
+00:05:39,385 --> 00:05:41,475
+Okay, but going back to the administrative panel,
+
+109
+00:05:41,476 --> 00:05:43,730
+if you're someone who's not a technical, uh,
+
+110
+00:05:43,741 --> 00:05:47,052
+user of this, but ultimately need to check on the workspace billing,
+
+111
+00:05:47,328 --> 00:05:50,176
+you can click over here and then choose workspace settings,
+
+112
+00:05:50,591 --> 00:05:53,097
+and from here we can see these are general settings, I already put the
+
+113
+00:05:53,098 --> 00:05:55,384
+link in there, uh, preferred deployment region,
+
+114
+00:05:55,385 --> 00:05:57,863
+it did set that up improperly, so we're going to go ahead and say
+
+115
+00:05:57,864 --> 00:06:00,731
+that US East is the correct one, and I'll click update region.
+
+116
+00:06:00,732 --> 00:06:03,604
+Thank you And then next, you could create a Slack channel,
+
+117
+00:06:03,605 --> 00:06:06,398
+you could book a migration call, there's lots of different ways you could talk
+
+118
+00:06:06,399 --> 00:06:09,372
+to Railway to get things fixed, which is really cool. I love this idea
+
+119
+00:06:09,373 --> 00:06:12,096
+of creating a Slack channel to talk to them, because a lot of the
+
+120
+00:06:12,097 --> 00:06:14,773
+users of Railway are companies that have Slack.
+
+121
+00:06:14,774 --> 00:06:17,989
+If we go over to people, we'll see that there are currently two members,
+
+122
+00:06:17,996 --> 00:06:21,145
+one is me from AIC Holdings, and you can be in different domains,
+
+123
+00:06:21,397 --> 00:06:23,491
+and also IT at Greenmark Waste,
+
+124
+00:06:23,753 --> 00:06:28,167
+both are admins, and, uh, two-factor authentication is forced right here.
+
+125
+00:06:28,641 --> 00:06:30,683
+You could also add trusted domains,
+
+126
+00:06:31,072 --> 00:06:34,433
+so if there's a certain domain that you want to always accept people from,
+
+127
+00:06:34,434 --> 00:06:37,493
+you could do that. That's a startup thing, I would never use this at
+
+128
+00:06:37,494 --> 00:06:40,985
+a larger company, because you don't want everybody with a Greenmark Waste email to
+
+129
+00:06:40,986 --> 00:06:43,533
+be able to get into this thing, right? Um,
+
+130
+00:06:43,544 --> 00:06:45,759
+plans, we're currently on the Pro plan,
+
+131
+00:06:45,870 --> 00:06:48,859
+which is at $20 a month, and it gives you a certain minimum amount
+
+132
+00:06:48,860 --> 00:06:51,562
+of compute. Um,
+
+133
+00:06:51,572 --> 00:06:55,272
+and, only if you were want- committing a ton of spend would you go
+
+134
+00:06:55,273 --> 00:06:57,767
+with one of these enterprise plans. So, there's,
+
+135
+00:06:57,768 --> 00:07:01,099
+uh, Pro plans, there's Hobby plans, for businesses you really want to go with
+
+136
+00:07:01,100 --> 00:07:03,588
+the Pro plan, it's so inexpensive at $20 a month,
+
+137
+00:07:03,876 --> 00:07:06,062
+and you'll almost never go over on billing.
+
+138
+00:07:06,063 --> 00:07:09,410
+So, the way a plan works, it's a $20 monthly subscription,
+
+139
+00:07:09,411 --> 00:07:12,363
+it's month-to-month, there is no annual contract.
+
+140
+00:07:12,821 --> 00:07:16,329
+If you use more than $20 worth of credits,
+
+141
+00:07:16,330 --> 00:07:20,141
+uhm, which typically you won't if you're not a very busy site- a place,
+
+142
+00:07:20,142 --> 00:07:22,918
+or a very busy site. If you don't use more than $20 worth of
+
+143
+00:07:22,919 --> 00:07:26,016
+credits, then your minimum spend of $20 is what they charge you for the
+
+144
+00:07:26,017 --> 00:07:28,929
+credit card. Otherwise, they are going to tack on extra fees,
+
+145
+00:07:29,212 --> 00:07:31,808
+because it's variable cost billing, that's extremely common.
+
+146
+00:07:31,962 --> 00:07:34,540
+You can also go look at the usage and see what the current costs
+
+147
+00:07:34,541 --> 00:07:37,765
+are. As you can see, these projects have been up You for a certain
+
+148
+00:07:37,766 --> 00:07:42,686
+amount of time, and the current estimated monthly cost for this entire three-stage
+
+149
+00:07:42,687 --> 00:07:45,230
+project is $4.79.
+
+150
+00:07:45,231 --> 00:07:49,243
+Really, really inexpensive. That can go up a lot as people start to use
+
+151
+00:07:49,244 --> 00:07:51,913
+the site more, calculate things more, et cetera,
+
+152
+00:07:51,914 --> 00:07:54,403
+and we can get that at some other time as well. Over here on
+
+153
+00:07:54,404 --> 00:07:57,932
+the billing side, I currently use my personal credit card so that I can
+
+154
+00:07:57,933 --> 00:08:00,672
+get through the first stage of the video game. And then I'm going to
+
+155
+00:08:00,673 --> 00:08:03,608
+go ahead and and time. I'm going after I send an email to Greenmark,
+
+156
+00:08:03,793 --> 00:08:06,691
+I'm going to invite the accounting group from there, in which case they'll be
+
+157
+00:08:06,692 --> 00:08:09,372
+an admin in the account and then they can go change the credit card
+
+158
+00:08:09,373 --> 00:08:11,931
+billing, and if I've already just paid $20,
+
+159
+00:08:11,932 --> 00:08:14,373
+I'll ask for a small reimbursement, no biggie on that one.
+
+160
+00:08:14,374 --> 00:08:18,142
+Um, a lot of this other stuff is just things that we can learn
+
+161
+00:08:18,143 --> 00:08:21,740
+over time, but I wanted to make sure I gave a full rundown of
+
+162
+00:08:21,741 --> 00:08:25,355
+what Railway is and kind of how it fits into the picture.
+
+163
+00:08:25,356 --> 00:08:28,708
+The way to think about it is, anytime you write code for something,
+
+164
+00:08:28,709 --> 00:08:30,960
+anything, and you have that code written,
+
+165
+00:08:31,798 --> 00:08:35,222
+you eventually need someone to host that code in the cloud so that it
+
+166
+00:08:35,223 --> 00:08:39,137
+can actually do tasks, and so Railway is a way to take your code
+
+167
+00:08:39,218 --> 00:08:42,048
+that you've written from your computer, put it on GitHub,
+
+168
+00:08:42,417 --> 00:08:46,716
+and then suck it into Railway and they automatically create a computer that hosts
+
+169
+00:08:46,717 --> 00:08:49,125
+your site, your worker, your data copier,
+
+170
+00:08:49,126 --> 00:08:51,382
+your email, your AI bot, whatever it is that you've built,
+
+171
+00:08:51,571 --> 00:08:54,400
+they're the host of that, and then they just charge you for the privilege.
+
+172
+00:08:54,620 --> 00:08:59,068
+This is like classic, um, the most classic thing that's happening right now in
+
+173
+00:08:59,069 --> 00:09:02,108
+cloud computing is exactly this. These containerized services,
+
+174
+00:09:02,424 --> 00:09:07,549
+and the most, uh, common one that we know of is So,
+
+175
+00:09:07,550 --> 00:09:10,183
+you could move from Railway to AWS.
+
+176
+00:09:10,184 --> 00:09:12,342
+You could also move to Google Cloud Provider,
+
+177
+00:09:12,343 --> 00:09:15,188
+GCP. You can move to Microsoft Azure.
+
+178
+00:09:15,189 --> 00:09:18,410
+These are all kind of, sort of interchangeable because they all host the code.
+
+179
+00:09:18,694 --> 00:09:21,153
+Railway just happens to be my favorite. And,
+
+180
+00:09:21,154 --> 00:09:23,850
+as you can see, they raised $100 million in the Series B.
+
+181
+00:09:23,851 --> 00:09:26,749
+They're a pretty big deal now because they're starting to blow up all due
+
+182
+00:09:26,750 --> 00:09:29,590
+to AI. Really simple and effective. If you have any questions,
+
+183
+00:09:29,591 --> 00:09:30,646
+let me know. Thanks for watching.

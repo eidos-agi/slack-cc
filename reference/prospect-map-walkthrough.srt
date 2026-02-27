@@ -1,0 +1,399 @@
+1
+00:00:00,011 --> 00:00:02,555
+Let's take a look at the prospect map.
+
+2
+00:00:02,681 --> 00:00:05,160
+This is a way of being able to visualize,
+
+3
+00:00:05,161 --> 00:00:07,704
+uh, different accounts,
+
+4
+00:00:07,990 --> 00:00:10,103
+different brands, different service lines,
+
+5
+00:00:10,187 --> 00:00:13,786
+active pipelines, things of that nature. And I'm just going to go through this
+
+6
+00:00:13,787 --> 00:00:16,330
+video quickly because it's not real data yet.
+
+7
+00:00:16,594 --> 00:00:21,068
+This is us working through the process of understanding what is needed to be
+
+8
+00:00:21,069 --> 00:00:24,075
+viewed because what is needed to be viewed changes the data.
+
+9
+00:00:24,076 --> 00:00:26,932
+The data work that we do, uh, days or,
+
+10
+00:00:26,933 --> 00:00:30,049
+you know, weeks later. So really hammering this out is,
+
+11
+00:00:30,095 --> 00:00:33,588
+is a great idea. It's a lean startup principle first.
+
+12
+00:00:34,243 --> 00:00:38,042
+So let's just look at how this works and then I'll give everybody a
+
+13
+00:00:38,043 --> 00:00:42,061
+chance to play around with it and provide some feedback on what it's missing
+
+14
+00:00:42,062 --> 00:00:46,475
+and filters it could do better at. The prospect map is a page that's
+
+15
+00:00:46,476 --> 00:00:49,637
+going to be found over here on the sidebar of Sourcetree. And then these
+
+16
+00:00:49,638 --> 00:00:53,896
+cards right here are actually filterable by what we call pills up at the
+
+17
+00:00:53,897 --> 00:00:56,349
+top. So if you were to click on the customer pill,
+
+18
+00:00:56,593 --> 00:01:00,437
+you would notice that these things filter down to just the 13 accounts that
+
+19
+00:01:00,438 --> 00:01:03,934
+are customer type accounts. If you click that lead button,
+
+20
+00:01:03,935 --> 00:01:08,156
+now it's both of those things. So it's adding up both customer and lead
+
+21
+00:01:08,157 --> 00:01:10,412
+and showing you ActivePipeline across those two.
+
+22
+00:01:10,794 --> 00:01:14,346
+Or you can, uh, click one of these and uncheck that pill.
+
+23
+00:01:14,772 --> 00:01:17,790
+You could also take a look at prospect count. So that's a really cool
+
+24
+00:01:17,791 --> 00:01:20,892
+feature. Um, you can also look at stage.
+
+25
+00:01:20,956 --> 00:01:23,073
+So where are they? Is an appointment scheduled?
+
+26
+00:01:23,074 --> 00:01:25,295
+This is for sales. Are they a qualified lead?
+
+27
+00:01:25,530 --> 00:01:28,345
+Has a proposal been sent? Are they in negotiation?
+
+28
+00:01:28,665 --> 00:01:32,077
+Did we, did the deal close one or close loss?
+
+29
+00:01:32,078 --> 00:01:34,475
+So this is going to be HubSpot type data right here.
+
+30
+00:01:35,009 --> 00:01:37,530
+And then we have teams. So right now it's like hometown.
+
+31
+00:01:37,531 --> 00:01:40,286
+I have Memphis, NTX, uh,
+
+32
+00:01:40,297 --> 00:01:43,703
+Enterprise. The, again, we can change whatever the pills say,
+
+33
+00:01:43,704 --> 00:01:46,856
+but I wanted to show the different dimensions that I was thinking about.
+
+34
+00:01:47,044 --> 00:01:49,447
+And then, of course, we have sales representative names up here.
+
+35
+00:01:50,125 --> 00:01:53,592
+You can also drag over here. This is going to be what I thought
+
+36
+00:01:53,593 --> 00:01:57,217
+to be time series data. So that way you can see how the data
+
+37
+00:01:57,218 --> 00:02:00,698
+changes over time. You're not just looking at a card that shows you one
+
+38
+00:02:00,699 --> 00:02:03,310
+thing, you're looking at how the card is changing over time.
+
+39
+00:02:03,546 --> 00:02:08,108
+Which is really, I love time series better than just point in time.
+
+40
+00:02:08,376 --> 00:02:10,689
+Because when I look at a number and it says 37,
+
+41
+00:02:10,690 --> 00:02:12,906
+but I can't see what it used to be, then I don't remember or
+
+42
+00:02:12,907 --> 00:02:16,136
+have a frame of reference for why 37 is even relevant or important.
+
+43
+00:02:16,863 --> 00:02:19,448
+Down here on the map, you can, uh,
+
+44
+00:02:19,458 --> 00:02:22,635
+use your mouse wheel to, uh,
+
+45
+00:02:22,636 --> 00:02:26,250
+uh, excuse me, zoom in. You and the size of the dot,
+
+46
+00:02:26,251 --> 00:02:28,318
+I'm going to make it so that it's based on,
+
+47
+00:02:28,319 --> 00:02:31,293
+um, these are called bubbles. So in a bubble chart,
+
+48
+00:02:31,294 --> 00:02:34,470
+we'll make it the size of the deal and we can work on colors
+
+49
+00:02:34,471 --> 00:02:36,993
+and icons. I'd be interested in feedback on this.
+
+50
+00:02:37,300 --> 00:02:40,995
+If you click one, it's going to open up a sidebar that shows you
+
+51
+00:02:40,996 --> 00:02:44,892
+much more detail about that dot. So we can click over here and see
+
+52
+00:02:44,893 --> 00:02:47,505
+all those different details over here off to the side as well.
+
+53
+00:02:47,834 --> 00:02:51,918
+That's a pretty cool feature. You can also click over here on a single
+
+54
+00:02:51,919 --> 00:02:54,024
+one and then it'll only show you,
+
+55
+00:02:54,025 --> 00:02:56,223
+um, and I'm going to uncheck this so we can see more.
+
+56
+00:02:56,591 --> 00:02:59,265
+There's qualified leads, there's proposal sent,
+
+57
+00:02:59,266 --> 00:03:01,320
+there's negotiation, there's close one,
+
+58
+00:03:01,485 --> 00:03:03,868
+close loss. Now, let's say you want to look at closed,
+
+59
+00:03:04,087 --> 00:03:07,122
+you can hold down alt and click close one and loss and now you
+
+60
+00:03:07,123 --> 00:03:10,148
+see both of them, right? So alt is a cool trick for that.
+
+61
+00:03:10,420 --> 00:03:12,922
+And you can also click again and then close one and be able to
+
+62
+00:03:12,923 --> 00:03:15,837
+see all of them at once. So that's a pretty cool trick.
+
+63
+00:03:16,106 --> 00:03:19,677
+All the customer, uh, account cards are listed down here below so you can
+
+64
+00:03:19,678 --> 00:03:23,483
+very quickly, like, move between them and not have to come off the screen
+
+65
+00:03:23,484 --> 00:03:26,868
+and you get to see everything. And I made this collapsible so that you
+
+66
+00:03:26,869 --> 00:03:29,133
+can close it and it just widens out here.
+
+67
+00:03:29,338 --> 00:03:32,098
+There may be some little funny things that we have to go fix,
+
+68
+00:03:32,099 --> 00:03:35,295
+uh, like how the, actually it seems like it's reloading correctly now.
+
+69
+00:03:35,713 --> 00:03:38,250
+This all can be configured and changed, but I'm gonna,
+
+70
+00:03:38,251 --> 00:03:40,681
+I saved the best for last. This is my favorite feature.
+
+71
+00:03:40,682 --> 00:03:43,766
+Um, this is an AI forward feature,
+
+72
+00:03:44,451 --> 00:03:46,891
+which means when you look at it, it won't make any sense to a
+
+73
+00:03:46,892 --> 00:03:50,474
+human why this is cool. But you click on the JSON button,
+
+74
+00:03:50,475 --> 00:03:53,287
+which stands for Javascript Object Notation.
+
+75
+00:03:53,845 --> 00:03:56,375
+And when we do that, it opens up a data,
+
+76
+00:03:56,376 --> 00:03:59,375
+uh, blob. Looks like a mess.
+
+77
+00:04:00,188 --> 00:04:03,124
+Now, you can open up an AI assistant,
+
+78
+00:04:03,125 --> 00:04:06,075
+such as Perplexity, or in the case of GreenMark,
+
+79
+00:04:06,251 --> 00:04:08,285
+you would open up, uh,
+
+80
+00:04:08,295 --> 00:04:11,182
+the, uh, excuse me, the Claude sidebar add-in,
+
+81
+00:04:11,454 --> 00:04:17,123
+and then you come over here and say, give me five
+
+82
+00:04:17,124 --> 00:04:19,243
+insights for this data.
+
+83
+00:04:20,730 --> 00:04:24,715
+And that's literally it, because instead of having to read the chart,
+
+84
+00:04:24,716 --> 00:04:27,255
+it's literally reading the data itself.
+
+85
+00:04:28,028 --> 00:04:32,202
+And that is the best way to give AI a chance to see things.
+
+86
+00:04:32,581 --> 00:04:34,454
+So I might say something like, who is most likely to close that I
+
+87
+00:04:34,455 --> 00:04:44,981
+should go after? And because
+
+88
+00:04:44,982 --> 00:04:48,779
+it's reading all that data, it's gonna tell you which one.
+
+89
+00:04:48,780 --> 00:04:51,388
+Because it can see it. Without this,
+
+90
+00:04:51,618 --> 00:04:53,947
+it can't see that because it can see the dots,
+
+91
+00:04:54,315 --> 00:04:58,521
+but it doesn't see everything. And that's the really cool trick behind this.
+
+92
+00:04:58,985 --> 00:05:02,124
+This can be really useful for integrating AI into a system,
+
+93
+00:05:02,493 --> 00:05:05,491
+but not having to build an AI model itself.
+
+94
+00:05:05,492 --> 00:05:09,087
+You're just showing behind the curtain whenever you need to.
+
+95
+00:05:09,455 --> 00:05:11,606
+If you have any questions about the prospect map,
+
+96
+00:05:11,607 --> 00:05:13,887
+Let me know. I'm going to try to keep these videos short,
+
+97
+00:05:13,888 --> 00:05:18,337
+uh, so that there's one video per feature and we don't cover too many.
+
+98
+00:05:18,614 --> 00:05:21,849
+And that way we can move the videos around and change them as needed
+
+99
+00:05:21,850 --> 00:05:24,795
+and, uh, re-, re-record little sections whenever necessary.
+
+100
+00:05:24,956 --> 00:05:25,611
+Thanks for watching.

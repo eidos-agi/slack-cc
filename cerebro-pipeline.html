@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Project Cerebro — Data Pipeline</title>
+  <style>
+    body { background: #0d1117; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .mermaid { background: #fff; border-radius: 12px; padding: 2rem; max-width: 95vw; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="mermaid">
+graph LR
+    subgraph Vendors["🏢 Vendor Systems"]
+        direction TB
+        SA["Sage Intacct<br/>Accounting · 5 tables"]
+        NV["Navusoft<br/>Operations · 5 tables"]
+        HS["HubSpot<br/>CRM · 5 tables"]
+        FL["Fleetio<br/>Fleet · 4 tables"]
+        PY["Paylocity<br/>Payroll"]
+        TE["3rd Eye<br/>❌ Unknown"]
+        WM["WAM<br/>No API"]
+        P3["9 P3 Systems"]
+    end
+
+    subgraph Daemon["⚙️ data-daemon"]
+        direction TB
+        SC["Scheduler<br/>60s cron loop"]
+        JQ["Job Queue<br/>Postgres SKIP LOCKED"]
+        WK["3 Worker Threads"]
+        RC["REST Connector<br/>Auth · Pagination · Retries"]
+        SC --> JQ --> WK --> RC
+    end
+
+    subgraph Warehouse["🏗️ Warehouse · Medallion Architecture"]
+        direction LR
+        BR["🟫 Bronze<br/>24 tables · 5 schemas<br/>Raw landing"]
+        SL["⬜ Silver<br/>Cleaned · Unified<br/>Deduped"]
+        GD["🟡 Gold<br/>Business Metrics<br/>Aggregations"]
+        BR --> SL --> GD
+    end
+
+    subgraph Metrics["📊 Gold Metrics"]
+        direction TB
+        MR["Monthly Revenue"]
+        CH["Cost per Haul"]
+        VU["Vehicle Utilization"]
+        LTV["Customer LTV"]
+    end
+
+    CB["🖥️ Cerebro<br/>Next.js Dashboard<br/>Railway"]
+
+    SA & NV & HS & FL & PY & TE & WM & P3 --> Daemon
+    Daemon --> BR
+    GD --> Metrics
+    Metrics --> CB
+
+    style SA fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style NV fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style HS fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style FL fill:#6b7280,color:#fff,stroke:#4b5563
+    style PY fill:#6b7280,color:#fff,stroke:#4b5563
+    style TE fill:#dc2626,color:#fff,stroke:#b91c1c
+    style WM fill:#6b7280,color:#fff,stroke:#4b5563
+    style P3 fill:#6b7280,color:#fff,stroke:#4b5563
+    style SC fill:#e85d75,color:#fff,stroke:#c44d63
+    style JQ fill:#e85d75,color:#fff,stroke:#c44d63
+    style WK fill:#e85d75,color:#fff,stroke:#c44d63
+    style RC fill:#e85d75,color:#fff,stroke:#c44d63
+    style BR fill:#b45309,color:#fff,stroke:#92400e
+    style SL fill:#6b7280,color:#fff,stroke:#4b5563
+    style GD fill:#ca8a04,color:#fff,stroke:#a16207
+    style MR fill:#16a34a,color:#fff,stroke:#15803d
+    style CH fill:#16a34a,color:#fff,stroke:#15803d
+    style VU fill:#16a34a,color:#fff,stroke:#15803d
+    style LTV fill:#16a34a,color:#fff,stroke:#15803d
+    style CB fill:#16a34a,color:#fff,stroke:#15803d
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+</body>
+</html>

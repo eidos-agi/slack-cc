@@ -5,7 +5,7 @@ status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 21:36'
-updated_date: '2026-02-25 07:44'
+updated_date: '2026-02-26 08:41'
 labels:
   - hubspot
   - admin
@@ -28,3 +28,9 @@ Daniel resolved the HubSpot login issue today. `it@greenmarkwaste.com` is a Micr
 - [x] #2 2FA configured with authenticator app
 - [x] #3 Documented: it@greenmarkwaste.com is a distribution list, not a user account
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Feb 26: Fully resolved. dshanklin@greenmarkwaste.com created Feb 24, joined it@greenmarkwaste.com. HubSpot access sent to it@ — Daniel now has admin access to production HubSpot.
+<!-- SECTION:NOTES:END -->

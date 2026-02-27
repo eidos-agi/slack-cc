@@ -1,11 +1,11 @@
 ---
 id: TASK-1.15
 title: Create custom properties matching Greenmark's waste industry needs
-status: To Do
+status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 22:30'
-updated_date: '2026-02-25 07:17'
+updated_date: '2026-02-26 08:43'
 labels:
   - hubspot
   - data-integration
@@ -36,3 +36,9 @@ HubSpot's default properties are generic B2B/SaaS-oriented. Greenmark is a waste
 <!-- SECTION:NOTES:BEGIN -->
 2026-02-25: Added dependency on TASK-1.12. Creating custom properties via API requires write scopes.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Superseded: Will evaluate custom properties against production HubSpot schema during connector build, not in sandbox.
+<!-- SECTION:FINAL_SUMMARY:END -->

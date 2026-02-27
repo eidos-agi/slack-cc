@@ -1,0 +1,563 @@
+1
+00:00:00,011 --> 00:00:02,932
+In this video, we're going to cover the infrastructure map,
+
+2
+00:00:02,933 --> 00:00:07,112
+which tells us all the different component pieces that we're planning on as part
+
+3
+00:00:07,113 --> 00:00:10,060
+of phase one of Cerebro. You can find the,
+
+4
+00:00:10,061 --> 00:00:12,571
+ah, infrastructure map over here on the sidebar.
+
+5
+00:00:12,591 --> 00:00:15,642
+You can also access it from a mobile phone from the same website.
+
+6
+00:00:16,078 --> 00:00:18,275
+Infrastructure map shows us, ah,
+
+7
+00:00:18,276 --> 00:00:21,169
+all the different, ah, things that we have to pay for on a monthly
+
+8
+00:00:21,170 --> 00:00:24,075
+basis to be able to host this kind of technology.
+
+9
+00:00:24,076 --> 00:00:26,442
+So you'll see right here that if we look here at Railway,
+
+10
+00:00:26,443 --> 00:00:30,056
+it costs $20 a month. There's also a pro plan that's required for Superbase,
+
+11
+00:00:30,057 --> 00:00:32,480
+which is the database we choose. And then,
+
+12
+00:00:32,601 --> 00:00:34,838
+ah, GitHub has actually free plans,
+
+13
+00:00:34,839 --> 00:00:37,327
+so you don't have to do anything for that. There's going to be more
+
+14
+00:00:37,328 --> 00:00:39,399
+infrastructure needs, but we'll start there.
+
+15
+00:00:39,403 --> 00:00:42,301
+And I would say that this is probably 80 to 90% of the bill
+
+16
+00:00:42,302 --> 00:00:46,065
+anyway. The only other major thing to watch out for is if you need
+
+17
+00:00:46,066 --> 00:00:48,139
+any dynamic AI directly available.
+
+18
+00:00:48,140 --> 00:00:50,756
+Inside is Cerebro, and that's going to be, ah,
+
+19
+00:00:50,757 --> 00:00:54,674
+like paying for, ah, electricity. Just however many kilowatt hours you use in the
+
+20
+00:00:54,675 --> 00:00:57,223
+world of AI, we call it tokens. So let's take a look at the
+
+21
+00:00:57,224 --> 00:01:00,005
+map, and we'll see over here on the first part of it that each
+
+22
+00:01:00,006 --> 00:01:03,822
+of these cards represents a source system that we have to pull data in
+
+23
+00:01:03,823 --> 00:01:06,834
+from. As I told Michael today when we,
+
+24
+00:01:06,835 --> 00:01:11,440
+ah, spoke together, ah, and we settled on the idea that some things
+
+25
+00:01:11,441 --> 00:01:13,845
+are going to be pulled data in and others are going to be pushed,
+
+26
+00:01:13,846 --> 00:01:16,383
+and that we'll figure that out as we go. Ah,
+
+27
+00:01:16,384 --> 00:01:19,185
+Navisoft, if you were to click on this, it actually opens up a sidebar,
+
+28
+00:01:19,187 --> 00:01:21,489
+and you can see a lot of information about Navisoft,
+
+29
+00:01:21,490 --> 00:01:25,081
+how it works, the data availability, et cetera. And so this first version is
+
+30
+00:01:25,158 --> 00:01:28,100
+just kind of a way to be able to see where the data comes
+
+31
+00:01:28,101 --> 00:01:31,517
+from, but we'll have some more information over here as time goes on,
+
+32
+00:01:31,518 --> 00:01:34,273
+including, ah, stakeholders, who do you call when something breaks,
+
+33
+00:01:34,274 --> 00:01:37,253
+things of that nature. Thank All right. I'll pull the map over here so
+
+34
+00:01:37,254 --> 00:01:40,281
+you can take a look at the Data Demon. The Data Demon is a
+
+35
+00:01:40,282 --> 00:01:42,665
+back-end process only, and it runs in Railway.
+
+36
+00:01:43,164 --> 00:01:45,729
+Ah, I did a Railway video, so if you go watch that one,
+
+37
+00:01:45,730 --> 00:01:47,915
+you can kind of learn a little bit more about how that works. The
+
+38
+00:01:47,916 --> 00:01:50,288
+Data Demon is a program that runs in the background,
+
+39
+00:01:50,968 --> 00:01:54,680
+and it is, has one job, and that's to go grab all this data,
+
+40
+00:01:54,681 --> 00:01:57,144
+and then double-check it, and move it through the pipeline.
+
+41
+00:01:57,525 --> 00:01:59,863
+So, it is reaching out its arm,
+
+42
+00:01:59,882 --> 00:02:03,134
+grabbing someone's hand. Ah, after it authenticates,
+
+43
+00:02:03,530 --> 00:02:06,829
+and then it's doing some calculations, and it's moving it over into the warehouse,
+
+44
+00:02:06,830 --> 00:02:09,319
+which is stored in Supabase. Um,
+
+45
+00:02:09,329 --> 00:02:12,357
+the warehouse is going to have three different layers inside of it,
+
+46
+00:02:12,358 --> 00:02:14,442
+what's called a bronze layer, a silver layer,
+
+47
+00:02:14,443 --> 00:02:16,841
+and a gold, and I'll get into what those three things mean here in
+
+48
+00:02:16,842 --> 00:02:19,362
+just a second. But you can also click on it and learn a lot
+
+49
+00:02:19,480 --> 00:02:22,220
+about this as well, and of course, if you have any questions about how
+
+50
+00:02:22,221 --> 00:02:24,400
+infrastructure works, or you're just curious how,
+
+51
+00:02:24,401 --> 00:02:27,028
+all this fits together, you can always pull up a,
+
+52
+00:02:27,029 --> 00:02:29,470
+uh, uh, what is it, the Claude sidebar,
+
+53
+00:02:29,471 --> 00:02:32,828
+and just ask it, you know, plain English, explain to me why we would
+
+54
+00:02:32,829 --> 00:02:35,183
+do this, uh, things of that nature. Okay,
+
+55
+00:02:35,464 --> 00:02:37,827
+but let's get into what data movements are.
+
+56
+00:02:37,831 --> 00:02:40,185
+So first off, this is called a medallion architecture,
+
+57
+00:02:40,186 --> 00:02:43,165
+it's extremely common in both finance and also in healthcare,
+
+58
+00:02:43,166 --> 00:02:45,793
+but, uh, you'll also find it, um,
+
+59
+00:02:45,804 --> 00:02:48,459
+in any system that has to have canonical data,
+
+60
+00:02:48,460 --> 00:02:52,164
+uh, pulled in from one place and then stored for a warehouse use later.
+
+61
+00:02:52,547 --> 00:02:54,728
+The bronze layer basically means this,
+
+62
+00:02:54,729 --> 00:02:58,359
+um, give me a piece of data, like this,
+
+63
+00:02:58,400 --> 00:03:00,865
+this page right here, and just store it,
+
+64
+00:03:01,705 --> 00:03:04,478
+just store the picture of it, uh, don't put it into columns,
+
+65
+00:03:04,479 --> 00:03:07,101
+don't put it into rows, don't try to stick it in a,
+
+66
+00:03:07,102 --> 00:03:09,265
+a tabular format, don't make it a spreadsheet,
+
+67
+00:03:09,266 --> 00:03:11,686
+don't remove dollar signs, don't move negative signs,
+
+68
+00:03:11,973 --> 00:03:14,975
+you literally store it the exact same way that you received it from the
+
+69
+00:03:14,976 --> 00:03:17,665
+source system. There's a huge reason why you want to do this.
+
+70
+00:03:18,234 --> 00:03:21,663
+If you pull it once from the source system and you store it raw,
+
+71
+00:03:21,891 --> 00:03:24,693
+you never have to pull it again because you got a photocopy of what
+
+72
+00:03:24,694 --> 00:03:26,906
+it was. In the silver layer,
+
+73
+00:03:26,907 --> 00:03:30,195
+that's when we actually run a little bit of code to take that raw
+
+74
+00:03:30,196 --> 00:03:32,674
+data and then convert it into something that we can,
+
+75
+00:03:32,675 --> 00:03:34,838
+uh, use, such as taking,
+
+76
+00:03:34,839 --> 00:03:38,835
+uh, counting, uh, numbers, that come in that have parentheses around them,
+
+77
+00:03:39,211 --> 00:03:42,321
+removing the parentheses, and putting a negative sign in front.
+
+78
+00:03:42,431 --> 00:03:46,550
+That is called a transformation, and we can do that step during the silver
+
+79
+00:03:46,551 --> 00:03:48,868
+layer. So you have the bronze pulling in raw data.
+
+80
+00:03:49,212 --> 00:03:53,107
+Silver is where we take that data and we clean it up and normalize
+
+81
+00:03:53,108 --> 00:03:55,400
+it into something like, uh, is it words,
+
+82
+00:03:55,401 --> 00:03:58,726
+is it numbers, is it decimal places, and do all that kind of cleanup
+
+83
+00:03:58,727 --> 00:04:02,559
+stuff. There's another reason that we want to separate out into these different layers,
+
+84
+00:04:02,560 --> 00:04:05,113
+and that's because when there's a data error or a data issue,
+
+85
+00:04:05,114 --> 00:04:08,370
+we can basically isolate where that error came from.
+
+86
+00:04:08,626 --> 00:04:11,409
+Was it a transformation issue trying to remove parentheses,
+
+87
+00:04:11,664 --> 00:04:14,522
+or was it actually that the data just didn't load? Um,
+
+88
+00:04:14,533 --> 00:04:17,182
+and then lastly, we have what's called a gold layer, and that one is
+
+89
+00:04:17,183 --> 00:04:21,820
+business metrics and KPIs, and the gold layer is essentially where we
+
+90
+00:04:21,821 --> 00:04:24,720
+combine data across multiple sources together.
+
+91
+00:04:24,721 --> 00:04:26,954
+That's not always true. Uh, in some systems,
+
+92
+00:04:26,955 --> 00:04:28,995
+the gold layer is just one system, so that would,
+
+93
+00:04:29,103 --> 00:04:32,327
+that would mean that Navisoft alone could have its own bronze,
+
+94
+00:04:32,328 --> 00:04:35,105
+silver, and gold layer, but I'm going to kind of cross over in this
+
+95
+00:04:35,106 --> 00:04:39,023
+discussion and just simply say that sometimes the gold layer is where you combine
+
+96
+00:04:39,024 --> 00:04:42,247
+things as well, and that's a perfectly valid way to look at it.
+
+97
+00:04:42,633 --> 00:04:45,425
+So, to recap the goal there,
+
+98
+00:04:45,661 --> 00:04:48,779
+imagine for a moment that you had a HubSpot contact.
+
+99
+00:04:48,780 --> 00:04:51,663
+But you also had Navisoft current clients,
+
+100
+00:04:51,664 --> 00:04:53,725
+and you wanted to combine those into a singular view.
+
+101
+00:04:54,313 --> 00:04:56,369
+We also need a third table added in,
+
+102
+00:04:56,392 --> 00:04:59,318
+which is going to be a Normalized Customers table,
+
+103
+00:04:59,319 --> 00:05:01,540
+or a Leads table, or a Prospects table.
+
+104
+00:05:01,851 --> 00:05:06,765
+Something that is, has the sole job of linking the HubSpot
+
+105
+00:05:06,766 --> 00:05:09,410
+person over to the, uhm,
+
+106
+00:05:09,420 --> 00:05:11,547
+Navisoft person. That's one technique.
+
+107
+00:05:11,548 --> 00:05:14,980
+Another technique, sometimes people don't use, is where they pick one system to be
+
+108
+00:05:14,981 --> 00:05:18,486
+the canonical list. They say, this is the golden list,
+
+109
+00:05:18,853 --> 00:05:21,079
+and everybody will always be in this list,
+
+110
+00:05:21,080 --> 00:05:23,883
+and even if they're not in another system, they will always be in this
+
+111
+00:05:23,884 --> 00:05:26,181
+system. But that's the best way to do it. You always want to have
+
+112
+00:05:26,182 --> 00:05:29,177
+one system that has at least, you want to have at least one system
+
+113
+00:05:29,178 --> 00:05:31,931
+that has everybody. And we can choose whether that's Cerebro,
+
+114
+00:05:32,265 --> 00:05:35,083
+HubSpot, Navisoft, or, uhm,
+
+115
+00:05:35,094 --> 00:05:39,724
+a combination thereof. So that's That is how the Medallion architecture works,
+
+116
+00:05:39,740 --> 00:05:42,259
+bronze, silver, gold. And once you have gold,
+
+117
+00:05:42,260 --> 00:05:44,522
+that's when you can hook it up into live dashboards.
+
+118
+00:05:44,837 --> 00:05:47,750
+You can, uh, hook it up to alerting systems, you can hook it up
+
+119
+00:05:47,751 --> 00:05:50,714
+to an AI, you can hook it up to automated reports that go into
+
+120
+00:05:50,715 --> 00:05:53,374
+people's email, uh, you can hook it up to a mobile app,
+
+121
+00:05:53,375 --> 00:05:55,490
+you can hook it up to, uhm,
+
+122
+00:05:55,501 --> 00:05:58,604
+heck, you can hook it up to a speaker that you can talk to
+
+123
+00:05:58,605 --> 00:06:00,672
+on your desk and ask questions of. Uhm,
+
+124
+00:06:00,673 --> 00:06:04,474
+Thank you. All of that happens downriver of the Cerebro process itself.
+
+125
+00:06:04,781 --> 00:06:07,565
+So the Data Demon's job is to take all these things from this place
+
+126
+00:06:07,566 --> 00:06:10,023
+and then to put them over here in the Unified Warehouse. And that,
+
+127
+00:06:10,024 --> 00:06:12,439
+in a nutshell, is how the architecture works.
+
+128
+00:06:13,023 --> 00:06:16,042
+I'm sure that I'll be adding more onto this as we go.
+
+129
+00:06:16,275 --> 00:06:18,291
+So why build this in the first place? Why build the map?
+
+130
+00:06:18,292 --> 00:06:22,545
+Well, first off, I love when we can easily and quickly explain how something
+
+131
+00:06:22,546 --> 00:06:25,850
+works through, uh, you know, a diagram, but also because if we build this
+
+132
+00:06:25,851 --> 00:06:29,198
+out first and then have a discussion together about whether we like it or
+
+133
+00:06:29,199 --> 00:06:33,623
+dislike it, it allows us to perfect the chart that you see right in
+
+134
+00:06:33,624 --> 00:06:36,086
+front of you and get it just right with all the rules,
+
+135
+00:06:36,087 --> 00:06:40,321
+restrictions, governments, and regulation before we even have to write any code,
+
+136
+00:06:40,689 --> 00:06:44,031
+meaning that code doesn't have to be rewritten because it was mistake-prone.
+
+137
+00:06:44,421 --> 00:06:47,515
+So this is like, uh, the map, the treasure map for how we need
+
+138
+00:06:47,516 --> 00:06:51,320
+to get there, and AI can basically write code that matches the treasure map
+
+139
+00:06:51,321 --> 00:06:53,589
+and that allows us to finish things a lot faster as well.
+
+140
+00:06:53,940 --> 00:06:56,225
+If you have any other questions, let me know. Thank you very much.
+
+141
+00:06:56,226 --> 00:06:56,694
+Have a good night.

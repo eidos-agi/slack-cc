@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Greenmark Planning — Cockpit</title>
+  <title>Greenmark Cockpit — Cockpit</title>
   <style>
     :root {
       --primary: #3fb950;
@@ -169,8 +169,8 @@
 <body>
 
   <div class="header">
-    <div class="cockpit-name">Greenmark Planning</div>
-    <div class="takeoff-label">Takeoff #5</div>
+    <div class="cockpit-name">Greenmark Cockpit</div>
+    <div class="takeoff-label">Takeoff #6</div>
   </div>
 
   <div class="status-bar">
@@ -180,15 +180,15 @@
     </div>
     <div class="status-item">
       <div class="status-label">Date</div>
-      <div class="status-value">Feb 25, 2026</div>
+      <div class="status-value">Feb 26, 2026</div>
     </div>
     <div class="status-item">
       <div class="status-label">Time</div>
-      <div class="status-value">3:18 PM</div>
+      <div class="status-value">2:29 AM</div>
     </div>
     <div class="status-item">
       <div class="status-label">Takeoff</div>
-      <div class="status-value">#5</div>
+      <div class="status-value">#6</div>
     </div>
   </div>
 
@@ -203,7 +203,7 @@
     </div>
     <div class="status-item">
       <div class="status-label">Session</div>
-      <div class="status-value">#5</div>
+      <div class="status-value">#6</div>
     </div>
     <div class="status-item">
       <div class="status-label">Last Landing</div>
@@ -211,59 +211,50 @@
     </div>
   </div>
 
-  <div class="drift">
-    <span class="drift-badge">Drift</span>
-    <span class="drift-text">9 new commits since last session &mdash; cockpit infrastructure: pre-flight skill, takeoff rewrite (briefing expansion, HTML dashboard, pilot metadata). Framework matured significantly between sessions.</span>
-  </div>
-
-  <div class="resume">
-    Previous session auto-closed without explicit bookmark. Last known commit: &ldquo;Add podcast style system to weekly-update skill&rdquo; (bd67c0f).
-  </div>
+  <div class="resume">Session auto-closed without explicit bookmark. Last commit: &ldquo;rename: greenmark-planning &rarr; greenmark-cockpit&rdquo; (0146727). No drift detected.</div>
 
   <div class="section">
     <h2>Where We Were</h2>
-    <p>The cockpit framework launched on Feb 25 with a burst of skill creation. In a single day, the foundational workflow skills were built: /takeoff (session boot), /land (session close), /pre-flight (workspace scanning), /weekly-update (7-stage pipeline), /hubspot-explore (CRM data exploration), /diarize (meeting transcript processing), and /task-out (action item routing).</p>
-    <p>HubSpot data exploration was the primary technical work. The test account (Greenmark Dev, enterprise tier) was fully mapped &mdash; 36 API scopes identified, REST wrapper script proven with 9 commands, and the sandbox seeded with test data. The critical finding: HubSpot CLI is CMS-only, making the REST API the only viable path for CRM data extraction.</p>
-    <p>Two meetings were processed through the diarize pipeline. The Feb 19 kickoff call produced foundational decisions &mdash; Sage as system of record, HubSpot + Sage as first two data sources, read-only API policy, and the 2+2+2 integration strategy.</p>
+    <p>Last session auto-closed without a debrief (Feb 25). Completed 5 sessions focused on research and setup. Vendor research reached 40% &mdash; 6 of 15 systems deeply researched (Sage Intacct, Navusoft, HubSpot, Fleetio, Paylocity, WAM). The /diarize skill was built and tested against both kickoff transcripts &mdash; Feb 11 and Feb 19 calls are fully processed with decisions, action items, and features extracted.</p>
+    <p>HubSpot integration work advanced significantly: developer portal access, test account, REST API wrapper built and proven with 9 commands, sandbox fully explored with 36 scopes mapped. Critical finding: HubSpot CLI is CMS-only &mdash; REST API is the sole viable path for CRM data extraction.</p>
+    <p>Recording infrastructure in place (Fireflies account, Greenmark channel). GitHub org scaffolding done. The full cockpit skill suite became operational in session #5. No commits in 24 hours &mdash; all workstreams waiting on stakeholder access or credentials.</p>
   </div>
 
   <div class="section">
     <h2>Where We Are</h2>
-    <p><strong>Data integration (Cerebro)</strong> is in &ldquo;ready for connections&rdquo; phase. The data-daemon pipeline v1.4 is complete with synthetic data generators, YAML-driven configuration, Postgres job queue, and 82 passing tests. It works &mdash; it just needs real credentials.</p>
-    <p><strong>Vendor research</strong> stands at 6 of 15 systems deeply analyzed (Sage Intacct, Navusoft, HubSpot, Fleetio, Paylocity, WAM), with 65 bronze tables proposed. 3rd Eye remains a complete unknown.</p>
-    <p><strong>HubSpot sandbox</strong> is fully explored and ready for production API access. Setup instructions documented.</p>
-    <p><strong>SEO plans</strong> written for both websites &mdash; 90-day roadmaps &mdash; but no baseline audit done yet.</p>
-    <p><strong>Dashboard mockups</strong> waiting for stakeholder feedback. <span class="stale">14 days stale.</span></p>
-    <p><strong>Session hygiene:</strong> 4 takeoffs, 0 landings. Prior sessions ended without formal debrief. This is the first session with the full cockpit skill suite operational.</p>
+    <p>The engagement is in the <strong>infrastructure phase</strong>: foundation is laid, but the pipeline can't connect until Alex provisions Sage credentials. Stable but blocked in 5 directions.</p>
+    <p>Cerebro pipeline architecture is complete &mdash; YAML-driven extraction, Postgres job queue, 82 passing tests, 65 bronze tables proposed. It works with synthetic data and is ready for real connections.</p>
+    <p>Three dashboard mockups waiting for stakeholder feedback since Feb 11 &mdash; <span class="stale">15 days stale.</span> SEO plans written for both websites but no baseline audit started. This workstream is independent of data integration blockers and could advance immediately.</p>
+    <p>Momentum is present but stalled. Five people waiting on Alex or Michael for 11 open tasks. The oldest wait-ons are from Feb 11.</p>
   </div>
 
   <div class="section">
     <h2>Where We're Going</h2>
     <ol>
-      <li><strong>Unblock Sage connection</strong> &mdash; Alex promised Daniel a user account Monday (Feb 24). This is THE critical path. Once credentials exist: API key &rarr; first live data source &rarr; proof the pipeline works &rarr; confidence to request HubSpot production access &rarr; two live sources within days.</li>
-      <li><strong>Get HubSpot production CRM read access</strong> &mdash; Michael needs to approve Daniel's Private App. Setup instructions ready. Secondary to Sage but essential before real deals/contacts flow into the warehouse. Sandbox work de-risked this completely.</li>
-      <li><strong>Baseline SEO audits</strong> &mdash; Independent of data integration blockers. Both sites on Webflow. Michael called SEO &ldquo;low hanging fruit, top of the list.&rdquo; Running audits creates the measurable floor for the 90-day plans already written. Can ship this week.</li>
+      <li><strong>Unblock Sage Intacct connection</strong> &mdash; Alex promised Daniel a user account &ldquo;first thing Monday&rdquo; (Feb 24). Now 2 days late, no follow-up sent. This is THE critical path: Sage account &rarr; API key &rarr; first live data &rarr; proves medallion architecture.</li>
+      <li><strong>Get HubSpot CRM read permissions</strong> &mdash; Michael needs to provision API access (requested Feb 20, no response). Second data source, validates 2+2+2 strategy. Sandbox work de-risked this &mdash; scopes and data mapping are known.</li>
+      <li><strong>Get dashboard mockup feedback</strong> &mdash; Waiting since Feb 11 <span class="stale">(15 days)</span>, deferred twice. Determines which metrics to prioritize. Workaround: send mockups separately to Michael (ops view) and Alex (financial view).</li>
     </ol>
   </div>
 
   <div class="section blockers">
     <h2>Blockers</h2>
     <div class="blocker-item">
-      <p><span class="blocker-name">Alex Kaye &mdash; Sage Intacct account</span> <span class="stale">(6 days since decision, 1 day overdue)</span></p>
-      <p>Promised &ldquo;first thing Monday&rdquo; Feb 24. Still pending. Blocks: API key creation &rarr; Sage connector &rarr; first live data &rarr; downstream HubSpot CRM access. No follow-up sent yet.</p>
+      <p><span class="blocker-name">Alex Kaye &mdash; Sage Intacct account</span> <span class="stale">(2 days past promise)</span></p>
+      <p>Promised &ldquo;first thing Monday&rdquo; Feb 24. No update. Blocks: API key creation &rarr; Sage connector &rarr; first live data &rarr; everything downstream.</p>
     </div>
     <div class="blocker-item">
-      <p><span class="blocker-name">Michael Nguyen &mdash; HubSpot API access</span> <span class="stale">(5 days pending)</span></p>
-      <p>Request emailed Feb 20, no response. Also pending: Webflow login, Railway account, Google Business Profile access.</p>
+      <p><span class="blocker-name">Michael Nguyen &mdash; Multiple outstanding asks</span> <span class="stale">(6&ndash;15 days)</span></p>
+      <p>HubSpot API access (Feb 20), Webflow login (Feb 20), Railway billing setup, Google Business Profile access, dashboard mockup feedback (Feb 11 &mdash; most stale item).</p>
     </div>
     <div class="blocker-item">
-      <p><span class="blocker-name">Dashboard mockup feedback</span> <span class="stale">(14 days stale)</span></p>
-      <p>Three HTML prototypes need Michael and Alex's review. Deferred twice. Not blocking active work but divergence risk increases with time.</p>
+      <p><span class="blocker-name">3rd Eye &mdash; Genuinely unknown</span></p>
+      <p>No API docs, no vendor contact. Not blocking first two integrations but a future risk. Confirm with Michael whether 3rd Eye is even needed.</p>
     </div>
   </div>
 
   <div class="timestamp">
-    Generated Feb 25, 2026 at 3:18 PM by /takeoff
+    Generated Feb 26, 2026 at 2:29 AM by /takeoff
   </div>
 
 </body>

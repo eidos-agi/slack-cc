@@ -1,11 +1,11 @@
 ---
 id: TASK-1.12
 title: Expand test account PAK scopes for full CRM access
-status: To Do
+status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 22:30'
-updated_date: '2026-02-25 07:48'
+updated_date: '2026-02-26 08:43'
 labels:
   - hubspot
   - admin
@@ -53,3 +53,9 @@ Expand test account PAK scopes to enable full CRM access. Current PAK has 36 sco
 
 2026-02-25: Daniel told Michael he wants one more day of testing to prove read-only PAK access works (can read CRM data but not edit). Safer choice for AI. Expansion deferred until read-only proof is complete. Future plan: separate read-write key project for CRM agent improvements.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Superseded: Daniel now has admin access to production HubSpot. Sandbox PAK scope expansion no longer needed — production Private App will have the required scopes.
+<!-- SECTION:FINAL_SUMMARY:END -->

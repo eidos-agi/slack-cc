@@ -1,58 +1,56 @@
-# Greenmark Planning — Takeoff #5
+# Greenmark Cockpit — Takeoff #6
 
-**Pilot** Daniel Shanklin &nbsp;|&nbsp; **Date** Feb 25, 2026 &nbsp;|&nbsp; **Time** 3:18 PM
+**Pilot** Daniel Shanklin &nbsp;|&nbsp; **Date** Feb 26, 2026 &nbsp;|&nbsp; **Time** 2:29 AM
 
-**Session** #5 &nbsp;|&nbsp; **Branch** `main` &nbsp;|&nbsp; **Working tree** clean &nbsp;|&nbsp; **Last landing** never
+**Session** #6 &nbsp;|&nbsp; **Branch** `main` &nbsp;|&nbsp; **Working tree** clean &nbsp;|&nbsp; **Last landing** never
 
-> **Resume:** Previous session auto-closed without explicit bookmark. Last known commit: "Add podcast style system to weekly-update skill" (bd67c0f).
-
-> **Drift:** 9 new commits since last session — all cockpit infrastructure: pre-flight skill, takeoff rewrite (briefing expansion, HTML dashboard generation, pilot metadata). The cockpit framework matured significantly between sessions.
+> **Resume:** Session auto-closed without explicit bookmark. Last commit: `0146727 rename: greenmark-planning → greenmark-cockpit`. No drift detected — branch and working tree match bookmark state.
 
 ---
 
 ## Where We Were
 
-The cockpit framework launched on Feb 25 with a burst of skill creation. In a single day, the foundational workflow skills were built: `/takeoff` (session boot), `/land` (session close), `/pre-flight` (workspace scanning), `/weekly-update` (7-stage subagent pipeline with parallel analysis), `/hubspot-explore` (CRM data exploration via REST API wrapper), `/diarize` (meeting transcript processing), and `/task-out` (action item routing).
+Last session auto-closed without a debrief (Feb 25). Reconstructing from commits and project state: the team completed 5 sessions focused on research and setup. Vendor research reached 40% — 6 of 15 systems deeply researched (Sage Intacct, Navusoft, HubSpot, Fleetio, Paylocity, WAM). The `/diarize` skill was built and tested against both kickoff transcripts — the Feb 11 and Feb 19 calls are now fully processed with decisions, action items, and features extracted into structured READMEs.
 
-HubSpot data exploration was the primary technical work. The test account (Greenmark Dev, enterprise tier) was fully mapped — 36 API scopes identified, REST wrapper script (`hs-api.sh`) proven with 9 commands, and the sandbox seeded with test data. The critical finding: HubSpot CLI is CMS-only, making the REST API the only viable path for CRM data extraction.
+HubSpot integration work advanced significantly: developer portal access obtained, test account provisioned, REST API wrapper (`hs-api.sh`) built and proven with 9 commands, and the sandbox fully explored with 36 scopes mapped. The critical finding from that work: HubSpot CLI is CMS-only, making the REST API the sole viable path for CRM data extraction.
 
-Two meetings were processed through the diarize pipeline, establishing the pattern for structured knowledge capture. The Feb 19 kickoff call produced foundational decisions — Sage as system of record, HubSpot + Sage as first two data sources, read-only API policy, and the 2+2+2 integration strategy.
+Recording infrastructure was put in place — Fireflies account created, Greenmark channel set up. GitHub org scaffolding is done. The cockpit skill suite was completed in session #5: `/takeoff`, `/land`, `/pre-flight`, `/weekly-update`, `/hubspot-explore`, `/diarize`, and `/task-out` are all operational.
 
-Daniel's workflow is now repeatable: clipboard notes → skills → backlog → devlog. The machinery exists. What's missing is live data connections to run through it.
+No commits in the past 24 hours. All workstreams are either waiting on stakeholder access or blocked on credentials.
 
 ## Where We Are
 
-**Data integration (Cerebro)** is in "ready for connections" phase. The data-daemon pipeline v1.4 is complete with synthetic data generators, YAML-driven configuration, Postgres job queue, and 82 passing tests. It works — it just needs real credentials to connect to real systems.
+The engagement is in the **infrastructure phase**: the foundation is laid, but the actual data pipeline can't connect until Alex provisions Sage credentials. The situation is stable but blocked in 5 directions.
 
-**Vendor research** stands at 6 of 15 systems deeply analyzed (Sage Intacct, Navusoft, HubSpot, Fleetio, Paylocity, WAM), with 65 bronze tables proposed across those systems. The remaining 9 systems are cataloged but not yet researched — several (Expensify, Comerica) may flow through Sage rather than needing direct connectors. 3rd Eye remains a complete unknown with no API docs or vendor contact.
+On the tech side: Cerebro pipeline architecture is complete — YAML-driven extraction, Postgres job queue, 82 passing tests, 65 bronze tables proposed across 6 researched vendors. It works with synthetic data and is ready for real connections.
 
-**HubSpot sandbox** is fully explored and ready for production API access. Daniel told Michael he wants one more day proving read-only safety before requesting production credentials. Setup instructions are documented in hubspot-setup.md.
+Two meeting transcripts have been processed and filed. Three dashboard mockups (in `projects/data-mockups/`) were created and are waiting for stakeholder feedback since Feb 11 — neither Michael nor Alex have reviewed them. This is the most stale open item at 15 days.
 
-**SEO plans** are written for both websites (greenmarkwaste.com and htdisposal.com) — 90-day improvement roadmaps. But no baseline audit has been done yet, which means the plans lack a measured starting point.
+SEO plans are written for both websites (greenmarkwaste.com and htdisposal.com) — 90-day improvement roadmaps. But no baseline audit has started, which means the plans lack a measured starting point. This workstream is independent of the data integration blockers and could advance immediately.
 
-**Dashboard mockups** (3 HTML prototypes in projects/data-mockups/) have been waiting for Michael and Alex's feedback for 14 days. Deferred twice. Not urgent, but stale.
-
-**Session hygiene** needs attention: 4 takeoffs, 0 landings. Every prior session ended without a formal debrief, meaning no structured next_actions or blockers were carried forward. Bookmark data is minimal (auto-closed, no context). This is the first session with the full cockpit skill suite operational.
+Momentum is present but stalled. Five people are waiting on Alex or Michael for 11 open tasks. The oldest wait-ons are from Feb 11 — now 15 days old with no movement.
 
 ## Where We're Going
 
-1. **Unblock Sage connection** — Alex promised Daniel a user account "first thing Monday" (Feb 24) and it's now Feb 25 with no update. This is THE critical path. Once Daniel has Sage credentials, he creates a read-only API key, connects the first live data source, and moves from synthetic to production data. This cascades: Sage connection proves the pipeline works, which gives confidence to request HubSpot production access, which means two live sources feeding the warehouse within days of unblocking.
+1. **Unblock Sage Intacct connection** — Alex promised Daniel a user account "first thing Monday" (Feb 24). It's now Feb 26 with no update. This is THE critical path. Once Daniel has a Sage account, he creates the API key and connects the first real data source. This unblocks the entire pipeline and proves the medallion architecture works. Impact: moves from "we built the pipeline" to "we're pulling real financial data." No follow-up has been sent yet.
 
-2. **Get HubSpot production CRM read access** — Michael needs to approve Daniel's Private App in the production HubSpot account. Setup instructions are ready. This is secondary to Sage but essential before any real deals, contacts, or pipeline data flow into the warehouse. The sandbox work de-risked this — Daniel knows exactly what scopes are needed and how the data maps.
+2. **Get HubSpot CRM read permissions** — Michael needs to provision Daniel's API access in production HubSpot (requested Feb 20, no response). This is the second data source and validates the 2+2+2 strategy. Without it, the dashboard mockups have no data to display. The sandbox work de-risked this — Daniel knows exactly what scopes are needed and how the data maps. Impact: proves the dashboard prototypes work end-to-end.
 
-3. **Baseline SEO audits for both websites** — This is the one workstream completely independent of data integration blockers. Both sites are on Webflow. Michael called SEO "low hanging fruit, top of the list." Running baseline audits (PageSpeed, Core Web Vitals, backlink profile, keyword rankings) creates the measurable floor for the 90-day improvement plans already written. This can ship this week regardless of what happens with Sage or HubSpot.
+3. **Get dashboard mockup feedback from Michael + Alex** — These have been waiting since Feb 11 (15 days). Deferred twice. Once they react to the three mockup styles, Daniel knows which direction to refine. This is blocking the data integration roadmap because it determines which metrics to prioritize. Workaround: send mockups separately to each person (Michael gets ops view, Alex gets financial view) to lower the friction.
 
 ## Blockers
 
-**Alex Kaye — Sage Intacct account (6 days pending)**
-Alex was supposed to provision Daniel a Sage user account on Monday Feb 24 ("first thing"). It's now Tuesday Feb 25 afternoon with no update. This blocks: API key creation → Sage connector → first live data → downstream HubSpot CRM access. Everything in the data integration critical path starts here. No follow-up has been sent yet — status is unclear.
+**Alex Kaye — Sage Intacct account (2 days past promise)**
+Alex was supposed to provision Daniel a Sage user account on Monday Feb 24 ("first thing"). It's now Wednesday Feb 26 with no update. This blocks: API key creation → Sage connector → first live data → downstream HubSpot CRM access. Everything in the data integration critical path starts here. No follow-up has been sent from Daniel's side — status is unclear.
 
-**Michael Nguyen — HubSpot API access (5 days pending)**
-API access request emailed Feb 20. No response. Michael is also needed for: Webflow login credentials (emailed Feb 20), Railway billing account setup (details sent), and Google Business Profile access (mentioned in SEO discussion). Michael is engaged and supportive but has multiple outstanding asks.
+**Michael Nguyen — Multiple outstanding asks (6-15 days)**
+HubSpot API access (requested Feb 20, no response). Also owes: Webflow login credentials (emailed Feb 20), Railway billing account setup (details sent), Google Business Profile access (mentioned in SEO discussion), and dashboard mockup feedback (outstanding since Feb 11 — most stale item). Michael is engaged and supportive but has multiple concurrent asks stacking up.
 
-**Dashboard mockup feedback — 14 days stale**
-The three HTML dashboard prototypes in projects/data-mockups/ need Michael and Alex's review. Deferred twice. Not blocking active work, but the longer they sit, the more likely the mockups diverge from what stakeholders actually want. Can be pre-empted if Sage unblocks and live data becomes the priority.
+**3rd Eye — Genuinely unknown**
+No API docs, no vendor contact, can't even evaluate. Not blocking the first two integrations, but it's a future risk. Workaround: confirm with Michael whether 3rd Eye is even needed or if it's sunsetting.
+
+**Staleness alert:** Dashboard feedback 15 days. Sage account 2 days late. HubSpot permissions 6 days with no response.
 
 ---
 
-*Generated 2026-02-25T21:22:32Z by /takeoff*
+*Generated 2026-02-26T02:29:22Z by /takeoff*

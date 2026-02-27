@@ -1,11 +1,11 @@
 ---
 id: TASK-1.7
 title: Evaluate HubSpot Private App as alternative to PAK for CRM access
-status: To Do
+status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 21:58'
-updated_date: '2026-02-24 22:40'
+updated_date: '2026-02-26 08:41'
 labels:
   - hubspot
   - architecture
@@ -19,22 +19,7 @@ priority: medium
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Evaluate creating a HubSpot Private App as an alternative to PAK for API access.
-
-**Why this matters now:** Pipeline endpoint (`/crm/v3/pipelines/deals`) returns 403 with PAK — error says 'User level OAuth token is not allowed for this endpoint.' Private App tokens are app-level and may unlock this.
-
-**Private App advantages:**
-- App-level auth (not user-level)
-- May unlock pipeline endpoint
-- Granular scope control
-- No 30-min token expiry (long-lived tokens)
-
-**Private App disadvantages:**
-- Requires HubSpot Super Admin access
-- More setup overhead
-- Different auth flow
-
-**Decision:** Defer until after PAK scope expansion (TASK-1.12). If expanded PAK still can't read pipelines, then Private App becomes necessary.
+With admin access to production, Private App is the confirmed approach (proven in sandbox). PAK vs Private App evaluation is moot — Private App gives granular scope control.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -50,3 +35,9 @@ Evaluate creating a HubSpot Private App as an alternative to PAK for API access.
 <!-- SECTION:NOTES:BEGIN -->
 2026-02-24: Confirmed pipeline endpoint explicitly rejects user-level tokens. Deal stage names cannot be resolved without pipeline access. Private App is the only path to pipeline data.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Resolved: Private App is the approach. Admin access granted Feb 25, sandbox validation complete. No further evaluation needed.
+<!-- SECTION:FINAL_SUMMARY:END -->

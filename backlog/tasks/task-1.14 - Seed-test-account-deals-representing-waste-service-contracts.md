@@ -1,11 +1,11 @@
 ---
 id: TASK-1.14
 title: 'Seed test account: deals representing waste service contracts'
-status: To Do
+status: Done
 assignee:
   - Daniel
 created_date: '2026-02-24 22:30'
-updated_date: '2026-02-25 07:17'
+updated_date: '2026-02-26 08:43'
 labels:
   - hubspot
   - data-integration
@@ -36,3 +36,9 @@ Create sample deals in the Greenmark Dev test account representing waste managem
 <!-- SECTION:NOTES:BEGIN -->
 2026-02-25: Added dependency on TASK-1.12 (PAK scope expansion). Can't create deals via API without write scopes. Alternative: seed via HubSpot UI.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Superseded: Production HubSpot has real deal data. Sandbox seeding no longer needed.
+<!-- SECTION:FINAL_SUMMARY:END -->
