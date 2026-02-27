@@ -98,14 +98,20 @@ Back in the cockpit repo (`greenmark-cockpit`):
 1. Read `state.json`
 2. Set `custom.last_clean_sweep` to current ISO timestamp
 3. Write `state.json`
-4. If cockpit has uncommitted changes (from state.json update or anything else):
-   - `git add state.json`
-   - `git commit -m "clean-sweep: update state.json with sweep timestamp"`
+
+### Stage 6 — Report & Save
+
+**Generate** the final report (format below), then **save it** to disk:
+
+1. Write the report to `sweeps/YYYY-MM-DD-HHMMSS.md` in the cockpit repo
+   - Create the `sweeps/` directory if it doesn't exist
+   - Filename uses the sweep timestamp (UTC), e.g. `sweeps/2026-02-27-210000.md`
+2. Stage and commit everything in one shot:
+   - `git add state.json sweeps/`
+   - `git commit -m "clean-sweep: <date> sweep report"`
    - `git push`
 
-### Stage 6 — Report
-
-Output the final report in this exact format:
+**Report format:**
 
 ```
   ██████╗██╗     ███████╗ █████╗ ███╗   ██╗
@@ -165,3 +171,4 @@ Workspace: SWEPT (N warnings, N failures)
 - **Always update state.json** with `custom.last_clean_sweep` timestamp at the end
 - **Parallel where possible** — discovery, pushes, and builds all run in parallel. Only commits are sequential (to avoid race conditions on shared state).
 - **Commit message prefix** — all sweep commits use the prefix `clean-sweep: `
+- **Always save the report** — write to `sweeps/YYYY-MM-DD-HHMMSS.md` in the cockpit repo. Every sweep leaves a receipt.
