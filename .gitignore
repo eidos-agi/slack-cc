@@ -1,0 +1,33 @@
+# Local tooling — never commit binaries/deps
+tools/*/node_modules/
+tools/*/logs/
+tools/*/package-lock.json
+node_modules/
+
+# Track agent-browser docs (learnings flywheel)
+!tools/agent-browser/README.md
+!tools/agent-browser/learnings.md
+!tools/agent-browser/ab
+!tools/agent-browser/package.json
+
+# Logs
+*.log
+logs/
+
+# Environment and secrets
+.env
+.env.*
+*.key
+*.pem
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Internal strategy docs
+projects/cerebro-roi/*.pdf
+railguey/

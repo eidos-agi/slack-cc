@@ -7,10 +7,11 @@ AI Cockpit for Greenmark Waste Solutions — projects, decisions, meetings, and 
 | Project | Status | Owner | Details |
 |---------|--------|-------|---------|
 | **Data Integration (Cerebro)** | Researching | Daniel | [checklist](projects/data-integration/checklist.md) / [infra repo](https://github.com/greenmark-waste-solutions/infra) — 6 of 15 vendor APIs researched. Next: HubSpot API data model. |
-| **SEO Improvement** | Planning | Daniel | [greenmarkwaste.com](projects/seo-improvement/greenmarkwaste.com/seo-plan.md) / [htdisposal.com](projects/seo-improvement/htdisposal.com/seo-plan.md) — 90-day plans written, no baseline audit yet |
+| **SEO Improvement** | Active | Daniel | [greenmarkwaste.com](projects/seo-improvement/greenmarkwaste.com/seo-plan.md) / [htdisposal.com](projects/seo-improvement/htdisposal.com/seo-plan.md) — **Astro rebuild: mobile 92, desktop 99.** LCP 17.5→2.7s, CLS 0.176→0.001. [changelog](projects/seo-improvement/greenmarkwaste.com/changelog.md) |
 | **Dashboard Mockups** | Awaiting feedback | Daniel | [3 HTML prototypes](projects/data-mockups/checklist.md) — executive, operations, financial. Need Michael + Alex review. |
 | **Tech Org Setup** | In progress | Daniel + Alex | [checklist](projects/tech-org-setup/checklist.md) — GitHub org done, Sage/HubSpot access pending |
 | **Recording Solution** | Phase 1+2 done | Daniel | [checklist](projects/recording-solution/checklist.md) — diarize skill built + tested, glossary created |
+| **Auth Upgrade** | Active | Daniel | [plan](projects/auth-upgrade/README.md) / [print-out](projects/auth-upgrade/auth-upgrade-plan.html) — **Phase 1 before Sage goes live.** Shared password → individual accounts + SSO. |
 | **Warehouse Strategy** | Scoping | TBD | [checklist](projects/warehouse-strategy/checklist.md) — kickoff recording now available |
 
 ## Meetings

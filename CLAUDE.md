@@ -150,10 +150,34 @@ Full details: [infra/vendor-status.md](https://github.com/greenmark-waste-soluti
 ## Rules
 
 - **Soft deletes only** — never hard-delete records from any database. Use `deleted_at` timestamps.
-- **No secrets in repos** — credentials go in Knox or AIC Secure Request, never in git.
+- **No secrets in repos** — credentials go in Railway env vars (Greenmark's secrets manager) or LastPass, never in git. Do NOT use Knox (that's AIC's vault, not Greenmark's).
 - **Commit messages explain why** — not just what changed.
 - **Keep files under 2700 lines** — break up large documents.
 - **Meeting folders are self-contained** — all artifacts for a meeting live in one folder.
+
+## Browser Automation — MANDATORY
+
+**Use `tools/agent-browser/` for ALL browser automation. No exceptions.**
+
+- **DO NOT** use `mcp__claude-in-chrome__*` tools
+- **DO NOT** use `mcp__helios__*` tools
+- **DO NOT** use any other browser MCP
+
+**How to use it:**
+```bash
+AB="./tools/agent-browser/ab"
+$AB open <url>           # navigate
+$AB snapshot             # see the page (AI-friendly tree with @refs)
+$AB fill @<ref> <text>   # fill a field
+$AB click @<ref>         # click something
+$AB screenshot /tmp/x.png # visual proof
+```
+
+**After every browser session**, update `tools/agent-browser/learnings.md` with what worked, what broke, and what to do differently. This compounds.
+
+**Auth pattern:** Drive to login page, fill email (`it@greenmarkwaste.com`), then STOP for Daniel to paste password from LastPass and handle Duo 2FA.
+
+Full docs: [tools/agent-browser/README.md](tools/agent-browser/README.md)
 
 <!-- BACKLOG.MD MCP GUIDELINES START -->
 
