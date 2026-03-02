@@ -1,6 +1,6 @@
 # SEO Improvement Project
 
-**Status:** Planning
+**Status:** Active
 **Owner:** Daniel Shanklin
 **Requested by:** Stakeholder call, Feb 19, 2026 — [meeting notes](../../meetings/2026-02-19-stakeholder-call/README.md)
 **Target:** Improve SEO scores for both Greenmark websites
@@ -17,7 +17,8 @@ Same parent company, separate brands, different markets. SEO strategies are para
 ## Shared 90-Day Timeline
 
 ### Phase 1: Foundation (Days 1-30)
-- [ ] Run baseline audits on both sites (PageSpeed, Screaming Frog, Ahrefs/Semrush)
+- [x] Run PageSpeed baseline on greenmarkwaste.com — Mobile: 47, Desktop: 85, LCP: 17.5s (2026-02-28)
+- [ ] Run full baseline audits on both sites (Screaming Frog, Ahrefs/Semrush)
 - [ ] Set up GA4 + Google Search Console for both domains
 - [ ] Record baseline metrics (DA, keyword rankings, organic traffic, Core Web Vitals)
 - [ ] Implement schema markup (LocalBusiness + Service) on both sites
@@ -69,8 +70,14 @@ Same parent company, separate brands, different markets. SEO strategies are para
 - Claude sidebar can log into Webflow and make changes directly
 - Michael: "This is low hanging fruit. That shouldn't take too long. That should be kind of at the top of the list."
 
+## Change Log
+
+| Date | Site | Change | Impact | Details |
+|------|------|--------|--------|---------|
+| 2026-02-28 | greenmarkwaste.com | Hero slider: lazy loading + responsive srcset | Mobile perf 47→49, LCP 17.5→12.5s, CLS regressed 0.176→0.203 | [Full changelog](greenmarkwaste.com/changelog.md) |
+
 ## Blockers
 
 - [ ] Need access to existing GA/GSC accounts (if any) — ask Alex
-- [ ] Need Webflow login for both sites — ask Michael
+- [x] Need Webflow login for both sites — have access via designer
 - [ ] Need GBP login credentials for both brands

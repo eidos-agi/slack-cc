@@ -1,7 +1,7 @@
 # SEO Plan — greenmarkwaste.com
 
 *Created: 2026-02-20*
-*Status: Planning*
+*Status: Active*
 *Target: Commercial waste hauling — North Texas + Indiana*
 
 ## Brand Focus
@@ -24,7 +24,7 @@ Greenmark Waste Solutions — B2B focus. Target keywords: commercial hauling, co
 - [ ] Write compelling meta descriptions with CTA for each page
 - [ ] Verify XML sitemap is dynamic and submitted to GSC
 - [ ] Review robots.txt — not blocking critical resources
-- [ ] Compress all images (truck photos, dumpster photos)
+- [x] Compress all images (truck photos, dumpster photos) — hero slider: lazy loading + responsive srcset enabled (2026-02-28). RollOff source still needs re-compression.
 - [ ] Enable browser caching and Gzip compression
 
 ### Google Business Profile

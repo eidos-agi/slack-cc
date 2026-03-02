@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cerebro Authentication Upgrade — Greenmark Waste Solutions</title>
+  <style>
+    :root {
+      --primary: #3fb950;
+      --primary-dim: rgba(63, 185, 80, 0.15);
+      --danger: #f85149;
+      --danger-dim: rgba(248, 81, 73, 0.1);
+      --warning: #d29922;
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      padding: 3rem 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+    }
+    .header .subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+    }
+    .header .meta {
+      margin-top: 1rem;
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
+    .header .meta span {
+      margin-right: 2rem;
+    }
+
+    /* Sections */
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    p {
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .muted { color: var(--muted); }
+
+    /* Alert box */
+    .alert {
+      background: var(--danger-dim);
+      border: 1px solid var(--danger);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .alert-title {
+      font-weight: 700;
+      color: var(--danger);
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .alert p { margin-bottom: 0; font-size: 0.9375rem; }
+
+    /* Timeline */
+    .timeline {
+      display: flex;
+      gap: 0;
+      margin: 1.5rem 0;
+    }
+    .phase-card {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      position: relative;
+    }
+    .phase-card:first-child { border-radius: 8px 0 0 8px; }
+    .phase-card:last-child { border-radius: 0 8px 8px 0; }
+    .phase-card:not(:last-child) { border-right: none; }
+    .phase-num {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .phase-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 0.375rem;
+    }
+    .phase-time {
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
+    .phase-card.active {
+      border-color: var(--primary);
+      background: var(--primary-dim);
+    }
+    .phase-card.active .phase-title { color: var(--primary); }
+
+    /* Feature lists */
+    .features {
+      list-style: none;
+      padding: 0;
+    }
+    .features li {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9375rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .features li:last-child { border-bottom: none; }
+    .check {
+      color: var(--primary);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.9375rem;
+    }
+    th {
+      text-align: left;
+      padding: 0.75rem;
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    tr:last-child td { border-bottom: none; }
+
+    /* Action box */
+    .action-box {
+      background: var(--primary-dim);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .action-box h3 {
+      color: var(--primary);
+      margin-top: 0;
+    }
+    .action-box ol {
+      padding-left: 1.25rem;
+      margin: 0;
+    }
+    .action-box li {
+      padding: 0.375rem 0;
+      font-size: 0.9375rem;
+    }
+
+    /* Security grid */
+    .security-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .security-item {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+    .security-item .label {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+    .security-item .value {
+      font-weight: 600;
+      font-size: 0.9375rem;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8125rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Print styles */
+    @media print {
+      :root {
+        --bg: #ffffff;
+        --surface: #f6f8fa;
+        --border: #d0d7de;
+        --text: #1f2328;
+        --muted: #656d76;
+        --primary: #1a7f37;
+        --primary-dim: rgba(26, 127, 55, 0.08);
+        --danger: #cf222e;
+        --danger-dim: rgba(207, 34, 46, 0.06);
+      }
+      body {
+        padding: 0;
+        font-size: 11pt;
+        max-width: 100%;
+      }
+      .header h1 { font-size: 20pt; }
+      h2 { font-size: 14pt; break-after: avoid; }
+      .phase-card, .security-item, .action-box { break-inside: avoid; }
+      .alert { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Cerebro Authentication Upgrade</h1>
+    <div class="subtitle">Securing financial data access with individual accounts and Microsoft SSO</div>
+    <div class="meta">
+      <span>Prepared by: Daniel Shanklin</span>
+      <span>Date: March 2026</span>
+      <span>For: Michael Nguyen, Alex Kaye</span>
+    </div>
+  </div>
+
+  <!-- The Problem -->
+  <h2>The Problem</h2>
+
+  <div class="alert">
+    <div class="alert-title">Security Gap</div>
+    <p>Cerebro currently uses <strong>one shared password</strong> for all 8 users. There is no way to know who logged in, no way to revoke one person's access without changing everyone's password, and no two-factor authentication.</p>
+  </div>
+
+  <p>This is manageable while Cerebro only shows operational data. But we are about to connect <strong>Sage Intacct</strong> — which means real financial data (revenue, invoices, AR aging, P&L) will be visible in the dashboard. A shared password is not acceptable for financial data access.</p>
+
+  <!-- The Solution -->
+  <h2>The Solution</h2>
+
+  <p>We'll upgrade authentication in three phases. Each phase builds on the previous one, and each can be rolled out independently. There is no disruption to the dashboard itself — only the login experience changes.</p>
+
+  <div class="timeline">
+    <div class="phase-card active">
+      <div class="phase-num">Phase 1</div>
+      <div class="phase-title">Individual Accounts</div>
+      <div class="phase-time">Before Sage goes live</div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-num">Phase 2</div>
+      <div class="phase-title">Add Microsoft Login</div>
+      <div class="phase-time">Within 30 days</div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-num">Phase 3</div>
+      <div class="phase-title">Microsoft Only</div>
+      <div class="phase-time">Within 60 days</div>
+    </div>
+  </div>
+
+  <!-- Phase 1 -->
+  <h2>Phase 1: Individual Accounts</h2>
+
+  <p>Every user gets their own login — an email address and a personal password. When they first log in, they'll also set up <strong>two-factor authentication</strong> using an authenticator app on their phone (Microsoft Authenticator, Google Authenticator, or similar).</p>
+
+  <h3>What changes for users</h3>
+  <ul class="features">
+    <li><span class="check">+</span> Each person has their own email/password — no more sharing credentials</li>
+    <li><span class="check">+</span> Two-factor authentication required — a 6-digit code from your phone at each login</li>
+    <li><span class="check">+</span> Audit trail — we can see who logged in and when, including failed login attempts</li>
+    <li><span class="check">+</span> If someone leaves, we disable their account — no need to change everyone's password</li>
+    <li><span class="check">+</span> Automatic session timeout — if you walk away from your desk, Cerebro logs you out after 30 minutes of inactivity</li>
+  </ul>
+
+  <h3>Why two-factor authentication matters</h3>
+  <p>If a password is ever stolen from another website (and reused here), 2FA is what stops an attacker from using it to access Cerebro. It's a simple, powerful defense against the most common type of cyberattack — stolen credentials.</p>
+
+  <h3>What doesn't change</h3>
+  <p>The dashboard itself is identical. Same data, same pages, same experience. Only the login screen is different.</p>
+
+  <p class="muted"><strong>Effort:</strong> ~2 days of development. No downtime. Each user receives a personal email invitation with setup instructions.</p>
+
+  <!-- Phase 2 -->
+  <h2>Phase 2: Add Microsoft Login</h2>
+
+  <p>Greenmark already uses Microsoft 365. In Phase 2, we add a <strong>"Sign in with Microsoft"</strong> button to the login page. Users can click it and authenticate with their existing <code>@greenmarkwaste.com</code> Microsoft account — the same credentials they use for Outlook, Teams, and SharePoint.</p>
+
+  <h3>Why Microsoft</h3>
+  <ul class="features">
+    <li><span class="check">+</span> Users already have Microsoft accounts — no new passwords to remember</li>
+    <li><span class="check">+</span> Microsoft handles 2FA — if you have Authenticator set up for Outlook, it works here too</li>
+    <li><span class="check">+</span> Restricted to <code>@greenmarkwaste.com</code> only — personal Microsoft accounts cannot log in</li>
+  </ul>
+
+  <p>Email/password login still works as a fallback during this phase. Both options are available.</p>
+
+  <p class="muted"><strong>Effort:</strong> ~1 day of development. Requires an Azure AD app registration (see "What We Need From You" below).</p>
+
+  <!-- Phase 3 -->
+  <h2>Phase 3: Microsoft Only</h2>
+
+  <p>Once all users are comfortable with Microsoft login, we disable email/password entirely. Microsoft SSO becomes the <strong>only way</strong> to access Cerebro.</p>
+
+  <h3>Why this matters</h3>
+  <ul class="features">
+    <li><span class="check">+</span> <strong>Zero passwords to manage</strong> — when IT creates or deletes a Microsoft account, Cerebro access is handled automatically</li>
+    <li><span class="check">+</span> Offboarding becomes automatic — disable the Microsoft account, Cerebro access ends immediately</li>
+    <li><span class="check">+</span> Compliance-friendly — single sign-on with audit trails through Microsoft's security center</li>
+  </ul>
+
+  <h3>Emergency access</h3>
+  <p>We will create one emergency admin account stored offline in a physical safe — independent of Microsoft. Think of it as the emergency key to the building. If Microsoft ever has an outage, this account guarantees we can always get in. Two trusted people will have access to this key.</p>
+
+  <p class="muted"><strong>Effort:</strong> Half a day. Flip a configuration flag and update the login page.</p>
+
+  <!-- What We Need -->
+  <h2>What We Need From You</h2>
+
+  <div class="action-box">
+    <h3>Action Items</h3>
+    <ol>
+      <li><strong>Approve Phase 1</strong> — confirm we should proceed with individual accounts before Sage financial data goes live</li>
+      <li><strong>Provide user list</strong> — names and email addresses for all 8 users who need Cerebro access</li>
+      <li><strong>Azure AD app registration</strong> (for Phase 2) — either:
+        <br>a) Michael registers the app in Entra ID (we'll provide the settings), or
+        <br>b) Grant Daniel temporary admin access to the <code>greenmarkwaste.com</code> Entra ID tenant</li>
+    </ol>
+  </div>
+
+  <p>Phase 1 has <strong>no blockers</strong> — we can start as soon as you approve. Phase 2 requires the Azure AD setup, which we can do in parallel while Phase 1 rolls out.</p>
+
+  <!-- Timeline -->
+  <h2>Timeline</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Phase</th>
+        <th>Milestone</th>
+        <th>Target</th>
+        <th>Depends On</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Phase 1</strong></td>
+        <td>Individual accounts + 2FA live</td>
+        <td>Before Sage data goes live</td>
+        <td>Your approval</td>
+      </tr>
+      <tr>
+        <td><strong>Phase 2</strong></td>
+        <td>Microsoft SSO available</td>
+        <td>Within 30 days of Phase 1</td>
+        <td>Azure AD app registration</td>
+      </tr>
+      <tr>
+        <td><strong>Phase 3</strong></td>
+        <td>Email/password disabled</td>
+        <td>Within 60 days of Phase 1</td>
+        <td>All users confirmed on Microsoft SSO</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Security Summary -->
+  <h2>Security Summary</h2>
+
+  <p>Here's what improves at each phase:</p>
+
+  <div class="security-grid">
+    <div class="security-item">
+      <div class="label">Audit Trail</div>
+      <div class="value">Who logged in, when, from where — including failed attempts</div>
+    </div>
+    <div class="security-item">
+      <div class="label">Two-Factor Auth</div>
+      <div class="value">Mandatory for every login — enforced, not optional</div>
+    </div>
+    <div class="security-item">
+      <div class="label">Access Revocation</div>
+      <div class="value">Disable one user without affecting others</div>
+    </div>
+    <div class="security-item">
+      <div class="label">Tenant Restriction</div>
+      <div class="value">Only @greenmarkwaste.com accounts</div>
+    </div>
+    <div class="security-item">
+      <div class="label">Session Security</div>
+      <div class="value">Auto-logout after 30 min idle — protects unattended screens</div>
+    </div>
+    <div class="security-item">
+      <div class="label">Data Protection</div>
+      <div class="value">Row-level security — users only see what their role allows</div>
+    </div>
+    <div class="security-item">
+      <div class="label">Offboarding</div>
+      <div class="value">Disable M365 account = locked out automatically</div>
+    </div>
+    <div class="security-item">
+      <div class="label">Emergency Access</div>
+      <div class="value">Offline break-glass account independent of Microsoft</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Capability</th>
+        <th>Today</th>
+        <th>After Phase 1</th>
+        <th>After Phase 3</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Individual accounts</td>
+        <td style="color: var(--danger);">No</td>
+        <td style="color: var(--primary);">Yes</td>
+        <td style="color: var(--primary);">Yes</td>
+      </tr>
+      <tr>
+        <td>Two-factor authentication</td>
+        <td style="color: var(--danger);">No</td>
+        <td style="color: var(--primary);">Yes (TOTP)</td>
+        <td style="color: var(--primary);">Yes (Microsoft)</td>
+      </tr>
+      <tr>
+        <td>Audit trail</td>
+        <td style="color: var(--danger);">No</td>
+        <td style="color: var(--primary);">Yes</td>
+        <td style="color: var(--primary);">Yes + Microsoft logs</td>
+      </tr>
+      <tr>
+        <td>Revoke one user</td>
+        <td style="color: var(--danger);">No</td>
+        <td style="color: var(--primary);">Yes</td>
+        <td style="color: var(--primary);">Yes (automatic)</td>
+      </tr>
+      <tr>
+        <td>Passwords to manage</td>
+        <td>1 shared</td>
+        <td>8 individual</td>
+        <td style="color: var(--primary);">0 (SSO)</td>
+      </tr>
+      <tr>
+        <td>Session timeout</td>
+        <td style="color: var(--danger);">Never</td>
+        <td style="color: var(--primary);">30 min idle</td>
+        <td style="color: var(--primary);">30 min idle</td>
+      </tr>
+      <tr>
+        <td>Data-level access control</td>
+        <td style="color: var(--danger);">No</td>
+        <td style="color: var(--primary);">Yes (role-based)</td>
+        <td style="color: var(--primary);">Yes (role-based)</td>
+      </tr>
+      <tr>
+        <td>Emergency access plan</td>
+        <td style="color: var(--danger);">No</td>
+        <td>N/A</td>
+        <td style="color: var(--primary);">Yes (offline key)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Footer -->
+  <div class="footer">
+    Greenmark Waste Solutions &mdash; Project Cerebro &mdash; Prepared by AIC Holdings
+  </div>
+
+</body>
+</html>
