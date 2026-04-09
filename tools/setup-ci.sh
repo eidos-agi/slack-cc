@@ -36,6 +36,28 @@ if [[ ! -d "$REPO/.git" ]]; then
     exit 1
 fi
 
+# Auto-detect language
+HAS_NODE=false
+HAS_PYTHON=false
+[[ -f "$REPO/package.json" ]] && HAS_NODE=true
+[[ -f "$REPO/requirements.txt" || -f "$REPO/pyproject.toml" || -f "$REPO/setup.py" ]] && HAS_PYTHON=true
+
+if [[ "$PYTHON" == false && "$HAS_PYTHON" == true && "$HAS_NODE" == false ]]; then
+    PYTHON=true
+fi
+
+if [[ "$PYTHON" == true ]]; then
+    echo "  language: Python"
+else
+    echo "  language: Node.js"
+fi
+
+# Warn on mismatch
+if [[ "$PYTHON" == false && "$HAS_NODE" == false && "$HAS_PYTHON" == false ]]; then
+    echo "  WARNING: no package.json or requirements.txt found — defaulting to Node.js" >&2
+    echo "  Use --python to override" >&2
+fi
+
 NAME=$(basename "$REPO")
 echo "setup-ci: configuring $NAME"
 
