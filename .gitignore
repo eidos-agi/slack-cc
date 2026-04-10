@@ -1,3 +1,14 @@
+# Ephemeral intel — regenerated every takeoff/land, not source of truth
+intel.json
+debrief.json
+
+# Local MCP config — auto-generated per machine
+.mcp.json
+
+# Python build artifacts
+__pycache__/
+*.pyc
+
 # Local tooling — never commit binaries/deps
 tools/*/node_modules/
 tools/*/logs/
