@@ -1,0 +1,145 @@
+{
+  "id": "20260413-135112",
+  "convened_at": "2026-04-13T13:51:12.287301+00:00",
+  "adjourned_at": "2026-04-13T15:48:19.763343+00:00",
+  "milestone": "'M-04: Sage Medallion Complete'",
+  "convene_results": [
+    {
+      "id": "C-01",
+      "check": "Ike state is current",
+      "automated": true,
+      "status": "pass",
+      "detail": "Milestone: 'M-04: Sage Medallion Complete', 16 open tasks"
+    },
+    {
+      "id": "C-02",
+      "check": "Learnings are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "19 learnings"
+    },
+    {
+      "id": "C-03",
+      "check": "Personas are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "3/3 personas"
+    },
+    {
+      "id": "C-04",
+      "check": "Git is clean or changes are understood",
+      "automated": true,
+      "status": "warn",
+      "detail": "1 dirty files"
+    },
+    {
+      "id": "C-05",
+      "check": "Current milestone is identified",
+      "automated": true,
+      "status": "pass",
+      "detail": "'M-04: Sage Medallion Complete'"
+    },
+    {
+      "id": "C-06",
+      "check": "Last session's next_actions are accounted for",
+      "automated": true,
+      "status": "pass",
+      "detail": "7 actions from last session",
+      "last_session_actions": [
+        "Monitor gl_entries load: psql sage_bronze.gl_entries count should grow from 10K toward 1.38M. Check daemon.run_history for gl_journal_entries completion.",
+        "After gl_entries load completes: verify sage_gold.refresh_all() fired \u2014 check sage_gold.gl_summary, entity_pnl, ap_aging row counts increased",
+        "If load fails: check Railway logs for column errors. The information_schema fix should handle it but verify.",
+        "TASK-0032: Export warp-speed gold tables as golden fixtures for parity testing",
+        "TASK-0033: Write sage_excel_parity.py validation script",
+        "Close cockpit PR #8 cleanup \u2014 already closed, verify no orphan branches",
+        "gl_batches extraction: 584K rows, will also need the fixed code to load"
+      ]
+    },
+    {
+      "id": "C-07",
+      "check": "Database state matches expectations",
+      "automated": true,
+      "status": "skip",
+      "detail": "No DATABASE_URL \u2014 cannot check sage_bronze"
+    },
+    {
+      "id": "C-08",
+      "check": "No open PRs blocking the critical path",
+      "automated": true,
+      "status": "pass",
+      "detail": "0 open PR(s) on critical-path repos, all CI green",
+      "all_critical_prs": []
+    }
+  ],
+  "summary": "Fixed the auto-reflect lookup table. Replaced with LLM reasoning.",
+  "next_actions": [
+    "Ship ceremony-patterns branch"
+  ],
+  "tasks_completed": [],
+  "learnings_added": [],
+  "adjourn_results": [
+    {
+      "id": "A-01",
+      "check": "All work is committed and pushed",
+      "automated": true,
+      "status": "fail",
+      "detail": "3 uncommitted files",
+      "fix": "Commit and push before adjourning."
+    },
+    {
+      "id": "A-02",
+      "check": "Ike state reflects what was accomplished",
+      "automated": true,
+      "status": "pass",
+      "detail": "all tasks at rest"
+    },
+    {
+      "id": "A-03",
+      "check": "Learnings from this session are saved",
+      "automated": false,
+      "status": "manual",
+      "note": "Did anything go wrong or almost go wrong?",
+      "fix": "Call ariadne_learn() for each lesson."
+    },
+    {
+      "id": "A-04",
+      "check": "PRs are opened for completed work",
+      "automated": false,
+      "status": "manual",
+      "note": "Code committed but no PR = invisible work.",
+      "fix": "Open PRs with Closes #N."
+    },
+    {
+      "id": "A-05",
+      "check": "Migration state is consistent",
+      "automated": false,
+      "status": "manual",
+      "note": "If applied manually, is it also in the PR?",
+      "fix": "Ensure migration file matches what's on the database."
+    },
+    {
+      "id": "A-06",
+      "check": "Next actions are concrete",
+      "automated": false,
+      "status": "manual",
+      "note": "Can the next convene start without context?",
+      "fix": "Write specific next_actions, not vague goals."
+    },
+    {
+      "id": "A-07",
+      "check": "Stakeholders updated if work is visible",
+      "automated": false,
+      "status": "manual",
+      "note": "Did we ship something Michael/Alex would see?",
+      "fix": "Update Wrike in Daniel's voice."
+    },
+    {
+      "id": "A-08",
+      "check": "Personas updated if calibration changed",
+      "automated": false,
+      "status": "manual",
+      "note": "Did Rhea hedge? Did Ariadne miss? Did the mayor drift?",
+      "fix": "Update the relevant persona JSON."
+    }
+  ]
+}

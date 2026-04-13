@@ -107,7 +107,7 @@ def search_docs(query: str) -> list[dict]:
     scored = [(doc, s) for doc, s in scored if s > 0]
     scored.sort(key=lambda x: x[1], reverse=True)
 
-    return [
+    results = [
         {
             "title": doc["title"],
             "path": doc["path"],
@@ -118,6 +118,18 @@ def search_docs(query: str) -> list[dict]:
         }
         for doc, score in scored
     ]
+
+    # Mark surfaced docs as read — the implicit feedback signal.
+    # If Ariadne surfaced a doc and the agent later searches for it,
+    # that behavioral signal means the nudge worked.
+    try:
+        from .ariadne import mark_doc_read
+        for r in results:
+            mark_doc_read(r["title"])
+    except ImportError:
+        pass
+
+    return results
 
 
 def list_docs() -> list[dict]:

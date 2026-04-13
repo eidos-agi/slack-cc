@@ -42,6 +42,25 @@ def _latest_session() -> dict | None:
         return None
 
 
+def _load_session_history(last_n: int = 5) -> list[dict]:
+    """Load the last N completed sessions (those with adjourned_at)."""
+    if not SESSIONS_DIR.exists():
+        return []
+    files = sorted(SESSIONS_DIR.glob("*.json"), reverse=True)
+    sessions = []
+    for f in files[:last_n + 2]:
+        try:
+            with open(f) as fh:
+                s = json.load(fh)
+            if s.get("adjourned_at"):
+                sessions.append(s)
+            if len(sessions) >= last_n:
+                break
+        except Exception:
+            continue
+    return sessions
+
+
 def _write_session(session: dict):
     """Write a session log entry."""
     SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
@@ -293,6 +312,25 @@ def run_convene() -> dict:
             + (f" Last session: {last_session['id']}" if last_session else " First session.")
         ) if failed == 0 else f"Convene blocked. {failed} checks failed.",
         "docs": _count_docs(),
+        "serendipity": _serendipity_stats(last_session) if last_session else None,
+    }
+
+
+def _serendipity_stats(session: dict) -> dict | None:
+    """Summarize doc surfacing from last session for the convene report."""
+    docs_surfaced = session.get("docs_surfaced", [])
+    if not docs_surfaced:
+        return None
+
+    total = len(docs_surfaced)
+    read = sum(1 for d in docs_surfaced if d.get("read"))
+    graduated = sum(1 for d in docs_surfaced if d.get("graduated"))
+
+    return {
+        "last_session_docs_surfaced": total,
+        "read": read,
+        "graduated_to_learnings": graduated,
+        "ignored": total - read,
     }
 
 
@@ -356,7 +394,33 @@ def run_adjourn(summary: str = "", next_actions: list[str] | None = None) -> dic
         last["summary"] = summary or "No summary provided."
         last["next_actions"] = next_actions or []
         last["adjourn_results"] = results
+
+        # Populate fields that always existed but were never filled
+        from .ariadne import get_surfaced_docs, _load_learnings
+
+        # What docs were surfaced and what happened to them
+        last["docs_surfaced"] = get_surfaced_docs()
+
+        # What learnings were added this session (diff convene count vs now)
+        current_learnings = _load_learnings()
+        convene_count = 0
+        for cr in last.get("convene_results", []):
+            if cr.get("id") == "C-02" and "detail" in cr:
+                try:
+                    convene_count = int(cr["detail"].split()[0])
+                except (ValueError, IndexError):
+                    pass
+        if len(current_learnings) > convene_count:
+            last["learnings_added"] = [
+                {"id": l["id"], "lesson": l["lesson"][:80]}
+                for l in current_learnings[convene_count:]
+            ]
+
         _write_session(last)
+
+    # Surface existing learnings so the agent can avoid duplicates
+    from .ariadne import _load_learnings
+    existing = _load_learnings()
 
     return {
         "phase": "adjourn",
@@ -374,6 +438,15 @@ def run_adjourn(summary: str = "", next_actions: list[str] | None = None) -> dic
             {"id": r["id"], "check": r["check"], "note": r.get("note", ""), "fix": r.get("fix", "")}
             for r in results if r["status"] == "manual"
         ],
+        "reflect": {
+            "existing_learnings": [
+                {"id": l["id"], "lesson": l["lesson"]} for l in existing
+            ],
+            "instruction": (
+                "You just lived through this session. If you learned something novel — "
+                "something not already in the list above — call ariadne_learn(). If not, move on."
+            ),
+        },
         "minutes": {
             "summary": summary,
             "next_actions": next_actions,

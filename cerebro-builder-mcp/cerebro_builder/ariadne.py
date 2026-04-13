@@ -17,6 +17,7 @@ about something new).
 
 import json
 import os
+import random
 from pathlib import Path
 
 from .mission import MISSION, get_current_milestone, get_next_tasks
@@ -24,6 +25,10 @@ from .topology import SERVICES, ENVIRONMENTS, DEPLOY_ORDER
 
 # ── Pattern memory ──────────────────────────────────────
 # Known mistakes. Loaded from learnings.json. Grows over time.
+
+# Session-scoped tracking: what docs were surfaced and what happened to them.
+# Resets per process. No new files — lives in memory.
+_surfaced_this_session: list[dict] = []
 
 LEARNINGS_PATH = Path(__file__).parent.parent / "learnings.json"
 PERSONA_PATH = Path(__file__).parent.parent / "personas" / "ariadne.json"
@@ -100,6 +105,120 @@ def _check_patterns(text: str) -> list[dict]:
         if any(t in text_lower for t in learning["trigger"]):
             triggered.append(learning)
     return triggered
+
+
+def _serendipity_rate() -> float:
+    """Adaptive serendipity rate based on session history.
+
+    Starts at 0.3. Adjusts based on whether random docs in past sessions
+    led to reads or learnings. If the agent ignores them, rate drops.
+    If random docs lead to engagement, rate rises.
+
+    No history = 0.3 (current behavior).
+    """
+    from .ceremony import _load_session_history
+
+    history = _load_session_history(last_n=5)
+    if not history:
+        return 0.3
+
+    random_surfaced = 0
+    random_engaged = 0
+
+    for session in history:
+        for doc in session.get("docs_surfaced", []):
+            if doc.get("why") == "stumbled_upon":
+                random_surfaced += 1
+                if doc.get("read") or doc.get("graduated"):
+                    random_engaged += 1
+
+    if random_surfaced == 0:
+        return 0.3
+
+    engagement = random_engaged / random_surfaced
+    return max(0.10, min(0.50, 0.15 + 0.35 * engagement))
+
+
+def _check_docs(text: str) -> list[dict]:
+    """Surface docs the builder didn't ask for — serendipity, not search.
+
+    Humans don't consult a manual before every task. They stumble upon
+    insights while working. Sometimes the connection is obvious, sometimes
+    it's adjacent. The randomness is the point.
+
+    Returns 0-2 docs: one relevant (if any tags match), and occasionally
+    one random doc. The random rate adapts from session engagement history.
+    Docs whose insights have graduated to learnings get deprioritized.
+    """
+    from .docs import list_docs
+
+    text_lower = text.lower()
+    all_docs = list_docs()
+    if not all_docs:
+        return []
+
+    # Context-sensitive graduation filter.
+    #
+    # A doc's violin can have multiple bodies — relevant in one context,
+    # graduated, then relevant again in a new context. Only suppress a doc
+    # if the learnings covering its tags are ALSO relevant to the current
+    # task. If we're working on something new, old graduations don't apply.
+    learnings = _load_learnings()
+    active_learning_triggers = set()
+    for l in learnings:
+        triggers = [t.lower() for t in l.get("trigger", [])]
+        # Only count this learning's triggers if the learning itself
+        # is relevant to the current task (any trigger matches the text)
+        if any(t in text_lower for t in triggers):
+            active_learning_triggers.update(triggers)
+
+    # Score docs by task relevance. Graduation demotes but never eliminates —
+    # a doc that matched the task is relevant. The question is whether a
+    # learning already covers it IN THIS CONTEXT. If so, rank it lower.
+    # If not, it's fresh territory (or a second body on the violin).
+    scored = []
+    for doc in all_docs:
+        hits = sum(1 for tag in doc["tags"] if tag.lower() in text_lower)
+        if hits > 0:
+            covered = sum(1 for tag in doc["tags"] if tag.lower() in active_learning_triggers)
+            freshness = len(doc["tags"]) - covered  # uncovered tags = fresh territory
+            scored.append((doc, hits, freshness))
+
+    # Sort by relevance first, then by freshness (prefer docs with uncovered territory)
+    scored.sort(key=lambda x: (x[1], x[2]), reverse=True)
+
+    surfaced = []
+
+    # One relevant doc (best match, if any)
+    if scored:
+        best = scored[0]
+        entry = {"title": best[0]["title"], "path": best[0]["path"], "why": "relevant"}
+        surfaced.append(entry)
+        _surfaced_this_session.append({**entry, "read": False, "graduated": False})
+
+    # Adaptive random rate — learns from session history
+    if random.random() < _serendipity_rate():
+        already = {d["title"] for d in surfaced}
+        candidates = [d for d in all_docs if d["title"] not in already]
+        if candidates:
+            pick = random.choice(candidates)
+            entry = {"title": pick["title"], "path": pick["path"], "why": "stumbled_upon"}
+            surfaced.append(entry)
+            _surfaced_this_session.append({**entry, "read": False, "graduated": False})
+
+    return surfaced
+
+
+def get_surfaced_docs() -> list[dict]:
+    """Return docs surfaced this session (for the session log at adjourn)."""
+    return list(_surfaced_this_session)
+
+
+def mark_doc_read(title: str):
+    """Mark a surfaced doc as read. Called by docs() when the agent searches."""
+    for tracked in _surfaced_this_session:
+        if tracked["title"].lower() == title.lower():
+            tracked["read"] = True
 
 
 # ── Her own mind ────────────────────────────────────────
@@ -199,6 +318,7 @@ def ariadne_challenge(task_title: str, approach: str = "") -> dict:
     """
     combined = f"{task_title} {approach}"
     triggered = _check_patterns(combined)
+    relevant_docs = _check_docs(combined)
 
     # Always build reasoning context — Rhea needs it
     reasoning_context = _build_context_for_reasoning(task_title, approach)
@@ -229,7 +349,7 @@ def ariadne_challenge(task_title: str, approach: str = "") -> dict:
     # Layer 1 found nothing: Rhea reasons from scratch (more important!)
     rhea_required = True  # Always — that's the point
 
-    return {
+    result = {
         "task": task_title,
         "approach": approach or "(describe your approach for a better challenge)",
         "patterns_triggered": len(triggered),
@@ -249,6 +369,21 @@ def ariadne_challenge(task_title: str, approach: str = "") -> dict:
         ),
     }
 
+    # Serendipity — the builder stumbles upon knowledge while working.
+    # Sometimes relevant, sometimes adjacent, sometimes random.
+    # Humans learn this way. Agents should too.
+    if relevant_docs:
+        result["related_reading"] = {
+            "docs": relevant_docs,
+            "nudge": (
+                "Ariadne surfaced these while thinking about your task. "
+                "Some are relevant, some are just interesting. "
+                "Read with docs() if curious — or don't. Learning is casual."
+            ),
+        }
+
+    return result
+
 
 def ariadne_learn(lesson: str, trigger_words: list[str], source: str = "") -> dict:
     """Add a new learning to Ariadne's pattern memory.
@@ -266,4 +401,14 @@ def ariadne_learn(lesson: str, trigger_words: list[str], source: str = "") -> di
     }
     learnings.append(new_learning)
     _save_learnings(learnings)
+
+    # Graduation: if this learning came from a surfaced doc, mark it.
+    # The insight moved from doc → pattern memory. Next time, the
+    # learning triggers directly — the doc is internalized.
+    source_lower = (source or "").lower()
+    for tracked in _surfaced_this_session:
+        if tracked["title"].lower() in source_lower:
+            tracked["graduated"] = True
+            break
+
     return {"added": new_id, "total_learnings": len(learnings)}
