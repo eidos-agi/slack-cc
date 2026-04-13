@@ -61,6 +61,76 @@ def adjourn(summary: str = "", next_actions: list[str] | None = None) -> dict:
     return run_adjourn(summary, next_actions or [])
 
 
+@mcp.tool()
+def beepboop() -> dict:
+    """Flush the buffer. Finish → adjourn → compress → reconvene.
+
+    Call when context is getting long or the pilot says "beepboop".
+    Returns session state, dirty files, open PRs, and instructions
+    for the agent to cycle cleanly.
+
+    The agent should:
+    1. Finish or checkpoint any in-flight work
+    2. Call adjourn() with the summary and next_actions from this response
+    3. Tell the pilot to /clear
+    4. After clear: call convene() → whats_next() → resume
+    """
+    from .ceremony import _latest_session
+    from .mission import get_current_milestone, get_next_tasks
+
+    session = _latest_session()
+    milestone = get_current_milestone()
+    tasks = get_next_tasks()
+
+    import subprocess
+    try:
+        r = subprocess.run(
+            ["git", "status", "--porcelain"],
+            capture_output=True, text=True, timeout=5,
+            cwd="/home/dev/repos/greenmark-cockpit",
+        )
+        dirty_files = [l.strip() for l in r.stdout.strip().split("\n") if l.strip()]
+    except Exception:
+        dirty_files = []
+
+    open_prs = []
+    for repo in ["cerebro", "cerebro-migrations", "data-daemon", "greenmark-cockpit"]:
+        try:
+            r = subprocess.run(
+                ["gh", "pr", "list", "--repo", f"greenmark-waste-solutions/{repo}",
+                 "--state", "open", "--json", "number,title,url", "--limit", "5"],
+                capture_output=True, text=True, timeout=10,
+            )
+            if r.returncode == 0 and r.stdout.strip():
+                import json
+                prs = json.loads(r.stdout)
+                for pr in prs:
+                    open_prs.append({"repo": repo, **pr})
+        except Exception:
+            pass
+
+    return {
+        "phase": "beepboop",
+        "message": (
+            "Context flush requested. Agent: finish in-flight work, "
+            "then call adjourn() with the summary and next_actions below. "
+            "After adjourn, tell the pilot to /clear. "
+            "After clear, call convene() → whats_next() → resume."
+        ),
+        "current_milestone": milestone.get("title") if milestone else None,
+        "open_tasks": len(tasks),
+        "dirty_files": dirty_files,
+        "open_prs": open_prs,
+        "session_id": session["id"] if session else None,
+        "instructions": [
+            "1. Commit any uncommitted work" if dirty_files else "1. Git is clean",
+            "2. Call adjourn(summary=<what you did>, next_actions=<concrete next steps>)",
+            "3. Tell pilot: 'Context flushed. /clear and I'll reconvene.'",
+            "4. After /clear: convene() → whats_next() → execute",
+        ],
+    }
+
+
 # ── Mission ─────────────────────────────────────────────
 
 
