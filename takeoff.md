@@ -1,64 +1,37 @@
-# Greenmark Cockpit — Takeoff #8
+# Greenmark Cockpit — Takeoff #23
 
-**Pilot** Daniel Shanklin &nbsp;|&nbsp; **Date** Mar 2, 2026 &nbsp;|&nbsp; **Time** 10:01 AM
+**Pilot** Daniel Shanklin &nbsp;|&nbsp; **Date** Apr 13, 2026 &nbsp;|&nbsp; **Time** session start
 
-**Session** #8 &nbsp;|&nbsp; **Branch** `main` &nbsp;|&nbsp; **Working tree** dirty (65 files) &nbsp;|&nbsp; **Last landing** 3 days ago (Feb 27)
+**Session** #23 &nbsp;|&nbsp; **Branch** `feat/branch-flow-guards` &nbsp;|&nbsp; **Working tree** 2 dirty &nbsp;|&nbsp; **Last landing** 2 days ago
 
-> **Resume:** Last session auto-closed without a debrief. Reconstructing from commits and project state.
+> **Resume:** Session 22 (double session). Built tiered release practices (ADR-2026-02, 13/13 compliant), cerebro-github MCP (14 tools, 3 layers, persistent ledger, topology model), Rhea token-gate pattern for production merges (19 tests), SageIntacctConnector (15 tests, merged), Jam.dev bug reporter (deployed), bulk merged 9 PRs. GitHub Project board live with milestones and Gantt.
 
 ---
 
 ## Where We Were
 
-Last session ended without a formal landing. Reconstructing from commits, project state, and memory.
-
-Recent cockpit work was operational housekeeping — the `/clean-sweep` skill was added, the workspace was swept, 43 backlog tasks were synced, and the repo was renamed from `greenmark-planning` to `greenmark-cockpit`. This was infrastructure work: making the cockpit itself more usable.
-
-Before that, the real breakthroughs happened on vendor access. HubSpot CRM access was fully secured — Daniel authenticated via `it@greenmarkwaste.com`, a private app (`data-daemon-production`) was created with contacts/companies/deals/owners read scopes, and the API was proven with real Greenmark production data. Sage Intacct access was also unblocked — Daniel has credentials. These were the two biggest credential blockers that had been holding up the data pipeline for weeks.
-
-On the SEO front, the Astro rebuild of greenmarkwaste.com was deployed to Railway. Performance went from abysmal (17.5s LCP on the old Webflow site) to excellent (2.7s LCP, mobile Lighthouse 92, desktop 99, CLS 0.001, TBT 0ms). Only the homepage was built — interior pages still need conversion.
-
-Cerebro Warp Speed was pushed to GitHub — a FastAPI + Claude Agent SDK prototype with 17 in-process MCP tools across HubSpot, Sage, and Identity Resolution plugins. All 190 tests passed. This is the conversational AI layer that sits on top of the data warehouse.
+Session 22 was a double-header that fundamentally changed how we work. The tiered release practices system (ADR-2026-02) classified all 13 repos into Production/Supporting/Reference tiers with appropriate ceremony enforced by `bootstrap-repo.sh` and audited by `ensure-release.sh`. The cerebro-github MCP encodes 14 tools across three layers (Do/See/Know) with a persistent incident ledger — the ceremony that knows itself. The Rhea token-gate pattern means T1 production merges require adversarial reasoning before execution. SageIntacctConnector shipped with 15 tests covering XML session auth, cursor pagination, date-range chunking for GLENTRY, and entity resolution from LOCATION codes. Jam.dev bug reporter deployed so Michael/Alex/Robert can screen-capture issues.
 
 ## Where We Are
 
-The Greenmark engagement is transitioning from "research and planning" into "connections and delivery." The vendor research phase is largely complete (6 of 15 systems deeply researched), the data pipeline architecture works (data-daemon v1.4 tested with synthetic data), and — critically — the first two real data source connections are now unblocked.
+The Sage pipeline rebuild sits at M-03: connector merged, credentials from warp-speed set on both Railway environments. sage_bronze is live on staging (7 tables, RBAC 19/19). The PL04000005 blocker remains an open question — warp-speed's credentials work for downloading GL data, so the same credentials on data-daemon should work. This needs to be tested.
 
-**What's moving:**
-- **HubSpot** is fully unblocked. Private app key created, API proven with real data. data-daemon can connect today. No action needed from Michael or Alex.
-- **Sage Intacct** is unblocked. Daniel has access and credentials. Ready to wire up.
-- **SEO** has real momentum. Astro site is live with excellent scores. The foundation is solid for building out interior pages.
-- **Cerebro Warp Speed** is prototyped and tested. 190/190 tests passing with synthetic fixtures.
+Infrastructure is solid: 13/13 repos tier-compliant, GitHub Project board has 47+ items with milestones M-01 through M-07, sub-issues, and dates. cerebro-github MCP is registered and working. Two strategic PRs remain: cerebro #14 (staging build-info banner) and cockpit #2 (all session 22 work).
 
-**What's stalled:**
-- **Navusoft** — still waiting on Michael's team for access. No timeline given. This blocks the route/dispatch data integration.
-- **3rd Eye** — complete unknown. No API docs, no vendor contact. Can't even evaluate feasibility.
-- **Dashboard mockups** — 3 HTML prototypes ready, awaiting Michael and Alex feedback.
-
-**What needs attention:**
-- 65 files of work product sitting uncommitted in the cockpit. Stakeholders browse this repo in GitHub's web UI — they can't see any of this until it's pushed.
-- Weekly update is stale (last run Feb 25, 5 days ago).
-- Auth upgrade plan written but pending Michael's approval before Sage financial data goes live.
+Daniel asked for "great docs" — documentation permanence was a theme in session 22. README.md is the hub, every leaf links back, ADR-2026-02 explains why, tools/README.md covers the full enforcement picture. Documentation should be verified against current reality this session.
 
 ## Where We're Going
 
-1. **Connect HubSpot to data-daemon** — This is the single highest-impact next step. The blocker is gone, the pipeline is ready, and this is exactly what Michael and Alex chose as Priority #1. Proving the end-to-end flow with real production CRM data makes the whole project tangible. It turns Cerebro from a prototype into a system that knows about real customers, real deals, real pipeline.
-
-2. **Connect Sage Intacct to data-daemon** — The second data source Michael and Alex chose. Financial data flowing means the dashboard can show real revenue, real AR aging, real P&L trends. Combined with HubSpot, this gives Cerebro the "revenue + operations" view that was the original pitch.
-
-3. **Commit and push cockpit work product** — 47 new backlog tasks, meeting notes from the Alex Kaye call, decision records, project plans, and SEO artifacts are all sitting in the working tree. Michael and Alex browse this repo in GitHub's web UI. Until this is committed, they can't see the planning work that's been done.
-
-**If Navusoft access arrives:** That immediately becomes priority #2, pushing Sage to #3. Route data combined with CRM data is the "customer lifecycle" view Michael wants most.
+1. **Merge cerebro #14 + cockpit #2** — close the strategic PR backlog from session 22
+2. **M-04: sage_silver + sage_gold views** — materialized views transforming bronze → silver (cleaned, typed) → gold (Alex's spreadsheet layout)
+3. **M-05: Excel parity validation** — compare pipeline gold against warp-speed golden fixtures
+4. **M-06: Wire Financial dashboard** — replace mock data with live gold queries
+5. **Documentation audit** — verify all docs reflect current reality
 
 ## Blockers
 
-- **Navusoft:** Waiting on Michael's team to provision access for Daniel. No timeline. This blocks route/dispatch data but does NOT block the immediate HubSpot + Sage priorities.
-- **3rd Eye:** Complete unknown — no API documentation, no vendor contact, no way to even evaluate. Parked until Michael can facilitate a conversation with the vendor.
-- **WAM:** Confirmed no API. Michael says Hometown is transitioning to Navusoft "over the next couple months." WAM integration may never be needed. Low urgency.
-- **Auth upgrade:** Plan written (Phase 1: individual accounts + 2FA), but waiting on Michael's approval. Must ship before Sage financial data goes live — this is a gating dependency on the security side.
-
-None of these blockers affect the two highest priorities (HubSpot and Sage connections are clear).
+**Sage API PL04000005 (soft blocker):** Warp-speed credentials set on Railway in session 22. These credentials pull 1.38M GL entries via warp-speed-excel. Same credentials on data-daemon should work but haven't been tested live. If it fails, requires Sage support investigation.
 
 ---
 
-*Generated Mar 2, 2026 at 10:01 AM by /takeoff*
+*Generated 2026-04-13 by /takeoff*

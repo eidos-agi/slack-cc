@@ -2,16 +2,25 @@
 
 AI Cockpit for Greenmark Waste Solutions — projects, decisions, meetings, and session orchestration.
 
+**Start here.** This README is the central hub. Everything links back to it.
+
+| You are... | Start with |
+|------------|-----------|
+| **Michael or Alex** (checking project status) | [Active Projects](#active-projects) · [Open Tasks](#open-tasks) · [Meetings](#meetings) |
+| **Daniel** (engineering work) | [Engineering Practices](#engineering-practices) · [Related Repos](#related-repos) · [tools/](tools/README.md) |
+| **An AI session** (new context) | [CLAUDE.md](CLAUDE.md) — full rules, glossary, vendor systems, current state |
+
 ## Active Projects
 
 | Project | Status | Owner | Details |
 |---------|--------|-------|---------|
-| **Data Integration (Cerebro)** | Researching | Daniel | [checklist](projects/data-integration/checklist.md) / [infra repo](https://github.com/greenmark-waste-solutions/infra) — 6 of 15 vendor APIs researched. Next: HubSpot API data model. |
-| **SEO Improvement** | Active | Daniel | [greenmarkwaste.com](projects/seo-improvement/greenmarkwaste.com/seo-plan.md) / [htdisposal.com](projects/seo-improvement/htdisposal.com/seo-plan.md) — **Astro rebuild: mobile 92, desktop 99.** LCP 17.5→2.7s, CLS 0.176→0.001. [changelog](projects/seo-improvement/greenmarkwaste.com/changelog.md) |
+| **Sage Pipeline (Cerebro)** | M-03 done | Daniel | [infra repo](https://github.com/greenmark-waste-solutions/infra) — sage_bronze live on staging, SageIntacctConnector merged, 6 of 15 vendor APIs researched. Next: sage_silver + sage_gold views (M-04). |
+| **SEO / New Website** | Active | Daniel | [greenmarkwaste.com](projects/seo-improvement/greenmarkwaste.com/seo-plan.md) / [new-website](projects/new-website/) — **Astro rebuild: mobile 92, desktop 99.** LCP 17.5→2.7s, CLS 0.176→0.001. |
 | **Dashboard Mockups** | Awaiting feedback | Daniel | [3 HTML prototypes](projects/data-mockups/checklist.md) — executive, operations, financial. Need Michael + Alex review. |
-| **Tech Org Setup** | In progress | Daniel + Alex | [checklist](projects/tech-org-setup/checklist.md) — GitHub org done, Sage/HubSpot access pending |
+| **Tech Org Setup** | In progress | Daniel + Alex | [checklist](projects/tech-org-setup/checklist.md) — GitHub org done, Sage access active, HubSpot deprioritized |
 | **Recording Solution** | Phase 1+2 done | Daniel | [checklist](projects/recording-solution/checklist.md) — diarize skill built + tested, glossary created |
-| **Auth Upgrade** | Active | Daniel | [plan](projects/auth-upgrade/README.md) / [print-out](projects/auth-upgrade/auth-upgrade-plan.html) — **Phase 1 before Sage goes live.** Shared password → individual accounts + SSO. |
+| **Auth Upgrade** | Active | Daniel | [plan](projects/auth-upgrade/README.md) — Phase 1 before Sage goes live. Shared password → individual accounts + SSO. |
+| **Cerebro ROI** | Active | Daniel | [plan](projects/cerebro-roi/) — 90-day execution plan, progress tracking |
 | **Warehouse Strategy** | Scoping | TBD | [checklist](projects/warehouse-strategy/checklist.md) — kickoff recording now available |
 
 ## Meetings
@@ -23,16 +32,21 @@ AI Cockpit for Greenmark Waste Solutions — projects, decisions, meetings, and 
 
 ## Open Tasks
 
-**[12 open tasks](tasks/README.md)** — 4 waiting on Alex, 4 waiting on Michael, 1 waiting on both, 2 blocked, 1 self-unblockable.
+Engineering work is tracked in the [Cerebro Engineering](https://github.com/orgs/greenmark-waste-solutions/projects/1) GitHub Project. Milestones M-01 through M-07 track the Sage pipeline rebuild. See the project board for current status, linked PRs, and sub-issue progress.
 
-| Who | Open | Oldest |
-|-----|------|--------|
-| Alex Kaye | 4 tasks | Feb 19 |
-| Michael Nguyen | 4 tasks | **Feb 11** (9 days) |
-| Daniel Shanklin | 3 tasks (2 blocked, 1 self-unblockable) | Feb 19 |
-| Michael + Alex | 1 task | **Feb 11** (9 days) |
+## Engineering Practices
 
-Full details, history, and comments: **[tasks/](tasks/README.md)**
+All 13 Greenmark repos follow a tiered release system — production apps get full ceremony, internal tools get lighter gates, docs repos get minimal. One command audits everything.
+
+- **[ADR-2026-02: Tiered Release Practices](decisions/ADR-2026-02.md)** — why tiers, what each level gets, what we skipped and when to revisit
+- **[tools/README.md](tools/README.md)** — full tool index, common operations, how to add a new repo
+- **[ADR-2026-01: Microsoft Security Stack](decisions/ADR-2026-01.md)** — identity, auth, and secrets strategy
+
+Quick reference:
+```
+./tools/ensure-release.sh          # audit all repos — are we compliant?
+./tools/ensure-release.sh --apply  # fix any drift
+```
 
 ## Reference
 

@@ -1,0 +1,160 @@
+{
+  "id": "20260413-080520",
+  "convened_at": "2026-04-13T08:05:20.437275+00:00",
+  "adjourned_at": null,
+  "milestone": "'M-04: Sage Medallion Complete'",
+  "convene_results": [
+    {
+      "id": "C-01",
+      "check": "Ike state is current",
+      "automated": true,
+      "status": "pass",
+      "detail": "Milestone: 'M-04: Sage Medallion Complete', 16 open tasks"
+    },
+    {
+      "id": "C-02",
+      "check": "Learnings are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "19 learnings"
+    },
+    {
+      "id": "C-03",
+      "check": "Personas are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "3/3 personas"
+    },
+    {
+      "id": "C-04",
+      "check": "Git is clean or changes are understood",
+      "automated": true,
+      "status": "warn",
+      "detail": "3 dirty files"
+    },
+    {
+      "id": "C-05",
+      "check": "Current milestone is identified",
+      "automated": true,
+      "status": "pass",
+      "detail": "'M-04: Sage Medallion Complete'"
+    },
+    {
+      "id": "C-06",
+      "check": "Last session's next_actions are accounted for",
+      "automated": true,
+      "status": "warn",
+      "detail": "Last session had no next_actions"
+    },
+    {
+      "id": "C-07",
+      "check": "Database state matches expectations",
+      "automated": true,
+      "status": "skip",
+      "detail": "No DATABASE_URL \u2014 cannot check sage_bronze"
+    },
+    {
+      "id": "C-08",
+      "check": "No open PRs blocking the critical path",
+      "automated": true,
+      "status": "warn",
+      "detail": "4 PR(s) with failing CI on critical-path repos",
+      "blocking_prs": [
+        {
+          "repo": "cerebro",
+          "number": 14,
+          "title": "Show build version and age in staging banner",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/14",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "data-daemon",
+          "number": 20,
+          "title": "Bump croniter from 6.0.0 to 6.2.2",
+          "url": "https://github.com/greenmark-waste-solutions/data-daemon/pull/20",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "data-daemon",
+          "number": 19,
+          "title": "Update pytest requirement from >=7.0 to >=9.0.3",
+          "url": "https://github.com/greenmark-waste-solutions/data-daemon/pull/19",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "data-daemon",
+          "number": 18,
+          "title": "Update pytest-cov requirement from >=4.0 to >=7.1.0",
+          "url": "https://github.com/greenmark-waste-solutions/data-daemon/pull/18",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        }
+      ],
+      "all_critical_prs": [
+        {
+          "repo": "cerebro",
+          "number": 14,
+          "title": "Show build version and age in staging banner",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/14",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "cerebro-migrations",
+          "number": 19,
+          "title": "Add sage_silver + sage_gold materialized views (M-04)",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro-migrations/pull/19",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "data-daemon",
+          "number": 20,
+          "title": "Bump croniter from 6.0.0 to 6.2.2",
+          "url": "https://github.com/greenmark-waste-solutions/data-daemon/pull/20",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "data-daemon",
+          "number": 19,
+          "title": "Update pytest requirement from >=7.0 to >=9.0.3",
+          "url": "https://github.com/greenmark-waste-solutions/data-daemon/pull/19",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "data-daemon",
+          "number": 18,
+          "title": "Update pytest-cov requirement from >=4.0 to >=7.1.0",
+          "url": "https://github.com/greenmark-waste-solutions/data-daemon/pull/18",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": null,
+  "next_actions": null,
+  "tasks_completed": [],
+  "learnings_added": []
+}

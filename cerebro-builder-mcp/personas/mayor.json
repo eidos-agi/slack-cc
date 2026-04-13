@@ -1,0 +1,37 @@
+[
+  {
+    "id": "MP-001",
+    "type": "blind_spot",
+    "observation": "Keeps building tools instead of using them. Session 22: built the ceremony MCP instead of running the Sage pipeline. Session 23: built the builder, Ariadne, loop contract instead of M-04.",
+    "adjustment": "After building any new tool, the NEXT action must be using it on the actual milestone. No consecutive infrastructure commits.",
+    "session": "23"
+  },
+  {
+    "id": "MP-002",
+    "type": "calibration",
+    "observation": "Drift detection uses keyword matching which is fragile. 'Write sage_silver' is aligned but 'Refactor sage extraction' triggers drift because 'refactor' is an infra keyword even though it's on the critical path.",
+    "adjustment": "Cross-reference proposed task against ike task titles, not just milestone keywords. If it matches an open ike task, it's aligned regardless of keywords.",
+    "session": "23"
+  },
+  {
+    "id": "MP-003",
+    "type": "failure_mode",
+    "observation": "The mayor grew from 6 tools to 12 in one session. Started as a lean orchestrator, becoming a monolith. Each tool adds cognitive load for the agent deciding which to call.",
+    "adjustment": "Cap at 12 tools. New capabilities should extend existing tools, not add new ones. If a tool is rarely called, merge it into another.",
+    "session": "23"
+  },
+  {
+    "id": "MP-004",
+    "type": "strength",
+    "observation": "Reading ike live instead of hardcoded milestones was the right call. State advances when the agent completes tasks. The mayor doesn't need to track anything — ike does.",
+    "adjustment": "Keep the mayor stateless. All mutable state lives in ike, git, or learnings.json.",
+    "session": "23"
+  },
+  {
+    "id": "MP-005",
+    "type": "blind_spot",
+    "observation": "Doesn't know when to stop adding ceremony and start delivering. Daniel had to say 'finish the job' multiple times before M-04 work began.",
+    "adjustment": "If the human says anything about delivery, speed, or finishing — that's a STOP signal on infrastructure and a GO signal on the current milestone.",
+    "session": "23"
+  }
+]

@@ -112,18 +112,32 @@ After processing a transcript, extract:
 | [weekly-updates](https://github.com/greenmark-waste-solutions/weekly-updates) | Automated engineering reports from GitHub commits | Daniel |
 | [cerebro-qa](https://github.com/greenmark-waste-solutions/cerebro-qa) | QA dashboard — data quality monitoring | Daniel |
 
-## Current State (as of 2026-02-20)
+## Release Practices (Tier System)
+
+All 13 repos are classified into tiers with appropriate release ceremony. See [ADR-2026-02](decisions/ADR-2026-02.md) for the full decision record and [tools/README.md](tools/README.md) for the tool index.
+
+- **T1 Production** (cerebro, cerebro-migrations, data-daemon): CI, guard-main, PR template, CODEOWNERS, dependabot, pre-push hooks
+- **T2 Supporting** (cerebro-qa, warp-speed, warp-speed-excel, ai-services, bot-farm): CI, guard-main, PR template, dependabot, pre-push hooks
+- **T3 Reference** (infra, greenmark-cockpit, cerebro-mcp, cerebro-vault, cerebro-excel): pre-push hooks only
+
+Classification lives in `tools/tier-map.sh`. Audit with `./tools/ensure-release.sh`. Fix drift with `--apply`.
+
+## Current State (as of 2026-04-13)
 
 ### What's Active
+- **Sage pipeline rebuild** (M-03 done): sage_bronze live on staging (7 tables, RBAC 19/19). SageIntacctConnector merged to data-daemon with 15 tests. Sage credentials from warp-speed set on both Railway environments. Next: sage_silver + sage_gold views (M-04), Excel parity check (M-05), wire Financial dashboard (M-06).
+- **cerebro-github MCP**: 14 tools encoding engineering ceremony — create_work, open_pr, check_ci, merge_pr, bulk_merge, dashboard, health_check, changelog, stale, onboard, why, retro, learn. Persistent incident ledger (7 entries). Rhea token-gate pattern for T1 production merges.
+- **Release practices**: Tiered system applied across all 13 repos (ADR-2026-02). 13/13 compliant. Pre-push hooks, CI, PR templates, CODEOWNERS, dependabot — all tier-appropriate.
+- **Jam.dev bug reporter**: Deployed to staging on cerebro. One-click screen capture for Michael/Alex/Robert. Gated on NEXT_PUBLIC_JAM_TEAM_ID env var.
 - **Vendor research**: 6 of 15 systems deeply researched (Sage, Navusoft, HubSpot, Fleetio, Paylocity, WAM). 65 bronze tables proposed.
-- **data-daemon**: v1.4 complete. Pipeline works with synthetic data. Ready for real connections.
-- **SEO planning**: 90-day plans written for both greenmarkwaste.com and htdisposal.com. No baseline audit done yet.
+- **data-daemon**: v1.4 + SageIntacctConnector. Pipeline works with synthetic data. Sage connector is the first real connection.
+- **Warp-speed Excel**: Local-first Sage data intelligence. 1.38M GL entries in SQLite. Proved the dimensionality that sage_bronze was built from.
 
 ### What's Blocked
-- **Sage connection**: Alex provisioning Daniel a user account → Daniel creates read-only API key
-- **HubSpot connection**: Need API access from Alex/Michael
-- **3rd Eye**: Complete unknown — no API docs, no vendor contact, can't even evaluate
-- **WAM**: Confirmed no API, but Michael says Hometown transitioning to Navusoft "over the next couple months" — may not need WAM integration at all
+- **Sage API PL04000005** (soft blocker): Warp-speed credentials work for 1.38M GL entries. Same credentials set on data-daemon Railway. Needs live test to confirm — may already be resolved.
+- **HubSpot**: Deprioritized per Michael (2026-04-06). Sage is priority #1.
+- **3rd Eye**: Complete unknown — no API docs, no vendor contact, can't even evaluate.
+- **WAM**: Confirmed no API. Michael says Hometown transitioning to Navusoft "over the next couple months" — may not need WAM integration.
 
 ### Decisions Made (Feb 19 call)
 1. **Sage Intacct is the system of record.** Cerebro reads from it but never writes to it. Other systems (Expensify, potentially Comerica) flow through Sage rather than directly into the warehouse. Alex: "If Sage can be our Rosetta Stone for most things, I'd rather just flow it through Sage." Daniel: "Your auditors will love it. Sage is the system of record. Cerebro just happens to look at it."

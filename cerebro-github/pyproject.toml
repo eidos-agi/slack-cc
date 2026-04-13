@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cerebro-github"
+version = "0.1.0"
+description = "MCP server encoding Greenmark engineering ceremony"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+]
+
+[project.scripts]
+cerebro-github = "cerebro_github.cli:main"

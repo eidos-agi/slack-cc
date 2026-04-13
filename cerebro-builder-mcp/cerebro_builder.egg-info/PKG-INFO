@@ -1,0 +1,6 @@
+Metadata-Version: 2.4
+Name: cerebro-builder
+Version: 0.1.0
+Summary: Orchestrator MCP — mission, topology, and child process ceremony for Cerebro
+Requires-Python: >=3.10
+Requires-Dist: mcp>=1.0.0

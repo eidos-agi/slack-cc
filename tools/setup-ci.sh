@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # setup-ci.sh — Install standardized CI pipeline on any repo
 #
+# STATUS: Largely superseded by bootstrap-repo.sh + tier-map.sh (ADR-2026-02).
+# bootstrap-repo.sh handles CI, guard-main, PR templates, CODEOWNERS, and
+# dependabot with tier-aware logic. This script is still useful for its
+# --deploy smoke-test option, which bootstrap-repo.sh doesn't handle.
+# See tools/README.md for the full tool index.
+#
 # Usage:
 #   ./tools/setup-ci.sh /path/to/repo              # Node.js repo (default)
 #   ./tools/setup-ci.sh /path/to/repo --python      # Python repo
@@ -224,27 +230,59 @@ GUARD
     echo "  ✓ guard-main.yml"
 fi
 
-# ── 3. Local Pre-Push Hook ───────────────────────────────────
+# ── 3. Ensure develop branch exists ──────────────────────────
+
+# Determine primary branch (main or master)
+PRIMARY_BRANCH=""
+if git -C "$REPO" show-ref --verify --quiet refs/remotes/origin/main; then
+    PRIMARY_BRANCH="main"
+elif git -C "$REPO" show-ref --verify --quiet refs/remotes/origin/master; then
+    PRIMARY_BRANCH="master"
+fi
+
+if [[ -n "$PRIMARY_BRANCH" ]]; then
+    if git -C "$REPO" show-ref --verify --quiet refs/remotes/origin/develop; then
+        echo "  skip: develop branch already exists"
+    else
+        echo "  Creating develop from $PRIMARY_BRANCH..."
+        git -C "$REPO" push origin "origin/$PRIMARY_BRANCH:refs/heads/develop" 2>&1 | sed 's/^/    /'
+        echo "  ✓ develop branch"
+    fi
+else
+    echo "  warn: no main/master remote branch — skipping develop creation"
+fi
+
+# ── 4. Local Pre-Push Hook ───────────────────────────────────
+# Blocks direct pushes to main, master, AND develop. Feature branches only.
 
 HOOK_FILE="$REPO/.git/hooks/pre-push"
-if [[ -f "$HOOK_FILE" ]]; then
-    echo "  skip: pre-push hook already exists"
+if [[ -f "$HOOK_FILE" ]] && grep -q "ensure-flow hook" "$HOOK_FILE" 2>/dev/null; then
+    echo "  skip: pre-push hook already exists (ensure-flow version)"
 else
     cat > "$HOOK_FILE" << 'HOOK'
 #!/usr/bin/env bash
+# ensure-flow hook — blocks direct pushes to main, master, and develop.
+# Feature branches only. Go through a PR.
+#
+# Installed by tools/setup-ci.sh in greenmark-cockpit.
+
 while read local_ref local_sha remote_ref remote_sha; do
-    if [[ "$remote_ref" == "refs/heads/main" || "$remote_ref" == "refs/heads/master" ]]; then
-        echo ""
-        echo "  BLOCKED: Direct push to main."
-        echo "  Push to develop and merge via PR."
-        echo ""
-        exit 1
-    fi
+    case "$remote_ref" in
+        refs/heads/main|refs/heads/master|refs/heads/develop)
+            branch="${remote_ref##refs/heads/}"
+            echo ""
+            echo "  BLOCKED: Direct push to $branch."
+            echo "  Feature branches only. Open a PR."
+            echo ""
+            exit 1
+            ;;
+    esac
 done
+
 exit 0
 HOOK
     chmod +x "$HOOK_FILE"
-    echo "  ✓ pre-push hook"
+    echo "  ✓ pre-push hook (blocks main, master, develop)"
 fi
 
 # ── Done ──────────────────────────────────────────────────────

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "AP-001",
+    "type": "calibration",
+    "observation": "Pattern matching on 'view' is too broad — triggers on React component names, not just SQL views. Need context awareness, not just keyword matching.",
+    "adjustment": "Check surrounding words for SQL context (schema, table, select, create) before triggering SQL-related patterns.",
+    "session": "23"
+  },
+  {
+    "id": "AP-002",
+    "type": "blind_spot",
+    "observation": "Tends to challenge the approach but not the scope. Will say 'wrong pattern' but not 'this task is too big for one iteration — break it down.'",
+    "adjustment": "Add scope check: if the task touches more than 2 repos or 3 files, flag it as potentially too large for one pass.",
+    "session": "23"
+  },
+  {
+    "id": "AP-003",
+    "type": "strength",
+    "observation": "Caught the JSONB-views-at-scale mistake before a single line of SQL was written. Pattern memory works well for known anti-patterns.",
+    "adjustment": "Keep investing in Layer 1 (patterns). It's cheap and catches 80% of mistakes.",
+    "session": "23"
+  },
+  {
+    "id": "AP-004",
+    "type": "blind_spot",
+    "observation": "Doesn't challenge whether the task itself should exist. Will evaluate 'write sage_silver' but won't ask 'should silver be a separate step or should we go straight from bronze to gold?'",
+    "adjustment": "Add a meta-question: 'Does this intermediate step earn its complexity, or can we skip it?'",
+    "session": "23"
+  }
+]

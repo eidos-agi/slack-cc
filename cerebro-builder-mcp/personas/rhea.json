@@ -1,0 +1,37 @@
+[
+  {
+    "id": "RP-001",
+    "type": "calibration",
+    "observation": "The Decider defaults to 'medium confidence — proceed with caution.' This is a hedge, not a decision. Medium confidence should be rare, not default.",
+    "adjustment": "Force binary: high (proceed) or low (stop). Medium only when genuinely split.",
+    "session": "23"
+  },
+  {
+    "id": "RP-002",
+    "type": "blind_spot",
+    "observation": "The Dreamer proposes 3 options ranked by simplicity, but the Doubter attacks all 3 equally instead of focusing on the one the Dreamer recommends. Debate spreads thin.",
+    "adjustment": "Doubter should attack the recommended option hardest. If it survives, the others don't matter.",
+    "session": "23"
+  },
+  {
+    "id": "RP-003",
+    "type": "failure_mode",
+    "observation": "Rhea subagent got stuck in an infinite text-generation loop (session 23) — kept announcing tool calls without making them. Produced no useful output for ~80 tokens of looping.",
+    "adjustment": "If Rhea returns no structured output, fall back to single-pass synthesis. Don't retry the same broken pattern.",
+    "session": "23"
+  },
+  {
+    "id": "RP-004",
+    "type": "strength",
+    "observation": "Token-gate architecture (two-call handshake) came from a Rhea debate. The Doubter caught that Option 1 (advisory flag) would be ignored and Option 2 (blocking call) would timeout. The hybrid emerged from genuine adversarial pressure.",
+    "adjustment": "Rhea works best on architecture decisions where there are real tradeoffs. Don't waste it on obvious calls.",
+    "session": "23"
+  },
+  {
+    "id": "RP-005",
+    "type": "calibration",
+    "observation": "Rhea tends to accept proposals with modifications rather than rejecting them outright. This bias toward 'yes, but...' means bad ideas get patched instead of killed.",
+    "adjustment": "The Doubter should explicitly state when the proposal should be abandoned, not just modified. 'Reject' is a valid output.",
+    "session": "23"
+  }
+]

@@ -1,0 +1,239 @@
+[
+  {
+    "id": "L001",
+    "type": "architecture",
+    "trigger": [
+      "view",
+      "materialized view",
+      "sql view",
+      "create view"
+    ],
+    "lesson": "SQL views on large JSONB tables recompute on every query. 1.3M GL entries means 1.3M JSON parse ops per SELECT. Use materialized views or ETL-written typed tables instead.",
+    "source": "Session 23 \u2014 Ariadne caught M-04 before it shipped wrong"
+  },
+  {
+    "id": "L002",
+    "type": "architecture",
+    "trigger": [
+      "supabase",
+      "postgres",
+      "warehouse",
+      "analytics"
+    ],
+    "lesson": "Supabase is an app database with connection pooling and row-level security. It is not an analytics warehouse. Heavy aggregation queries may hit pool limits or timeouts.",
+    "source": "Architecture review \u2014 Supabase docs confirm 60s query timeout on free tier"
+  },
+  {
+    "id": "L003",
+    "type": "architecture",
+    "trigger": [
+      "jsonb",
+      "raw_data",
+      "json_extract",
+      "->",
+      "->>"
+    ],
+    "lesson": "JSONB path extraction at query time doesn't scale. For millions of rows, extract typed columns during ETL and write to properly typed columns. Don't make the dashboard pay for the parse.",
+    "source": "Warp-speed proved this \u2014 Python extraction + SQLite typed columns is fast"
+  },
+  {
+    "id": "L004",
+    "type": "security",
+    "trigger": [
+      "same creds",
+      "same credentials",
+      "both environments",
+      "staging and production"
+    ],
+    "lesson": "Same credentials on staging and production means staging bugs hit the real vendor API. Check if a sandbox exists. If not, at minimum use a read-only user.",
+    "source": "Session 22 \u2014 blindly copied warp-speed creds to both Railway environments"
+  },
+  {
+    "id": "L005",
+    "type": "verification",
+    "trigger": [
+      "golden fixture",
+      "parity",
+      "validation",
+      "compare"
+    ],
+    "lesson": "Golden fixtures are only golden if they've been confirmed against source of truth. Has Alex verified the warp-speed numbers match her spreadsheet? A parity check against wrong fixtures is worse than no check.",
+    "source": "Warp-speed GL Account + Department + Location proven by Alex 2026-04-06"
+  },
+  {
+    "id": "L006",
+    "type": "verification",
+    "trigger": [
+      "mock",
+      "synthetic",
+      "fake data",
+      "test data"
+    ],
+    "lesson": "Mocks that pass don't mean production works. The Sage PL04000005 error only appears on real API calls. Test against real systems before declaring done.",
+    "source": "Session 21 \u2014 mock tests passed but real Sage API returned permission error"
+  },
+  {
+    "id": "L007",
+    "type": "architecture",
+    "trigger": [
+      "scale",
+      "10x",
+      "100x",
+      "million",
+      "bulk"
+    ],
+    "lesson": "Infrastructure that has never been fired at the target volume is not proven, it's hoped-for. Stress-test with synthetic load before declaring ready for production.",
+    "source": "Daniel feedback \u2014 stress test before scale jumps"
+  },
+  {
+    "id": "L008",
+    "type": "architecture",
+    "trigger": [
+      "warp-speed",
+      "prototype",
+      "sqlite",
+      "copy",
+      "port",
+      "replicate",
+      "same as",
+      "just like"
+    ],
+    "lesson": "Prefer patterns already proven in production tools over copying from prototypes. Warp-speed is a prototype (SQLite, Python scripts, local-first). data-daemon and cerebro-migrations are the production tools (Postgres, YAML-driven, Railway-deployed). Adapt the insight, not the implementation.",
+    "source": "Daniel \u2014 session 23"
+  },
+  {
+    "id": "L009",
+    "type": "ceremony",
+    "trigger": [
+      "pr",
+      "pull request",
+      "issue",
+      "project board"
+    ],
+    "lesson": "Every PR must reference an issue with Closes #N. Create the issue first. Work that isn't tracked doesn't exist.",
+    "source": "Session 22 \u2014 opened 9 PRs with no linked issues. 30 minutes rework."
+  },
+  {
+    "id": "L010",
+    "type": "ceremony",
+    "trigger": [
+      "ci",
+      "check",
+      "pipeline",
+      "green"
+    ],
+    "lesson": "CI you don't check is CI you don't have. After every PR, check_ci before moving on.",
+    "source": "Session 22 \u2014 4 PRs had failing CI, walked away. 45 minutes to fix."
+  },
+  {
+    "id": "L011",
+    "type": "ceremony",
+    "trigger": [
+      "delete branch",
+      "develop",
+      "main",
+      "long-lived"
+    ],
+    "lesson": "Never delete long-lived branches (main, develop). Destruction is irreversible. Guard rails beat memory.",
+    "source": "Session 21 \u2014 deleted develop branch from cerebro-migrations remote."
+  },
+  {
+    "id": "L012",
+    "type": "ceremony",
+    "trigger": [
+      "next_public",
+      "env var",
+      "build time",
+      "railway"
+    ],
+    "lesson": "NEXT_PUBLIC_* vars are baked at build time. Setting them in Railway without a code push doesn't trigger a rebuild. Build-time vars need build-time changes.",
+    "source": "Session 22 \u2014 staging banner didn't appear after setting env var."
+  },
+  {
+    "id": "L013",
+    "type": "stakeholder",
+    "trigger": [
+      "wrike",
+      "michael",
+      "alex",
+      "stakeholder",
+      "executive"
+    ],
+    "lesson": "Wrike stays executive-level, GitHub has the detail. Two systems = two audiences. If Wrike is stale, Michael thinks nothing happened.",
+    "source": "Session 22 \u2014 GitHub had 30+ items, Wrike hadn't been updated."
+  },
+  {
+    "id": "L014",
+    "type": "ceremony",
+    "trigger": [
+      "bootstrap",
+      "template",
+      "one size",
+      "all repos"
+    ],
+    "lesson": "One size fits nobody. Classify repos by tier first, then apply appropriate ceremony. A SQL repo doesn't need Node.js CI.",
+    "source": "Session 22 \u2014 bootstrap-repo.sh installed wrong CI on cerebro-migrations."
+  },
+  {
+    "id": "L015",
+    "type": "ruling",
+    "trigger": [
+      "oracle",
+      "quality",
+      "separate mcp"
+    ],
+    "lesson": "Quality control belongs inside the orchestrator (the mayor), not as a separate MCP. Judgment and quality are the same concern. Don't add process boundaries where you need speed.",
+    "source": "Session 23 \u2014 Rhea ruled against separate quality oracle MCP."
+  },
+  {
+    "id": "L016",
+    "type": "ruling",
+    "trigger": [
+      "rhea gate",
+      "token gate",
+      "production merge"
+    ],
+    "lesson": "Use a two-call handshake for production gates: gate call returns context, agent runs Rhea, execution call validates token. The gate is structural, not behavioral.",
+    "source": "Session 23 \u2014 Rhea debate on where enforcement boundary lives."
+  },
+  {
+    "id": "L017",
+    "trigger": [
+      "staging supabase",
+      "staging database",
+      "develop environment",
+      "benchmark",
+      "migration staging",
+      "db push",
+      "supabase db",
+      "izmuckuepryqneebwwol"
+    ],
+    "lesson": "The develop Railway environment points to PRODUCTION Supabase (wwmcgtyngnziepeynccz), not staging (izmuckuepryqneebwwol). Both environments use the same DB. This means: (1) there is no staging database isolation, (2) migrations applied to 'staging' hit production, (3) benchmark queries on 'staging' run against production data. Before running any destructive or heavy query, verify which Supabase project you're actually connected to. The topology.py claims two separate Supabase projects but Railway config tells a different story.",
+    "source": "Session 23 \u2014 tried to benchmark staging, discovered both Railway environments point to production Supabase. Near-miss: could have run destructive migration against production thinking it was staging."
+  },
+  {
+    "id": "L018",
+    "trigger": [
+      "sage_bronze",
+      "silver transform",
+      "gold transform",
+      "gl_entries",
+      "bronze schema",
+      "migration applied"
+    ],
+    "lesson": "sage_bronze on production Supabase is incomplete: only gl_accounts, ap_bills, ar_invoices, vendors exist (all empty). gl_entries, gl_batches, customers tables don't exist. The migration 20260410060000_sage_bronze_rewrite.sql either wasn't fully applied or only partially ran. Before writing any silver/gold transforms, verify the bronze schema is complete AND populated. Don't write transforms against tables that don't exist.",
+    "source": "Session 23 \u2014 benchmark discovered 3 of 7 bronze tables missing on production, all tables empty."
+  },
+  {
+    "id": "L019",
+    "trigger": [
+      "jsonb benchmark",
+      "jsonb performance",
+      "1.3m",
+      "materialized view viable",
+      "L001 correction"
+    ],
+    "lesson": "L001 was wrong in absolute terms. JSONB extraction on 10K real rows: 0.63s. Gold aggregation (GROUP BY entity/account/period): 0.28s. Extrapolated to 1.3M: ~87s extract, ~39s aggregation. Under the 60s Supabase timeout for aggregation. Materialized views on JSONB are viable at this scale \u2014 not fast, but not catastrophic. The correct guidance: use materialized views with scheduled refresh for gold, not live views. Python ETL (approach C) is still cleaner but SQL materialized views (approach B) work as proven fallback.",
+    "source": "Session 23 \u2014 real benchmark on production Supabase with 10K GL entries from live Sage API."
+  }
+]

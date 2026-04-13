@@ -42,3 +42,4 @@ Thumbs.db
 # Internal strategy docs
 projects/cerebro-roi/*.pdf
 railguey/
+cerebro-github/cerebro_github.egg-info/
