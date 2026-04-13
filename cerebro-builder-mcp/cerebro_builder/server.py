@@ -514,31 +514,6 @@ FORGE_ROUTES = {
     },
 }
 
-# Information hierarchy — most detail to least.
-# Each layer filters for its audience. Never push detail UP the chain.
-# GitHub repos hold everything. The board curates into actionable items.
-# Wrike distills into business outcomes. Michael doesn't need PR numbers.
-INFORMATION_HIERARCHY = [
-    {
-        "layer": "GitHub repos",
-        "audience": "Engineers (Daniel + agents)",
-        "detail": "Everything: code, commits, CI, PRs, discussions",
-        "mcp": "cerebro-github",
-    },
-    {
-        "layer": "Project Board (#1)",
-        "audience": "Daniel (engineering oversight)",
-        "detail": "Curated: issues, milestones (as parent issues), sub-issue progress, status",
-        "mcp": "cerebro-github (create_work, open_pr, dashboard)",
-    },
-    {
-        "layer": "Wrike",
-        "audience": "Michael + Alex (executives)",
-        "detail": "Business outcomes only. No PR numbers, no jargon, Daniel's voice.",
-        "mcp": "wrike",
-    },
-]
-
 
 @mcp.tool()
 def which_forge(situation: str) -> dict:
@@ -563,4 +538,55 @@ def which_forge(situation: str) -> dict:
         "situation": situation,
         "recommended_forges": matches,
         "all_forges": list(FORGE_ROUTES.keys()),
+    }
+
+
+# ── Documentation — searchable builder knowledge ──────
+
+
+@mcp.tool()
+def docs(query: str = "") -> dict:
+    """Search the builder's knowledge base.
+
+    Two modes — like a book:
+      docs("")              Table of Contents — browse all docs by title
+      docs("project board") Index — find where a concept is explained
+
+    Use this when you need to understand how systems relate, what the
+    ceremony requires, who sees what, or how information flows.
+    Results include references (line numbers where terms appear).
+
+    Args:
+        query: Keywords to search (title, tags, content). Empty = list all.
+    """
+    from .docs import search_docs, list_docs
+
+    if not query.strip():
+        # Table of Contents
+        all_docs = list_docs()
+        return {
+            "mode": "table_of_contents",
+            "count": len(all_docs),
+            "docs": all_docs,
+            "usage": "Pass keywords to search the index: docs('project board'), docs('hierarchy'), etc.",
+        }
+
+    # Index — search by keyword
+    results = search_docs(query)
+    if not results:
+        all_docs = list_docs()
+        return {
+            "mode": "index",
+            "query": query,
+            "count": 0,
+            "results": [],
+            "table_of_contents": all_docs,
+            "hint": f"No docs matched '{query}'. Try broader terms.",
+        }
+
+    return {
+        "mode": "index",
+        "query": query,
+        "count": len(results),
+        "results": results,
     }

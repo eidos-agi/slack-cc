@@ -292,6 +292,18 @@ def run_convene() -> dict:
             f"Session convened. {passed} checks passed."
             + (f" Last session: {last_session['id']}" if last_session else " First session.")
         ) if failed == 0 else f"Convene blocked. {failed} checks failed.",
+        "docs": _count_docs(),
+    }
+
+
+def _count_docs() -> dict:
+    """Surface docs availability so the agent knows to use docs()."""
+    from .docs import list_docs
+    all_docs = list_docs()
+    return {
+        "count": len(all_docs),
+        "titles": [d["title"] for d in all_docs],
+        "hint": "Use docs('keyword') to search, docs('') for table of contents.",
     }
 
 
