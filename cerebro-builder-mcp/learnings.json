@@ -77,5 +77,31 @@
     ],
     "lesson": "Infrastructure that has never been fired at the target volume is not proven, it's hoped-for. Stress-test with synthetic load before declaring ready for production.",
     "source": "Daniel feedback \u2014 stress test before scale jumps"
+  },
+  {
+    "id": "L008",
+    "trigger": [
+      "squash",
+      "merge",
+      "pr",
+      "push after",
+      "additional commits",
+      "branch"
+    ],
+    "lesson": "Squash merges on GitHub silently drop commits pushed after the PR was created but before it was merged. If you push additional commits to a branch after creating the PR, verify the merge includes them \u2014 or the PR description will say one thing and main will have another. Always check the diff between your local branch and origin/main after a squash merge.",
+    "source": "Session 26 \u2014 migration fix and updated fixtures were pushed to feat/sage-parity-script after PR #23 was created. Squash merge only included the first commit. Migration file on main was stale until caught during audit."
+  },
+  {
+    "id": "L009",
+    "trigger": [
+      "concurrent",
+      "concurrently",
+      "refresh materialized",
+      "disk",
+      "supabase disk",
+      "disk space"
+    ],
+    "lesson": "REFRESH MATERIALIZED VIEW CONCURRENTLY requires enough disk to hold both old and new data simultaneously. On Supabase free tier with 1.38M rows, this blows the disk limit. Use non-concurrent refresh instead \u2014 brief read lock is acceptable for off-hours cron jobs. Also: changes applied directly to the live DB (CREATE OR REPLACE FUNCTION, ALTER ROLE, GRANT) are not captured by squash-merging the migration PR \u2014 you must verify the live function source matches the file on main.",
+    "source": "Session 26 \u2014 CONCURRENT refresh of 1.38M row sage_silver.gl_entries failed with 'No space left on device' after 56s. Non-concurrent completed in 51s."
   }
 ]

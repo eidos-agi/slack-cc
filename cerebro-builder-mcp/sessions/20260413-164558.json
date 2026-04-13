@@ -1,0 +1,143 @@
+{
+  "id": "20260413-164558",
+  "convened_at": "2026-04-13T16:45:58.166320+00:00",
+  "adjourned_at": "2026-04-13T17:49:24.887905+00:00",
+  "milestone": "'M-04: Sage Medallion Complete'",
+  "convene_results": [
+    {
+      "id": "C-01",
+      "check": "Ike state is current",
+      "automated": true,
+      "status": "pass",
+      "detail": "Milestone: 'M-04: Sage Medallion Complete', 16 open tasks"
+    },
+    {
+      "id": "C-02",
+      "check": "Learnings are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "7 learnings"
+    },
+    {
+      "id": "C-03",
+      "check": "Personas are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "3/3 personas"
+    },
+    {
+      "id": "C-04",
+      "check": "Git is clean or changes are understood",
+      "automated": true,
+      "status": "pass",
+      "detail": "clean"
+    },
+    {
+      "id": "C-05",
+      "check": "Current milestone is identified",
+      "automated": true,
+      "status": "pass",
+      "detail": "'M-04: Sage Medallion Complete'"
+    },
+    {
+      "id": "C-06",
+      "check": "Last session's next_actions are accounted for",
+      "automated": true,
+      "status": "pass",
+      "detail": "1 actions from last session",
+      "last_session_actions": [
+        "Ship ceremony-patterns branch"
+      ]
+    },
+    {
+      "id": "C-07",
+      "check": "Database state matches expectations",
+      "automated": true,
+      "status": "skip",
+      "detail": "No DATABASE_URL \u2014 cannot check sage_bronze"
+    },
+    {
+      "id": "C-08",
+      "check": "No open PRs blocking the critical path",
+      "automated": true,
+      "status": "pass",
+      "detail": "0 open PR(s) on critical-path repos, all CI green",
+      "all_critical_prs": []
+    }
+  ],
+  "summary": "Sage Medallion live \u2014 M-04 through M-06 done in one session. Refreshed 1.38M GL entries through silver/gold materialized views. Built financial fetcher + API route, wired Financial and Executive dashboard pages with live/mock fallback. Revenue matches Alex's spreadsheet to the penny (HTN $872,850.23, NTX $75,246.02). Parity: FULL (10,056 rows, 0 failures). Fixed refresh_all() for Supabase disk limit, exposed sage_gold via PostgREST, deployed to staging + production. Caught and fixed stale squash merge that dropped migration fix and fixtures. All PRs merged, zero open.",
+  "next_actions": [
+    "Notify Michael and Alex that Sage is live on Cerebro (TASK-0040)",
+    "Monitor staging 3 days for stability (TASK-0042)",
+    "Investigate Supabase disk pressure \u2014 CONCURRENT refresh fails at 1.38M rows, non-concurrent works but locks views ~51s",
+    "Cost breakdown classification in getCostBreakdown() is keyword-matching account_title \u2014 needs proper chart of accounts mapping"
+  ],
+  "tasks_completed": [],
+  "learnings_added": [],
+  "adjourn_results": [
+    {
+      "id": "A-01",
+      "check": "All work is committed and pushed",
+      "automated": true,
+      "status": "fail",
+      "detail": "10 uncommitted files",
+      "fix": "Commit and push before adjourning."
+    },
+    {
+      "id": "A-02",
+      "check": "Ike state reflects what was accomplished",
+      "automated": true,
+      "status": "pass",
+      "detail": "all tasks at rest"
+    },
+    {
+      "id": "A-03",
+      "check": "Learnings from this session are saved",
+      "automated": false,
+      "status": "manual",
+      "note": "Did anything go wrong or almost go wrong?",
+      "fix": "Call ariadne_learn() for each lesson."
+    },
+    {
+      "id": "A-04",
+      "check": "PRs are opened for completed work",
+      "automated": false,
+      "status": "manual",
+      "note": "Code committed but no PR = invisible work.",
+      "fix": "Open PRs with Closes #N."
+    },
+    {
+      "id": "A-05",
+      "check": "Migration state is consistent",
+      "automated": false,
+      "status": "manual",
+      "note": "If applied manually, is it also in the PR?",
+      "fix": "Ensure migration file matches what's on the database."
+    },
+    {
+      "id": "A-06",
+      "check": "Next actions are concrete",
+      "automated": false,
+      "status": "manual",
+      "note": "Can the next convene start without context?",
+      "fix": "Write specific next_actions, not vague goals."
+    },
+    {
+      "id": "A-07",
+      "check": "Stakeholders updated if work is visible",
+      "automated": false,
+      "status": "manual",
+      "note": "Did we ship something Michael/Alex would see?",
+      "fix": "Update Wrike in Daniel's voice."
+    },
+    {
+      "id": "A-08",
+      "check": "Personas updated if calibration changed",
+      "automated": false,
+      "status": "manual",
+      "note": "Did Rhea hedge? Did Ariadne miss? Did the mayor drift?",
+      "fix": "Update the relevant persona JSON."
+    }
+  ],
+  "docs_surfaced": []
+}
