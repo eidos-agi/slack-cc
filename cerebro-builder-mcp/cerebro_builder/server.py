@@ -63,17 +63,19 @@ def adjourn(summary: str = "", next_actions: list[str] | None = None) -> dict:
 
 @mcp.tool()
 def beepboop() -> dict:
-    """Flush the buffer. Finish → adjourn → compress → reconvene.
+    """One-word session cycle trigger.
 
-    Call when context is getting long or the pilot says "beepboop".
-    Returns session state, dirty files, open PRs, and instructions
-    for the agent to cycle cleanly.
+    Call when the pilot says "beepboop". Finishes in-flight work,
+    adjourns, and reconvenes cleanly.
 
     The agent should:
     1. Finish or checkpoint any in-flight work
     2. Call adjourn() with the summary and next_actions from this response
-    3. Tell the pilot to /clear
-    4. After clear: call convene() → whats_next() → resume
+    3. IF context is long/bloated, run /compact first (NOT /clear)
+    4. Call convene() → whats_next() → resume
+
+    Compact is a suggestion when context has grown stale, not a
+    mandatory step. If context is fresh, skip straight to convene.
     """
     from .ceremony import _latest_session
     from .mission import get_current_milestone, get_next_tasks
@@ -112,10 +114,10 @@ def beepboop() -> dict:
     return {
         "phase": "beepboop",
         "message": (
-            "Context flush requested. Agent: finish in-flight work, "
+            "Session cycle. Agent: finish in-flight work, "
             "then call adjourn() with the summary and next_actions below. "
-            "After adjourn, tell the pilot to /clear. "
-            "After clear, call convene() → whats_next() → resume."
+            "If context is long, run /compact (NOT /clear) before reconvening. "
+            "Then convene() → whats_next() → resume."
         ),
         "current_milestone": milestone.get("title") if milestone else None,
         "open_tasks": len(tasks),
@@ -125,8 +127,8 @@ def beepboop() -> dict:
         "instructions": [
             "1. Commit any uncommitted work" if dirty_files else "1. Git is clean",
             "2. Call adjourn(summary=<what you did>, next_actions=<concrete next steps>)",
-            "3. Tell pilot: 'Context flushed. /clear and I'll reconvene.'",
-            "4. After /clear: convene() → whats_next() → execute",
+            "3. If context is bloated, run /compact (NOT /clear) — otherwise skip",
+            "4. convene() → whats_next() → execute",
         ],
     }
 
