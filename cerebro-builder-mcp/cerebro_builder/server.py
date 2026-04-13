@@ -514,6 +514,31 @@ FORGE_ROUTES = {
     },
 }
 
+# Information hierarchy — most detail to least.
+# Each layer filters for its audience. Never push detail UP the chain.
+# GitHub repos hold everything. The board curates into actionable items.
+# Wrike distills into business outcomes. Michael doesn't need PR numbers.
+INFORMATION_HIERARCHY = [
+    {
+        "layer": "GitHub repos",
+        "audience": "Engineers (Daniel + agents)",
+        "detail": "Everything: code, commits, CI, PRs, discussions",
+        "mcp": "cerebro-github",
+    },
+    {
+        "layer": "Project Board (#1)",
+        "audience": "Daniel (engineering oversight)",
+        "detail": "Curated: issues, milestones (as parent issues), sub-issue progress, status",
+        "mcp": "cerebro-github (create_work, open_pr, dashboard)",
+    },
+    {
+        "layer": "Wrike",
+        "audience": "Michael + Alex (executives)",
+        "detail": "Business outcomes only. No PR numbers, no jargon, Daniel's voice.",
+        "mcp": "wrike",
+    },
+]
+
 
 @mcp.tool()
 def which_forge(situation: str) -> dict:

@@ -191,6 +191,6 @@ CHANGE_LIFECYCLE = [
     "8. If credentials needed: provision_credentials() on both envs",
     "9. promote_to_production() — merge develop → main (manual dispatch for migrations)",
     "10. verify_production() — deploy landed, health check passes",
-    "11. update_stakeholders() — Wrike card updated, changelog generated",
-    "12. close_milestone() — if all sub-issues done, close the milestone",
+    "11. update_stakeholders() — Wrike card updated (executive layer: outcomes, not PRs), changelog generated",
+    "12. close_milestone() — if all sub-issues done on the board, close the milestone parent issue",
 ]

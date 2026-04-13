@@ -1,10 +1,18 @@
 """Ceremony configuration — single source of truth.
 
-The GitHub Project Board (#1, "Cerebro Engineering") is the engineering
-source of truth. It's where Daniel sees progress across all repos.
-Wrike is the executive layer for Michael and Alex — high-level, no jargon.
-The project board is the detail layer — every issue, every PR, every
-milestone's sub-issue progress bar.
+Information Hierarchy (most detail → least):
+
+  GitHub repos         All code, commits, CI, PRs, discussions.
+    └─ Project Board   Curated: issues + milestones + status + progress bars.
+         └─ Wrike      Executive distillation: business outcomes only.
+
+Each layer filters for its audience:
+  - GitHub has everything. Engineers live here.
+  - The Project Board (#1, "Cerebro Engineering") strips noise into
+    actionable items. Daniel sees progress across all repos here.
+    Milestones are parent issues; sub-issues fill the progress bar.
+  - Wrike strips engineering detail into business language.
+    Michael and Alex see "Sage data flowing" not "PR #29 fixes WAL pressure".
 
 Work that isn't on the board doesn't exist. The create_work → open_pr →
 merge_pr ceremony exists to enforce this: every code change traces back
