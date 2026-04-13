@@ -51,6 +51,11 @@ GUARDRAILS = [
         "source": "Michael, 2026-04-06 call",
         "test": "Does the output match Alex's Greenmark_Metrics format?",
     },
+    {
+        "rule": "Work not on the project board doesn't exist",
+        "source": "Session 22 retrospective, Daniel directive",
+        "test": "Did I create_work() before writing code? Is the issue on Project #1? Will the PR close it?",
+    },
 ]
 
 # ── Ike integration ─────────────────────────────────────────

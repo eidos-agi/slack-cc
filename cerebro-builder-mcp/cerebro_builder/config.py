@@ -1,9 +1,26 @@
-"""Ceremony configuration — single source of truth."""
+"""Ceremony configuration — single source of truth.
+
+The GitHub Project Board (#1, "Cerebro Engineering") is the engineering
+source of truth. It's where Daniel sees progress across all repos.
+Wrike is the executive layer for Michael and Alex — high-level, no jargon.
+The project board is the detail layer — every issue, every PR, every
+milestone's sub-issue progress bar.
+
+Work that isn't on the board doesn't exist. The create_work → open_pr →
+merge_pr ceremony exists to enforce this: every code change traces back
+to a board item, and closing an issue updates the milestone progress.
+"""
 
 import os
 from pathlib import Path
 
 GH_ORG = "greenmark-waste-solutions"
+
+# Cerebro Engineering project board — the engineering source of truth.
+# Wrike is executive-level for Michael/Alex. This board is task-level for Daniel.
+# Every issue created by create_work() lands here. PRs link back via Closes #N.
+# The Roadmap view shows the Gantt. Sub-issues show milestone progress.
+# URL: https://github.com/orgs/greenmark-waste-solutions/projects/1
 PROJECT_NUMBER = 1
 PROJECT_ID = "PVT_kwDOD49Jk84BRMz-"
 ASSIGNEE = "dshanklin-bv"

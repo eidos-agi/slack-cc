@@ -191,7 +191,7 @@ def whats_next() -> dict:
         "guardrails": [g["test"] for g in GUARDRAILS],
         "children": {
             "ike-md": "Use to update task status as you work (task_edit status='In Progress'/'Done')",
-            "cerebro-github": "Use for issues, PRs, CI, merge",
+            "cerebro-github": "Use for issues, PRs, CI, merge — everything goes through the project board (Project #1)",
             "railguey": "Use for deploy status, logs, variables",
             "rhea": "Use when stakes are high or you're unsure",
         },
