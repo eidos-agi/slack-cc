@@ -125,16 +125,16 @@ Classification lives in `tools/tier-map.sh`. Audit with `./tools/ensure-release.
 ## Current State (as of 2026-04-13)
 
 ### What's Active
-- **Sage pipeline rebuild** (M-03 done): sage_bronze live on staging (7 tables, RBAC 19/19). SageIntacctConnector merged to data-daemon with 15 tests. Sage credentials from warp-speed set on both Railway environments. Next: sage_silver + sage_gold views (M-04), Excel parity check (M-05), wire Financial dashboard (M-06).
+- **Sage Medallion LIVE (M-04 through M-06 done)**: Full bronze→silver→gold pipeline live. 1.38M GL entries in sage_bronze, 7 silver materialized views, 3 gold views (entity_pnl, gl_summary, ap_aging). `sage_gold.refresh_all()` wired into data-daemon executor. Financial + Executive dashboard pages fetch live data from sage_gold via PostgREST, with mock fallback. Dec 2025 revenue matches Alex's Greenmark_Metrics to the penny (HTN $872,850.23, NTX $75,246.02). Parity: FULL (10,056 rows, 0 failures). Deployed to staging + production 2026-04-13.
+- **cerebro-builder MCP**: 12 tools for session orchestration. Serendipity learning system: Ariadne surfaces docs while working, adapts from engagement (read/graduation signals). Adaptive serendipity rate (0.10-0.50). 13 docs in knowledge base. Rhea 3-model debate for high-stakes decisions.
 - **cerebro-github MCP**: 14 tools encoding engineering ceremony — create_work, open_pr, check_ci, merge_pr, bulk_merge, dashboard, health_check, changelog, stale, onboard, why, retro, learn. Persistent incident ledger (7 entries). Rhea token-gate pattern for T1 production merges.
 - **Release practices**: Tiered system applied across all 13 repos (ADR-2026-02). 13/13 compliant. Pre-push hooks, CI, PR templates, CODEOWNERS, dependabot — all tier-appropriate.
 - **Jam.dev bug reporter**: Deployed to staging on cerebro. One-click screen capture for Michael/Alex/Robert. Gated on NEXT_PUBLIC_JAM_TEAM_ID env var.
 - **Vendor research**: 6 of 15 systems deeply researched (Sage, Navusoft, HubSpot, Fleetio, Paylocity, WAM). 65 bronze tables proposed.
-- **data-daemon**: v1.4 + SageIntacctConnector. Pipeline works with synthetic data. Sage connector is the first real connection.
+- **data-daemon**: v1.4 + SageIntacctConnector. Pipeline live against real Sage API. Executor refreshes gold views after each extraction.
 - **Warp-speed Excel**: Local-first Sage data intelligence. 1.38M GL entries in SQLite. Proved the dimensionality that sage_bronze was built from.
 
 ### What's Blocked
-- **Sage API PL04000005** (soft blocker): Warp-speed credentials work for 1.38M GL entries. Same credentials set on data-daemon Railway. Needs live test to confirm — may already be resolved.
 - **HubSpot**: Deprioritized per Michael (2026-04-06). Sage is priority #1.
 - **3rd Eye**: Complete unknown — no API docs, no vendor contact, can't even evaluate.
 - **WAM**: Confirmed no API. Michael says Hometown transitioning to Navusoft "over the next couple months" — may not need WAM integration.
