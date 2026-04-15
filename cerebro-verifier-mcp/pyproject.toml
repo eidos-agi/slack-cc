@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cerebro-verifier"
+version = "0.1.0"
+description = "Independent QA MCP — verifies the Cerebro dashboard renders correctly with real data"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+    "psycopg2-binary>=2.9.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["cerebro_verifier*"]
+
+[project.scripts]
+cerebro-verifier = "cerebro_verifier.cli:main"

@@ -103,5 +103,75 @@
     ],
     "lesson": "REFRESH MATERIALIZED VIEW CONCURRENTLY requires enough disk to hold both old and new data simultaneously. On Supabase free tier with 1.38M rows, this blows the disk limit. Use non-concurrent refresh instead \u2014 brief read lock is acceptable for off-hours cron jobs. Also: changes applied directly to the live DB (CREATE OR REPLACE FUNCTION, ALTER ROLE, GRANT) are not captured by squash-merging the migration PR \u2014 you must verify the live function source matches the file on main.",
     "source": "Session 26 \u2014 CONCURRENT refresh of 1.38M row sage_silver.gl_entries failed with 'No space left on device' after 56s. Non-concurrent completed in 51s."
+  },
+  {
+    "id": "L010",
+    "trigger": [
+      "dashboard",
+      "page",
+      "ui",
+      "frontend",
+      "done",
+      "ship",
+      "deploy",
+      "staging",
+      "live"
+    ],
+    "lesson": "Declaring a UI feature done without visually verifying it in a browser is not done. TypeScript compiling, CI passing, and API returning data are plumbing checks \u2014 they verify code correctness, not feature correctness. The thing stakeholders see is the rendered page. Open it, screenshot it, confirm the numbers match before marking the task complete.",
+    "source": "Session 26 \u2014 shipped Financial + Executive dashboard wiring across 6 tasks without ever opening the page in a browser. Daniel called it out."
+  },
+  {
+    "id": "L011",
+    "trigger": [
+      "mock",
+      "fallback",
+      "mock data",
+      "live data",
+      "consolidated",
+      "memphis"
+    ],
+    "lesson": "Mock data mixed with live data is worse than pure mock. The dashboard showed $982K consolidated revenue \u2014 stakeholders would see that as real, but $34K of it was fake Memphis data. When live data exists, never fall back to mock for the same metric. Show the real number or show nothing. Silent mock fallbacks create numbers that look authoritative but aren't.",
+    "source": "Session 27 \u2014 verifier caught mock/live mixing on Executive page"
+  },
+  {
+    "id": "L012",
+    "trigger": [
+      "period",
+      "latest period",
+      "current month",
+      "revenue zero",
+      "period selector"
+    ],
+    "lesson": "The latest period in sage_gold is not necessarily the latest meaningful period. Current-month GL entries land before revenue is booked, so the most recent period may have costs but $0 revenue. Default to the most recent period with substantial revenue (>$1K), not just the most recent period that exists.",
+    "source": "Session 27 \u2014 dashboard showed $0 for June 2026 (current month with only GL entries)"
+  },
+  {
+    "id": "L013",
+    "trigger": [
+      "railguey",
+      "railway",
+      "production environment",
+      "env var",
+      "NEXT_PUBLIC",
+      "deploy",
+      "environment variable",
+      "account"
+    ],
+    "lesson": "Railguey has a multi-account system (railguey_account_add, railguey_account_default) that lets you register tokens for different Railway environments. As of v0.2.5, switching the default account switches ALL tools to that environment's token. Use `railguey_account_default production` to operate on production, then switch back with `railguey_account_default develop`. The .env.local token is only used when no account is set. Doctor should flag when the account system isn't set up for multi-environment workflows.",
+    "source": "Session 28: orange staging banner on production \u2014 needed to set NEXT_PUBLIC_ENV_LABEL=PRODUCTION on the production Railway environment but railguey was locked to develop"
+  },
+  {
+    "id": "L014",
+    "trigger": [
+      "browserbase",
+      "cloudflare",
+      "captcha",
+      "headless",
+      "fingerprint",
+      "verification failed",
+      "auth context"
+    ],
+    "lesson": "Browserbase sessions need the `fingerprint` option to pass Cloudflare captchas. Without it, the user agent says 'HeadlessChrome' and Cloudflare verification fails. Create sessions with `browserSettings.fingerprint: {browsers: ['chrome'], devices: ['desktop'], operatingSystems: ['macos']}` for sites behind Cloudflare. Also: persistent auth contexts expire \u2014 GitHub OAuth cookies survived but Railway needed re-login. Don't assume a context ID means authenticated.",
+    "source": "Session 28: Cloudflare blocked Railway login via Browserbase because HeadlessChrome user agent was detected"
   }
 ]

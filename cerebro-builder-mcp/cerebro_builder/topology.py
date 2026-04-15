@@ -108,6 +108,15 @@ SERVICES = {
         },
         workspace_path="/home/dev/repos/cerebro-warp-speed",
     ),
+    "cerebro-telemetry": Service(
+        name="cerebro-telemetry",
+        repo="cerebro-telemetry",
+        domains={
+            "develop": "cerebro-telemetry-develop.up.railway.app",
+            "production": "",  # not yet promoted — develop-only for v1
+        },
+        workspace_path="/home/dev/repos/cerebro-telemetry",
+    ),
 }
 
 ENVIRONMENTS = {

@@ -1,0 +1,264 @@
+{
+  "id": "20260413-211131",
+  "convened_at": "2026-04-13T21:11:31.076618+00:00",
+  "adjourned_at": "2026-04-13T22:09:34.584904+00:00",
+  "milestone": "'M-04: Sage Medallion Complete'",
+  "convene_results": [
+    {
+      "id": "C-01",
+      "check": "Ike state is current",
+      "automated": true,
+      "status": "pass",
+      "detail": "Milestone: 'M-04: Sage Medallion Complete', 14 open tasks"
+    },
+    {
+      "id": "C-02",
+      "check": "Learnings are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "12 learnings"
+    },
+    {
+      "id": "C-03",
+      "check": "Personas are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "3/3 personas"
+    },
+    {
+      "id": "C-04",
+      "check": "Git is clean or changes are understood",
+      "automated": true,
+      "status": "warn",
+      "detail": "1 dirty files"
+    },
+    {
+      "id": "C-05",
+      "check": "Current milestone is identified",
+      "automated": true,
+      "status": "pass",
+      "detail": "'M-04: Sage Medallion Complete'"
+    },
+    {
+      "id": "C-06",
+      "check": "Last session's next_actions are accounted for",
+      "automated": true,
+      "status": "pass",
+      "detail": "7 actions from last session",
+      "last_session_actions": [
+        "Research Alex's Greenmark_Metrics spreadsheet \u2014 extract KPI hierarchy, layout, and comparisons she makes. Redesign entity comparison chart to match.",
+        "Remove the MOCKUP badge from the header bar \u2014 it still shows even when data is LIVE (mock-banner.tsx / data-sources.json issue)",
+        "Remove hardcoded Insights section from Executive page \u2014 those are mock insights, not from live data",
+        "Merge mock removal + period fix + stacked columns to main and deploy to production",
+        "TASK-0047: Auth flow now proven via Browserbase \u2014 update verifier browser.py to use Browserbase provider instead of local ab",
+        "TASK-0049: Design the learning layer \u2014 how exploration crystallizes into regression checks",
+        "TASK-0053: Rewrite cerebro-vault with Railway adapter"
+      ]
+    },
+    {
+      "id": "C-07",
+      "check": "Database state matches expectations",
+      "automated": true,
+      "status": "skip",
+      "detail": "No DATABASE_URL \u2014 cannot check sage_bronze"
+    },
+    {
+      "id": "C-08",
+      "check": "No open PRs blocking the critical path",
+      "automated": true,
+      "status": "warn",
+      "detail": "2 PR(s) with failing CI on critical-path repos",
+      "blocking_prs": [
+        {
+          "repo": "cerebro",
+          "number": 22,
+          "title": "Bump eslint from 9.39.2 to 10.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/22",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "cerebro",
+          "number": 21,
+          "title": "Bump lucide-react from 0.563.0 to 1.8.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/21",
+          "ci_failing": true,
+          "failures": [
+            "Type Check"
+          ]
+        }
+      ],
+      "all_critical_prs": [
+        {
+          "repo": "cerebro",
+          "number": 26,
+          "title": "Bump tailwind-merge from 3.4.0 to 3.5.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/26",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 25,
+          "title": "Bump @types/node from 20.19.33 to 25.6.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/25",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 24,
+          "title": "Bump shadcn from 3.8.4 to 4.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/24",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 23,
+          "title": "Bump vitest from 3.2.4 to 4.1.4",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/23",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 22,
+          "title": "Bump eslint from 9.39.2 to 10.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/22",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "cerebro",
+          "number": 21,
+          "title": "Bump lucide-react from 0.563.0 to 1.8.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/21",
+          "ci_failing": true,
+          "failures": [
+            "Type Check"
+          ]
+        },
+        {
+          "repo": "cerebro",
+          "number": 20,
+          "title": "Bump dotenv from 17.3.1 to 17.4.2",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/20",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 19,
+          "title": "Bump @supabase/supabase-js from 2.98.0 to 2.103.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/19",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 18,
+          "title": "Bump tailwindcss from 4.1.18 to 4.2.2",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/18",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 17,
+          "title": "Bump react from 19.2.3 to 19.2.5",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/17",
+          "ci_failing": false,
+          "failures": []
+        }
+      ]
+    }
+  ],
+  "summary": "Session 28. Merged develop to main and deployed to production \u2014 mock removal, period fix, stacked columns all live. Removed MOCKUP badge, hardcoded Insights section, marked Sage connected in data-sources.json. Found and fixed orange STAGING banner showing on production \u2014 NEXT_PUBLIC_ENV_LABEL was set to STAGING on production Railway environment. Fixed by: (1) code change to hide banner when label is PRODUCTION, (2) setting env var via railguey. This required fixing railguey itself \u2014 account system existed but wasn't wired into _load_token(). Shipped railguey v0.2.5 (account override), v0.2.6 (doctor checks accounts), v0.2.7 (CI green, all tests pass). Verified production via Browserbase: no orange bar, no mock badge, $1,022,504 revenue, LIVE badge. Created builder doc for railguey multi-env pattern.",
+  "next_actions": [
+    "Research Alex's Greenmark_Metrics spreadsheet \u2014 extract KPI hierarchy, layout, comparisons. Redesign entity comparison chart to match.",
+    "TASK-0040: Notify Michael and Alex that Sage is live on production \u2014 dashboard shows real numbers",
+    "Fix the 'Partial' data health badge \u2014 executive page shows partial because non-Sage sources are 'not_connected'. Consider showing 'Live \u2014 Sage Intacct' instead.",
+    "TASK-0047: Update verifier browser.py to use Browserbase provider (context ID: 870a8efe)",
+    "TASK-0049: Design the verifier learning layer",
+    "TASK-0053: Rewrite cerebro-vault with Railway adapter",
+    "Fix railguey doctor xfailed tests \u2014 update assertions for nested workspace/service/project structure"
+  ],
+  "tasks_completed": [],
+  "learnings_added": [
+    {
+      "id": "L013",
+      "lesson": "Railguey has a multi-account system (railguey_account_add, railguey_account_defa"
+    }
+  ],
+  "adjourn_results": [
+    {
+      "id": "A-01",
+      "check": "All work is committed and pushed",
+      "automated": true,
+      "status": "pass",
+      "detail": "clean",
+      "fix": null
+    },
+    {
+      "id": "A-02",
+      "check": "Ike state reflects what was accomplished",
+      "automated": true,
+      "status": "pass",
+      "detail": "all tasks at rest"
+    },
+    {
+      "id": "A-03",
+      "check": "Learnings from this session are saved",
+      "automated": false,
+      "status": "manual",
+      "note": "Did anything go wrong or almost go wrong?",
+      "fix": "Call ariadne_learn() for each lesson."
+    },
+    {
+      "id": "A-04",
+      "check": "PRs are opened for completed work",
+      "automated": false,
+      "status": "manual",
+      "note": "Code committed but no PR = invisible work.",
+      "fix": "Open PRs with Closes #N."
+    },
+    {
+      "id": "A-05",
+      "check": "Migration state is consistent",
+      "automated": false,
+      "status": "manual",
+      "note": "If applied manually, is it also in the PR?",
+      "fix": "Ensure migration file matches what's on the database."
+    },
+    {
+      "id": "A-06",
+      "check": "Next actions are concrete",
+      "automated": false,
+      "status": "manual",
+      "note": "Can the next convene start without context?",
+      "fix": "Write specific next_actions, not vague goals."
+    },
+    {
+      "id": "A-07",
+      "check": "Stakeholders updated if work is visible",
+      "automated": false,
+      "status": "manual",
+      "note": "Did we ship something Michael/Alex would see?",
+      "fix": "Update Wrike in Daniel's voice."
+    },
+    {
+      "id": "A-08",
+      "check": "Personas updated if calibration changed",
+      "automated": false,
+      "status": "manual",
+      "note": "Did Rhea hedge? Did Ariadne miss? Did the mayor drift?",
+      "fix": "Update the relevant persona JSON."
+    }
+  ],
+  "docs_surfaced": []
+}

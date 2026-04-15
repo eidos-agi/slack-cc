@@ -1,24 +1,149 @@
 #!/usr/bin/env bash
-# ab — agent-browser wrapper with logging
-# Usage: ./ab <agent-browser args>
-# Logs every command + output to logs/YYYY-MM-DD.log
+# ab — agent-browser wrapper
+#
+# Contract (per Daniel, session 29): "fully working and continuously tested
+# agent-browser that uses browserbase in the cloud and shares the URL with
+# the user."
+#
+# Behavior:
+#   1. Forwards every argument to the upstream `agent-browser` binary.
+#   2. Defaults to `-p browserbase` when BROWSERBASE_API_KEY is set in env
+#      (can be overridden by passing an explicit `-p <provider>`).
+#   3. After an `open` command, automatically prints the Browserbase
+#      Live View URL by querying the Browserbase REST API for the most
+#      recent running session.
+#   4. Also exposes `ab live` — a convenience command that prints the
+#      Live View URL for the current running session without navigating.
+#   5. Logs every command + output to logs/YYYY-MM-DD.log.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 LOG_DIR="$SCRIPT_DIR/logs"
 LOG_FILE="$LOG_DIR/$(date +%Y-%m-%d).log"
-AB="$SCRIPT_DIR/node_modules/.bin/agent-browser"
+AB_BIN="$SCRIPT_DIR/node_modules/.bin/agent-browser"
 
 mkdir -p "$LOG_DIR"
 
 timestamp() { date '+%Y-%m-%d %H:%M:%S'; }
 
-# Log the command
-echo "[$(timestamp)] CMD: agent-browser $*" >> "$LOG_FILE"
+# ── Live View URL helpers ────────────────────────────────────────────────
 
-# Run and capture output, tee to both stdout and log
-OUTPUT=$("$AB" "$@" 2>&1) || true
+# Print the Live View URL for the most recent running Browserbase session.
+# Silent if the REST call fails — we never want telemetry lookups to break
+# the user's actual command.
+print_live_view_url() {
+    [ -z "${BROWSERBASE_API_KEY:-}" ] && return 0
+    local project_param=""
+    [ -n "${BROWSERBASE_PROJECT_ID:-}" ] && project_param="projectId=${BROWSERBASE_PROJECT_ID}&"
+
+    local sessions_json
+    sessions_json=$(curl -sS --max-time 5 \
+        "https://api.browserbase.com/v1/sessions?${project_param}status=RUNNING" \
+        -H "X-BB-API-Key: ${BROWSERBASE_API_KEY}" 2>/dev/null) || return 0
+
+    local session_id
+    session_id=$(printf '%s' "$sessions_json" | python3 -c "
+import json, sys
+try:
+    sessions = json.load(sys.stdin)
+    if sessions:
+        # Newest first
+        sessions.sort(key=lambda s: s.get('createdAt',''), reverse=True)
+        print(sessions[0].get('id',''))
+except Exception:
+    pass
+" 2>/dev/null) || return 0
+    [ -z "$session_id" ] && return 0
+
+    local debug_json
+    debug_json=$(curl -sS --max-time 5 \
+        "https://api.browserbase.com/v1/sessions/${session_id}/debug" \
+        -H "X-BB-API-Key: ${BROWSERBASE_API_KEY}" 2>/dev/null) || return 0
+
+    local live_url
+    live_url=$(printf '%s' "$debug_json" | python3 -c "
+import json, sys
+try:
+    d = json.load(sys.stdin)
+    print(d.get('debuggerFullscreenUrl','') or d.get('debuggerUrl',''))
+except Exception:
+    pass
+" 2>/dev/null) || return 0
+    [ -z "$live_url" ] && return 0
+
+    printf '\n🔴 Live View: %s\n' "$live_url"
+}
+
+# ── `ab live` — surface Live View URL without navigating ──────────────────
+
+if [ "${1:-}" = "live" ]; then
+    echo "[$(timestamp)] CMD: ab live" >> "$LOG_FILE"
+    if [ -z "${BROWSERBASE_API_KEY:-}" ]; then
+        echo "ERROR: BROWSERBASE_API_KEY not set — cannot query Live View URL"
+        exit 2
+    fi
+    print_live_view_url
+    exit 0
+fi
+
+# ── Default to browserbase provider when creds are present ────────────────
+#
+# If BROWSERBASE_API_KEY is set and the user did not pass an explicit
+# `-p <provider>` or `--provider <provider>`, inject `-p browserbase`.
+# This matches the session-29 contract: `ab` means "browserbase in the
+# cloud" by default.
+
+inject_provider=true
+for arg in "$@"; do
+    case "$arg" in
+        -p|--provider|-p=*|--provider=*)
+            inject_provider=false
+            break
+            ;;
+    esac
+done
+
+ARGS=("$@")
+if [ "$inject_provider" = "true" ] && [ -n "${BROWSERBASE_API_KEY:-}" ]; then
+    ARGS=(-p browserbase "$@")
+fi
+
+# ── Run the underlying binary ─────────────────────────────────────────────
+
+echo "[$(timestamp)] CMD: agent-browser ${ARGS[*]}" >> "$LOG_FILE"
+
+set +e
+OUTPUT=$("$AB_BIN" "${ARGS[@]}" 2>&1)
+EXIT=$?
+set -e
+
 echo "$OUTPUT"
 echo "[$(timestamp)] OUT: $(echo "$OUTPUT" | head -100)" >> "$LOG_FILE"
+
+# ── After an `open`, print the Live View URL so Daniel can watch ──────────
+#
+# Scan ARGS for `open` as a command token (not a value). We want to
+# surface Live View after navigation succeeds, but not on every command
+# (`click`, `fill`, etc.) — that would be noisy.
+
+is_open=false
+for arg in "${ARGS[@]}"; do
+    case "$arg" in
+        open)
+            is_open=true
+            break
+            ;;
+        -*)
+            # Skip flags; keep scanning
+            ;;
+    esac
+done
+
+if [ "$is_open" = "true" ] && [ "$EXIT" = "0" ]; then
+    print_live_view_url
+fi
+
 echo "---" >> "$LOG_FILE"
+
+exit $EXIT

@@ -108,6 +108,8 @@ After processing a transcript, extract:
 |------|-----------|-----------------|
 | [data-daemon](https://github.com/greenmark-waste-solutions/data-daemon) | Extraction pipeline — YAML-driven, Postgres job queue, 82 tests | Daniel |
 | [cerebro](https://github.com/greenmark-waste-solutions/cerebro) | Next.js dashboard app — hosted on Railway | Daniel |
+| [cerebro-mcp](https://github.com/greenmark-waste-solutions/cerebro-mcp) | Remote MCP server — Cloudflare Worker, 9 tools, Supabase OAuth + RLS. Live at `cerebro-mcp.dshanklin.workers.dev` | Daniel |
+| [cerebro-telemetry](https://github.com/greenmark-waste-solutions/cerebro-telemetry) | Dedicated telemetry service — Node + Hono + SQLite on a Railway volume. One endpoint every Greenmark service writes to. Live at `cerebro-telemetry-develop.up.railway.app` | Daniel |
 | [infra](https://github.com/greenmark-waste-solutions/infra) | Vendor API research, data dictionary, integration specs | Daniel |
 | [weekly-updates](https://github.com/greenmark-waste-solutions/weekly-updates) | Automated engineering reports from GitHub commits | Daniel |
 | [cerebro-qa](https://github.com/greenmark-waste-solutions/cerebro-qa) | QA dashboard — data quality monitoring | Daniel |

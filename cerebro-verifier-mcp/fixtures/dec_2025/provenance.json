@@ -1,0 +1,10 @@
+{
+  "blessed_at": "2026-04-13T13:23:06.676892",
+  "period": "2025-12",
+  "source": "sage_gold (Alex validated)",
+  "row_counts": {
+    "entity_pnl": 2,
+    "gl_summary": 643,
+    "ap_aging": 86
+  }
+}

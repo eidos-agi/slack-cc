@@ -1,0 +1,22 @@
+[
+  {
+    "entity": "hometown",
+    "period": "2025-12",
+    "revenue": 872850.23,
+    "cogs": 839936.95,
+    "gross_profit": 32913.28,
+    "operating_expenses": 400132.97,
+    "net_income": -367219.69,
+    "gross_margin": 0.04
+  },
+  {
+    "entity": "ntx",
+    "period": "2025-12",
+    "revenue": 75246.02,
+    "cogs": 270608.01,
+    "gross_profit": -195361.99,
+    "operating_expenses": 644985.91,
+    "net_income": -840347.9,
+    "gross_margin": -2.6
+  }
+]

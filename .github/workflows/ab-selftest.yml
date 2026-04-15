@@ -1,0 +1,113 @@
+name: ab self-test
+
+# Contract (session 29): ab must be continuously tested. This workflow
+# drives the real ab binary against a real Browserbase session against a
+# real production URL, every 6 hours. It emits a telemetry event so we
+# can see healthy/unhealthy self-tests in the same stream every other
+# component writes to. If it fails, it opens a tracking issue.
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # every 6 hours
+  workflow_dispatch:
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install agent-browser deps
+        working-directory: tools/agent-browser
+        run: npm install
+
+      - name: Run ab self-test
+        id: selftest
+        working-directory: tools/agent-browser
+        env:
+          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
+          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
+        run: |
+          set -e
+          TARGET="https://cerebro-telemetry-develop.up.railway.app/healthz"
+          START=$(date +%s%3N)
+
+          # Navigate + screenshot — the minimum "it actually drove a browser" proof
+          ./ab open "$TARGET"
+          ./ab screenshot /tmp/ab-selftest.png
+
+          # Assert screenshot file exists and is non-trivial
+          SIZE=$(stat -c%s /tmp/ab-selftest.png)
+          if [ "$SIZE" -lt 1000 ]; then
+            echo "screenshot too small ($SIZE bytes) — Browserbase session did not render" >&2
+            exit 1
+          fi
+
+          ELAPSED=$(( $(date +%s%3N) - START ))
+          echo "elapsed_ms=$ELAPSED" >> "$GITHUB_OUTPUT"
+          echo "screenshot_size=$SIZE" >> "$GITHUB_OUTPUT"
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+
+      - name: Emit telemetry event (success)
+        if: success()
+        env:
+          TELEMETRY_URL: https://cerebro-telemetry-develop.up.railway.app
+          TELEMETRY_INGEST_TOKEN: ${{ secrets.TELEMETRY_INGEST_TOKEN }}
+          ELAPSED: ${{ steps.selftest.outputs.elapsed_ms }}
+          SIZE: ${{ steps.selftest.outputs.screenshot_size }}
+          TARGET: ${{ steps.selftest.outputs.target }}
+          RUN_ID: ${{ github.run_id }}
+          SHA: ${{ github.sha }}
+        run: |
+          curl -fsS -X POST "$TELEMETRY_URL/ingest" \
+            -H "Authorization: Bearer $TELEMETRY_INGEST_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"source\": \"ab\",
+              \"kind\": \"selftest\",
+              \"name\": \"ab_browserbase_open_screenshot\",
+              \"status\": \"ok\",
+              \"latency_ms\": $ELAPSED,
+              \"attrs\": {
+                \"target\": \"$TARGET\",
+                \"screenshot_bytes\": $SIZE,
+                \"gh_run_id\": \"$RUN_ID\",
+                \"git_sha\": \"$SHA\"
+              }
+            }"
+
+      - name: Emit telemetry event (failure) + open issue
+        if: failure()
+        env:
+          TELEMETRY_URL: https://cerebro-telemetry-develop.up.railway.app
+          TELEMETRY_INGEST_TOKEN: ${{ secrets.TELEMETRY_INGEST_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -fsS -X POST "$TELEMETRY_URL/ingest" \
+            -H "Authorization: Bearer $TELEMETRY_INGEST_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"source\": \"ab\",
+              \"kind\": \"selftest\",
+              \"name\": \"ab_browserbase_open_screenshot\",
+              \"status\": \"error\",
+              \"attrs\": {
+                \"gh_run_url\": \"$RUN_URL\"
+              }
+            }" || true
+          # Dedupe: only open a new issue if there isn't already an open one
+          # tagged `ab-selftest-failure`
+          EXISTING=$(gh issue list --label ab-selftest-failure --state open --limit 1 --json number --jq '.[0].number' || echo "")
+          if [ -z "$EXISTING" ]; then
+            gh issue create \
+              --title "ab self-test failed ($(date -u +%Y-%m-%d))" \
+              --label ab-selftest-failure \
+              --body "Automated: ab self-test workflow failed. See $RUN_URL"
+          fi

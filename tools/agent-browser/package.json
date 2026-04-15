@@ -10,6 +10,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "agent-browser": "^0.15.1"
+    "agent-browser": "^0.25.4"
   }
 }
