@@ -1,7 +1,7 @@
 {
   "id": "20260415-133928",
   "convened_at": "2026-04-15T13:39:28.394949+00:00",
-  "adjourned_at": null,
+  "adjourned_at": "2026-04-16T18:37:41.682576+00:00",
   "milestone": "'M-04: Sage Medallion Complete'",
   "convene_results": [
     {
@@ -177,8 +177,80 @@
       ]
     }
   ],
-  "summary": null,
-  "next_actions": null,
+  "summary": "Full-arc session on Cerebro OAuth login UX \u2014 the castle and the 3-line answer.\n\n**Started** with PR #68: a server-side OAuth resolver and banner system for /login, aimed at making Claude \u2192 Cerebro OAuth feel legit instead of phishing-adjacent. 5 rounds of commits, 236 mocked unit tests, visual QA via dev-preview with synthetic context. Shipped to develop, then to main. Banner never rendered on prod.\n\n**Caught** after merging: the admin endpoint `/auth/v1/admin/oauth/authorizations/{id}` does not exist on Supabase. All 236 tests passed because they mocked fetch. Daniel walked me Socratically through the question \"there's only one place that would possibly send someone \u2014 why can't referral be there for us?\" until the answer fell out: the URL already carries the signal. No resolver needed. The specific app branding already rendered fine on /oauth/consent post-auth.\n\n**Fixed** via PR #74 (develop) \u2192 PR #76 (main). 2,007 lines deleted, 88 added. Real Claude.ai \u2192 cerebro-mcp connector OAuth flow verified end-to-end by Daniel himself \u2014 login hint rendered, MFA clean, consent page showed specific app branding, Allow click returned valid code + state to example.com callback.\n\n**Kept real wins caught while writing adversarial tests** (all security bugs unrelated to the broken main feature):\n- safe-next-path consolidated across 3 duplicates + new defenses (URL-encoded backslash, CRLF injection, control chars)\n- Shared url.ts helpers (isValidAuthorizationId + sanitiseHttpUrl)\n- Consent actions hardening (shape check + redirect scheme validation)\n- RBAC pathToPage prototype leak fix\n- Consent helpers (parseScopes dedup+cap, redactUrl safety)\n- 149 durable tests retained\n\n**Documentation**:\n- greenmark-cockpit ADR-2026-04 \u2014 \"on pre-auth pages, use URL signal not server-side resolver\"\n- greenmark-cockpit reference/oauth-ux-test-tool.md \u2014 persistent DCR test client + PKCE authorize-URL generator for future smoke checks\n- 3 memory entries saved: feedback_minimum_signal, feedback_mocked_is_not_verified, feedback_ui_browser_drive_before_done\n\n**Key lesson \u2014 the anti-pattern**: I built confidence from evidence downstream of the failure mode. Types compiled, tests were green, CI passed, preview rendered. None of those reached through to \"does this actually work against real Supabase.\" One curl on day one would have killed the castle in 30 seconds. Also: dev-preview with synthetic context does NOT count as browser verification \u2014 it's a mock with fancier rendering.",
+  "next_actions": [
+    "Merge outstanding dependabot PRs on cerebro (#22 eslint, #23 vitest, #24 shadcn, #25 @types/node, #26 tailwind-merge) \u2014 routine upkeep",
+    "Merge cerebro-migrations PR #27 (settings.yml adoption) \u2014 completes governance-as-code wave",
+    "If OAuth UX ever wants the specific-client banner on /login: open a research.md finding on SECURITY DEFINER RPC pattern to expose authz-by-id pre-auth. Not needed for current UX (consent page already does this).",
+    "Consider adding a one-shot integration test in cerebro that hits Supabase admin endpoints with real service-role to catch future pattern-match API hallucinations. Low priority \u2014 the memory + ADR should deter recurrence.",
+    "Follow through on broader M-04 (Sage Medallion) milestone work; OAuth UX was a tangent from that."
+  ],
   "tasks_completed": [],
-  "learnings_added": []
+  "learnings_added": [],
+  "adjourn_results": [
+    {
+      "id": "A-01",
+      "check": "All work is committed and pushed",
+      "automated": true,
+      "status": "fail",
+      "detail": "5 uncommitted files",
+      "fix": "Commit and push before adjourning."
+    },
+    {
+      "id": "A-02",
+      "check": "Ike state reflects what was accomplished",
+      "automated": true,
+      "status": "warn",
+      "detail": "1 tasks still in-progress"
+    },
+    {
+      "id": "A-03",
+      "check": "Learnings from this session are saved",
+      "automated": false,
+      "status": "manual",
+      "note": "Did anything go wrong or almost go wrong?",
+      "fix": "Call ariadne_learn() for each lesson."
+    },
+    {
+      "id": "A-04",
+      "check": "PRs are opened for completed work",
+      "automated": false,
+      "status": "manual",
+      "note": "Code committed but no PR = invisible work.",
+      "fix": "Open PRs with Closes #N."
+    },
+    {
+      "id": "A-05",
+      "check": "Migration state is consistent",
+      "automated": false,
+      "status": "manual",
+      "note": "If applied manually, is it also in the PR?",
+      "fix": "Ensure migration file matches what's on the database."
+    },
+    {
+      "id": "A-06",
+      "check": "Next actions are concrete",
+      "automated": false,
+      "status": "manual",
+      "note": "Can the next convene start without context?",
+      "fix": "Write specific next_actions, not vague goals."
+    },
+    {
+      "id": "A-07",
+      "check": "Stakeholders updated if work is visible",
+      "automated": false,
+      "status": "manual",
+      "note": "Did we ship something Michael/Alex would see?",
+      "fix": "Update Wrike in Daniel's voice."
+    },
+    {
+      "id": "A-08",
+      "check": "Personas updated if calibration changed",
+      "automated": false,
+      "status": "manual",
+      "note": "Did Rhea hedge? Did Ariadne miss? Did the mayor drift?",
+      "fix": "Update the relevant persona JSON."
+    }
+  ],
+  "docs_surfaced": []
 }
