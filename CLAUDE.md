@@ -116,13 +116,21 @@ After processing a transcript, extract:
 
 ## Release Practices (Tier System)
 
-All 13 repos are classified into tiers with appropriate release ceremony. See [ADR-2026-02](decisions/ADR-2026-02.md) for the full decision record and [tools/README.md](tools/README.md) for the tool index.
+All 13 repos are classified into tiers with appropriate release ceremony. See [ADR-2026-02](decisions/ADR-2026-02.md) for the original decision and [ADR-2026-03](decisions/ADR-2026-03-repo-governance-as-code.md) for the current source-of-truth model (Probot/Settings).
 
-- **T1 Production** (cerebro, cerebro-migrations, data-daemon): CI, guard-main, PR template, CODEOWNERS, dependabot, pre-push hooks
-- **T2 Supporting** (cerebro-qa, warp-speed, warp-speed-excel, ai-services, bot-farm): CI, guard-main, PR template, dependabot, pre-push hooks
-- **T3 Reference** (infra, greenmark-cockpit, cerebro-mcp, cerebro-vault, cerebro-excel): pre-push hooks only
+**Source of truth**: each repo's `.github/settings.yml`. The `repository.topics` field carries `tier-t1` / `tier-t2` / `tier-t3` as queryable metadata. Reconciled by the Probot/Settings GitHub App.
 
-Classification lives in `tools/tier-map.sh`. Audit with `./tools/ensure-release.sh`. Fix drift with `--apply`.
+Tier contract:
+
+- **T1 Production**: deploy risk is real. PR required on main, required status checks (Type Check / Lint / Unit Tests / Build), CODEOWNERS, dependabot.
+- **T2 Supporting**: has CI, lower blast radius. PR required, required checks.
+- **T3 Reference**: docs + tools, no deploy risk. Direct-to-main OK, pre-push hooks only.
+
+Migration status (2026-04-16):
+- **Migrated** (settings.yml landed): greenmark-cockpit (T3), cerebro (T1, in PR)
+- **Pending**: cerebro-migrations, data-daemon, cerebro-qa, cerebro-ai-services, cerebro-bot-farm, cerebro-warp-speed, cerebro-warp-speed-excel, infra, cerebro-mcp, cerebro-vault, cerebro-excel
+
+Legacy: `tools/tier-map.sh` is being retired. Entries get removed on the same commit that ships `.github/settings.yml` in the corresponding repo. When empty, the file gets deleted. Audit with `./tools/ensure-release.sh`. Fix drift with `--apply`.
 
 ## Current State (as of 2026-04-13)
 

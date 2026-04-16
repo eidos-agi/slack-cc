@@ -1,0 +1,49 @@
+# .github/settings.yml — declarative repo configuration
+#
+# Consumed by the Probot/Settings GitHub App:
+#   https://github.com/apps/settings
+#   https://github.com/probot/settings
+#
+# When installed, the app reconciles this file against actual GitHub state
+# on every push to main. That makes this file the source of truth for
+# branch protection, topics, labels, and other GitHub-native concerns.
+#
+# Schema: https://github.com/probot/settings#security-warning (IDE support via SchemaStore)
+
+repository:
+  name: greenmark-cockpit
+  description: "AI Cockpit for Greenmark Waste Solutions — orchestrates decisions, meetings, and tooling"
+  homepage: https://github.com/greenmark-waste-solutions
+  topics:
+    - tier-t3               # Reference tier: docs + tools, no deploy risk, direct-to-main
+    - greenmark
+    - cockpit
+    - ai-cockpit
+    - runtime-none          # No deployed service
+  private: true
+  has_issues: true
+  has_projects: true
+  has_wiki: false
+  has_downloads: false
+  default_branch: main
+  allow_squash_merge: true
+  allow_merge_commit: false
+  allow_rebase_merge: true
+  delete_branch_on_merge: true
+  allow_auto_merge: true
+
+# ── Branch protection ────────────────────────────────────────────────────
+# T3 contract: direct commits to main allowed. No required reviews.
+# The guard-main.yml workflow still fires a warning annotation on direct
+# pushes for visibility — it doesn't block.
+branches:
+  - name: main
+    protection:
+      required_pull_request_reviews: null
+      required_status_checks: null
+      enforce_admins: false
+      restrictions: null
+      allow_force_pushes: false
+      allow_deletions: false
+      required_linear_history: false
+      required_conversation_resolution: false
