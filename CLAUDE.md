@@ -198,6 +198,19 @@ Full details: [infra/vendor-status.md](https://github.com/greenmark-waste-soluti
 - **Keep files under 2700 lines** — break up large documents.
 - **Meeting folders are self-contained** — all artifacts for a meeting live in one folder.
 
+## Printing
+
+The office printer is reachable from the Docker container.
+
+```bash
+./tools/print.sh path/to/file.pdf                  # default printer
+./tools/print.sh path/to/file.pdf 10.0.231.27      # explicit IP
+```
+
+**Printer:** "Executive" — 25th Floor Copier (Ricoh), TCP port 9100 raw print.
+
+Use this to print Connection Forge reports, research briefs, ADR PDFs, or any document Daniel wants on paper. No CUPS needed — sends raw PDF over socket.
+
 ## Browser Automation — MANDATORY
 
 **Use `tools/agent-browser/` for ALL browser automation. No exceptions.**
