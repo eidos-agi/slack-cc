@@ -590,3 +590,96 @@ def docs(query: str = "") -> dict:
         "count": len(results),
         "results": results,
     }
+
+
+# ── Session planning — 6-phase template ──────────────────
+
+
+@mcp.tool()
+def plan_session(
+    scope: str,
+    budget_hours: float = 4.0,
+    build_a_goal: str = "",
+    build_a_steps: list[str] | None = None,
+    build_a_gate: str = "",
+    build_a_kill: str = "",
+    build_a_artifact: str = "",
+    build_b_goal: str = "",
+    build_b_steps: list[str] | None = None,
+    build_b_gate: str = "",
+    build_b_kill: str = "",
+    build_b_artifact: str = "",
+    observation_query: str = "",
+    render_markdown: bool = False,
+) -> dict:
+    """Produce a 6-phase session plan bound to a specific scope + budget.
+
+    This codifies the framework derived from session-29's failure modes:
+    observation before construction, one scope per session, kill criteria
+    per phase, single atomic deploy, non-negotiable /land at phase 5.
+
+    The mayor does NOT execute the plan — it returns structure. The agent
+    writes the plan to .ike/sessions/<date>.md and checks off phases as
+    they complete. Enforcement is by nudge (future phase_gate tool),
+    never by block.
+
+    Phases:
+      0. Pre-flight       — contracts, bookmark, env, health
+      1. Observation      — verify assumption with real data
+      2. Build A          — first scoped deliverable
+      3. Build B          — second scoped deliverable
+      4. Deploy           — atomic deploy + live verify
+      5. Land             — trilogy capture, /land, bookmark
+
+    Args:
+        scope: One-sentence statement of what this session delivers.
+               Multi-goal scopes trigger a warning.
+        budget_hours: Total budget. Template default sums to ~3.5h.
+               <3h scales phases down; >5h warns (split session).
+        build_a_goal / steps / gate / kill / artifact: Override Phase 2
+               content. All optional — unset phases get template defaults.
+        build_b_goal / steps / gate / kill / artifact: Same for Phase 3.
+        observation_query: Optional SQL or command string captured
+               verbatim for Phase 1 so there's no ambiguity.
+        render_markdown: If true, include the plan as markdown in the
+               response under key `markdown` — ready to paste into
+               .ike/sessions/<date>.md.
+    """
+    from .planning import plan_session as make_plan, render_plan_markdown
+
+    build_a = None
+    if any([build_a_goal, build_a_steps, build_a_gate, build_a_kill, build_a_artifact]):
+        build_a = {
+            k: v for k, v in [
+                ("goal", build_a_goal),
+                ("steps", build_a_steps),
+                ("gate", build_a_gate),
+                ("kill", build_a_kill),
+                ("artifact", build_a_artifact),
+            ] if v
+        }
+
+    build_b = None
+    if any([build_b_goal, build_b_steps, build_b_gate, build_b_kill, build_b_artifact]):
+        build_b = {
+            k: v for k, v in [
+                ("goal", build_b_goal),
+                ("steps", build_b_steps),
+                ("gate", build_b_gate),
+                ("kill", build_b_kill),
+                ("artifact", build_b_artifact),
+            ] if v
+        }
+
+    plan = make_plan(
+        scope=scope,
+        budget_hours=budget_hours,
+        build_a=build_a,
+        build_b=build_b,
+        observation_query=observation_query or None,
+    )
+
+    if render_markdown and "error" not in plan:
+        plan = {**plan, "markdown": render_plan_markdown(plan)}
+
+    return plan
