@@ -1,0 +1,59 @@
+name: settings.yml check (reusable)
+
+# Reusable workflow — any Greenmark repo can call this from its own
+# PR workflow to have its .github/settings.yml validated against the
+# Greenmark tier contract (ADR-2026-03) before merging.
+#
+# Usage in a downstream repo (.github/workflows/ci.yml):
+#
+#   jobs:
+#     settings-check:
+#       uses: greenmark-waste-solutions/greenmark-cockpit/.github/workflows/settings-yml-check.yml@main
+#       with:
+#         repo_name: cerebro-mcp
+#
+# This keeps one canonical validator — no copy-pasting YAML across
+# 13 repos. If the contract changes, one PR to the cockpit updates
+# every downstream repo's check on its next CI run.
+
+on:
+  workflow_call:
+    inputs:
+      repo_name:
+        description: "The expected name in repository.name (usually the repo slug)"
+        required: true
+        type: string
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout calling repo
+        uses: actions/checkout@v4
+
+      - name: Checkout validator from cockpit
+        uses: actions/checkout@v4
+        with:
+          repository: greenmark-waste-solutions/greenmark-cockpit
+          path: .cockpit
+          sparse-checkout: |
+            .github/scripts/validate-settings-yml.py
+          sparse-checkout-cone-mode: false
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install --quiet pyyaml
+
+      - name: Run validator
+        run: |
+          if [ ! -f .github/settings.yml ]; then
+            echo "::error::.github/settings.yml is missing"
+            echo "::error::Required by ADR-2026-03. Create it with tier-t1/t2/t3 topic + branch protection per tier."
+            exit 1
+          fi
+          python3 .cockpit/.github/scripts/validate-settings-yml.py .github/settings.yml "${{ inputs.repo_name }}"

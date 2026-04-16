@@ -1,0 +1,192 @@
+name: settings.yml audit
+
+# Contract (ADR-2026-03): every Greenmark repo has a .github/settings.yml
+# declaring tier (tier-t1/t2/t3), branch protection, and topics. This
+# workflow polls every repo listed below, fetches its settings.yml via
+# gh api, and validates it against the tier contract.
+#
+# Drift surfaces here as a CI failure + an auto-filed GitHub issue. The
+# same validator runs per-repo on PRs via the reusable-workflow pattern.
+#
+# Emits telemetry to cerebro-telemetry so we can see audit runs in the
+# same event stream as everything else.
+
+on:
+  schedule:
+    - cron: "15 */6 * * *"   # every 6 hours, staggered from ab-selftest
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/settings.yml"
+      - ".github/scripts/validate-settings-yml.py"
+      - ".github/workflows/settings-yml-audit.yml"
+      - "tools/tier-map.sh"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install --quiet pyyaml
+
+      - name: Audit all Greenmark repos
+        id: audit
+        env:
+          GH_TOKEN: ${{ secrets.GOV_AUDIT_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Every Greenmark repo that MUST have .github/settings.yml. When we
+          # onboard a new one, add it here (the validator will fail loudly
+          # until the file lands).
+          # Greenmark repos that MUST have .github/settings.yml. Keep this
+          # list in lockstep with `policies/software-approved.md` and the
+          # migration-status table in CLAUDE.md.
+          #
+          # cerebro-vault excluded — not in the GitHub org (retired 2026-04-16)
+          # data-daemon excluded from hard-fail until its pre-commit hook is
+          # compatible with CI environments; tracked in tier-map.sh deferred
+          # list. Its settings.yml is generated but not landed.
+          # cerebro-mcp-legacy excluded — archival reference for the Python
+          # cerebro-mcp before the Cloudflare Worker rewrite.
+          REPOS=(
+            greenmark-cockpit
+            cerebro
+            cerebro-mcp
+            cerebro-telemetry
+            cerebro-migrations
+            cerebro-qa
+            cerebro-ai-services
+            cerebro-bot-farm
+            cerebro-warp-speed
+            cerebro-warp-speed-excel
+            cerebro-excel
+            infra
+          )
+
+          REPORT=""
+          FAILURES=0
+          MISSING=0
+
+          for repo in "${REPOS[@]}"; do
+            # Fetch the settings.yml via GH API — avoids cloning each repo
+            RAW_URL="https://api.github.com/repos/greenmark-waste-solutions/$repo/contents/.github/settings.yml"
+            # Accept raw content
+            TMP=$(mktemp)
+            STATUS=$(curl -sS -o "$TMP" -w "%{http_code}" \
+              -H "Accept: application/vnd.github.raw+json" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "User-Agent: greenmark-settings-audit" \
+              "$RAW_URL" || echo "000")
+
+            if [ "$STATUS" = "404" ]; then
+              echo "::warning::$repo — .github/settings.yml MISSING"
+              REPORT="${REPORT}\n❌ $repo — MISSING"
+              MISSING=$(( MISSING + 1 ))
+              FAILURES=$(( FAILURES + 1 ))
+              continue
+            fi
+            if [ "$STATUS" != "200" ]; then
+              echo "::warning::$repo — fetch failed, HTTP $STATUS"
+              REPORT="${REPORT}\n⚠️  $repo — fetch HTTP $STATUS"
+              FAILURES=$(( FAILURES + 1 ))
+              continue
+            fi
+
+            # Run the validator
+            if RESULT=$(python3 .github/scripts/validate-settings-yml.py "$TMP" "$repo" 2>&1); then
+              TIER=$(echo "$RESULT" | python3 -c "import sys,json;print(json.load(sys.stdin).get('tier','?'))")
+              echo "✅ $repo — $TIER"
+              REPORT="${REPORT}\n✅ $repo — $TIER"
+            else
+              echo "::warning::$repo — validation FAILED"
+              echo "$RESULT"
+              REPORT="${REPORT}\n❌ $repo — validation failed"
+              FAILURES=$(( FAILURES + 1 ))
+            fi
+          done
+
+          {
+            echo "failures=$FAILURES"
+            echo "missing=$MISSING"
+            echo "report<<ENDREPORT"
+            echo -e "$REPORT"
+            echo "ENDREPORT"
+          } >> "$GITHUB_OUTPUT"
+
+          if [ "$FAILURES" -gt 0 ]; then
+            echo ""
+            echo "=== AUDIT FAILED ==="
+            echo -e "$REPORT"
+            exit 1
+          fi
+
+      - name: Emit telemetry event (success)
+        if: success()
+        env:
+          TELEMETRY_URL: https://cerebro-telemetry-develop.up.railway.app
+          TELEMETRY_INGEST_TOKEN: ${{ secrets.TELEMETRY_INGEST_TOKEN }}
+          RUN_ID: ${{ github.run_id }}
+          SHA: ${{ github.sha }}
+        run: |
+          curl -fsS -X POST "$TELEMETRY_URL/ingest" \
+            -H "Authorization: Bearer $TELEMETRY_INGEST_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"source\": \"settings-audit\",
+              \"kind\": \"audit\",
+              \"name\": \"all_repos_compliant\",
+              \"status\": \"ok\",
+              \"attrs\": {
+                \"gh_run_id\": \"$RUN_ID\",
+                \"git_sha\": \"$SHA\"
+              }
+            }" || true
+
+      - name: Emit telemetry + open issue (failure)
+        if: failure()
+        env:
+          TELEMETRY_URL: https://cerebro-telemetry-develop.up.railway.app
+          TELEMETRY_INGEST_TOKEN: ${{ secrets.TELEMETRY_INGEST_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          MISSING: ${{ steps.audit.outputs.missing }}
+          FAILURES: ${{ steps.audit.outputs.failures }}
+          REPORT: ${{ steps.audit.outputs.report }}
+        run: |
+          curl -fsS -X POST "$TELEMETRY_URL/ingest" \
+            -H "Authorization: Bearer $TELEMETRY_INGEST_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"source\": \"settings-audit\",
+              \"kind\": \"audit\",
+              \"name\": \"drift_detected\",
+              \"status\": \"error\",
+              \"attrs\": {
+                \"missing\": $MISSING,
+                \"failures\": $FAILURES,
+                \"gh_run_url\": \"$RUN_URL\"
+              }
+            }" || true
+
+          # Dedupe: only open a new issue if there isn't already an open one
+          EXISTING=$(gh issue list --label settings-yml-drift --state open --limit 1 --json number --jq '.[0].number' || echo "")
+          if [ -z "$EXISTING" ]; then
+            BODY=$(printf "Automated: settings.yml audit detected drift.\n\nReport:\n\`\`\`\n%s\n\`\`\`\n\nRun: %s\n\nFix each ❌ then re-run this workflow to close.\n" "$REPORT" "$RUN_URL")
+            gh issue create \
+              --title "settings.yml drift detected ($(date -u +%Y-%m-%d))" \
+              --label settings-yml-drift \
+              --body "$BODY"
+          fi

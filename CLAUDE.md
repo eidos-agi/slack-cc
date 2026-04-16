@@ -126,11 +126,30 @@ Tier contract:
 - **T2 Supporting**: has CI, lower blast radius. PR required, required checks.
 - **T3 Reference**: docs + tools, no deploy risk. Direct-to-main OK, pre-push hooks only.
 
-Migration status (2026-04-16):
-- **Migrated** (settings.yml landed): greenmark-cockpit (T3), cerebro (T1, in PR)
-- **Pending**: cerebro-migrations, data-daemon, cerebro-qa, cerebro-ai-services, cerebro-bot-farm, cerebro-warp-speed, cerebro-warp-speed-excel, infra, cerebro-mcp, cerebro-vault, cerebro-excel
+Migration status (2026-04-16, session 30):
 
-Legacy: `tools/tier-map.sh` is being retired. Entries get removed on the same commit that ships `.github/settings.yml` in the corresponding repo. When empty, the file gets deleted. Audit with `./tools/ensure-release.sh`. Fix drift with `--apply`.
+- **Migrated** (settings.yml committed, PR open or merged):
+  greenmark-cockpit, cerebro, cerebro-mcp (new), cerebro-telemetry (new),
+  cerebro-migrations, cerebro-qa, cerebro-ai-services, cerebro-bot-farm,
+  cerebro-warp-speed, cerebro-warp-speed-excel, cerebro-excel, infra
+- **Deferred**: data-daemon — pre-commit hook runs full pytest, blocks landing
+  from CI environment. Needs Daniel's local env to land the file.
+- **Removed from scope**: cerebro-vault — not in the GitHub org (local-only clone). Retired from tier-map.
+
+Continuous enforcement: `.github/workflows/settings-yml-audit.yml` polls every
+migrated repo every 6h, fetches `.github/settings.yml`, validates against the
+tier contract. Fails + auto-files a drift issue if any repo regresses.
+
+Per-repo self-check: `.github/workflows/settings-yml-check.yml` is a reusable
+workflow any Greenmark repo can call from its own CI to validate the file on
+every PR.
+
+Validator: `.github/scripts/validate-settings-yml.py` — enforces schema (tier
+topic, greenmark topic, private:true, branch protection per tier). Runs in CI
+and locally.
+
+Legacy: `tools/tier-map.sh` is mostly emptied. Only `data-daemon` remains
+(deferred above). When data-daemon migrates, delete `tier-map.sh` entirely.
 
 ## Current State (as of 2026-04-13)
 
@@ -202,6 +221,24 @@ $AB screenshot /tmp/x.png # visual proof
 **Auth pattern:** Drive to login page, fill email (`it@greenmarkwaste.com`), then STOP for Daniel to paste password from LastPass and handle Duo 2FA.
 
 Full docs: [tools/agent-browser/README.md](tools/agent-browser/README.md)
+
+## Software adoption policy — MANDATORY
+
+**Before installing, adopting, or proposing ANY new third-party software** — library, SaaS, GitHub App, CLI, Cloudflare add-on, Railway add-on, browser extension, anything — an agent must consult:
+
+- [`GR-TOOLING-001`](.visionlog/guardrails/GUARD-003-gr-tooling-001-new-software-requires-a-rulebook-check-and.md) — the rulebook (scripture)
+- [`policies/software-approved.md`](policies/software-approved.md) — the approved list
+
+"Free tier" does **not** exempt. Sentry free, PostHog free, Axiom free, Cloudflare R2 free — all create accounts, credentials, and almost always grow into spend. The Greenmark stakeholders default to "no" on software cost because they do not yet internalize that AI creates leverage proportional to tooling spend. Frame any spend proposal as "collapses X hours of recurring human work into Y minutes," not "this is production-grade."
+
+**Red-flag phrases that require an immediate stop-and-consult:**
+- "Production-grade systems have this"
+- "Industry best practice is to…"
+- "While we're at it, let's also add…"
+- "Free tier should be enough for now"
+- "We can always add it back later" (if yes, default to NOT having it today)
+
+Anything not on the approved list requires explicit Daniel approval before install.
 
 <!-- BACKLOG.MD MCP GUIDELINES START -->
 
