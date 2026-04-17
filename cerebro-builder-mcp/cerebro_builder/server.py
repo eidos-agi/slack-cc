@@ -198,6 +198,107 @@ def whats_next() -> dict:
     }
 
 
+# ── Wrike — stakeholder updates ────────────────────────
+
+
+# Michael's Wrike card map for Cerebro vendor integrations.
+# Structure: Weekly Review - Accounting → Special Projects → Cerebro → {vendor}
+WRIKE_CEREBRO_CARDS = {
+    "cerebro": {"id": "MAAAAAEE1lfX", "title": "Cerebro", "note": "Parent card. Post general Cerebro updates here."},
+    "sage": {"id": "MAAAAAEICsDm", "title": "Sage", "note": "DONE. Post completion/maintenance updates."},
+    "navusoft": {"id": "MAAAAAEICX2B", "title": "Navusoft", "note": "Waiting on vendor contract. Post vendor comms updates."},
+    "fleetio": {"id": "MAAAAAEICX2_", "title": "FleetIO", "note": "Approved 4/17. Post integration progress."},
+    "paylocity": {"id": "MAAAAAEICX3c", "title": "Paylocity", "note": "Future. No updates yet."},
+    "hubspot": {"id": "MAAAAAEICX3u", "title": "HubSpot", "note": "Deprioritized per Michael 4/6."},
+}
+
+# AIC business card (management fees, non-Cerebro AIC updates)
+WRIKE_AIC_CARD = {"id": "IEAGTFSIKRSDDOEL", "title": "AIC Related", "note": "AIC management fees and business. NOT for Cerebro data integration."}
+
+
+@mcp.tool()
+def wrike_update(vendor: str = "", summary: str = "") -> dict:
+    """Where and how to post a stakeholder update on Wrike.
+
+    Call this BEFORE posting to Wrike. Returns:
+    - Which card to update (task ID + title)
+    - The format Michael expects (date + bullets)
+    - What NOT to do (don't create tasks, don't use AIC Related for Cerebro)
+
+    Args:
+        vendor: Which vendor this update is about (sage, fleetio, navusoft, etc.)
+                Leave empty for general Cerebro updates.
+        summary: What you want to say (optional — for format preview)
+    """
+    import datetime
+
+    date_str = datetime.date.today().strftime("%-m.%-d")
+
+    card = WRIKE_CEREBRO_CARDS.get(vendor.lower(), WRIKE_CEREBRO_CARDS["cerebro"])
+
+    result = {
+        "card": card,
+        "tool": "mcp__wrike__add_comment",
+        "tool_args": {
+            "taskId": card["id"],
+            "plainText": False,  # HTML format — matches Michael's existing style
+        },
+        "format": {
+            "structure": (
+                "1. BLUF (Bottom Line Up Front) — bold, one line: what Michael needs to know or do\n"
+                "2. Details — bullet list with context\n"
+                "3. Link to GitHub if relevant"
+            ),
+            "html_template": (
+                '<b>{date} — {bluf}</b><br />'
+                '<ul>'
+                '<li>{detail_1}</li>'
+                '<li>{detail_2}</li>'
+                '</ul>'
+                '{optional_link}'
+            ),
+            "example_html": (
+                f'<b>{date_str} — Need Fleetio admin to generate API key (2 min).</b><br />'
+                '<ul>'
+                '<li>Michael approved Fleetio integration. API access is self-service from the Fleetio dashboard.</li>'
+                '<li>Rate limits confirmed: Professional 50 req/min, Premium 250 req/min.</li>'
+                '<li>Connector build is 1-2 days once we have credentials.</li>'
+                '</ul>'
+                'Full steps: <a href="https://github.com/greenmark-waste-solutions/cerebro/issues/77">cerebro#77</a>'
+            ),
+            "html_reference": {
+                "bold": "<b>text</b>",
+                "line_break": "<br />",
+                "bullet_list": "<ul><li>item</li></ul>",
+                "link": '<a href="URL">text</a>',
+                "mention_user": '<a class="stream-user-id avatar" rel="USER_ID">@Name</a>',
+            },
+            "known_user_ids": {
+                "Michael Nguyen": "KUAU4MMG",
+                "Alex Kaye": "KUAVODQT",
+            },
+        },
+        "rules": [
+            "BLUF first — Michael should know the ask or status in the first bold line",
+            "NEVER create new Wrike tasks or projects — comment on existing cards only",
+            "Use HTML formatting (plainText: false) — bold dates, bullet lists, links",
+            "Keep it to 3-5 bullets max. Michael scans these in weekly review.",
+            "Write in Daniel's voice — casual, direct, no corporate fluff",
+            "Link to GitHub for details (don't dump technical info into Wrike)",
+            "Don't post if nothing changed since last comment on this card",
+            f"AIC Related ({WRIKE_AIC_CARD['id']}) is for AIC business (fees), NOT Cerebro tech updates",
+        ],
+        "all_cards": {k: v["title"] for k, v in WRIKE_CEREBRO_CARDS.items()},
+    }
+
+    if summary:
+        result["draft_html"] = (
+            f'<b>{date_str} — {summary}</b><br />'
+        )
+
+    return result
+
+
 # ── Shipping ────────────────────────────────────────────
 
 

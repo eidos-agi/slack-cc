@@ -1,7 +1,7 @@
 {
-  "id": "20260417-200118",
-  "convened_at": "2026-04-17T20:01:18.804677+00:00",
-  "adjourned_at": "2026-04-17T20:03:14.057497+00:00",
+  "id": "20260417-210119",
+  "convened_at": "2026-04-17T21:01:19.143640+00:00",
+  "adjourned_at": null,
   "milestone": "'M-04: Sage Medallion Complete'",
   "convene_results": [
     {
@@ -9,14 +9,14 @@
       "check": "Ike state is current",
       "automated": true,
       "status": "pass",
-      "detail": "Milestone: 'M-04: Sage Medallion Complete', 12 open tasks"
+      "detail": "Milestone: 'M-04: Sage Medallion Complete', 11 open tasks"
     },
     {
       "id": "C-02",
       "check": "Learnings are loaded",
       "automated": true,
       "status": "pass",
-      "detail": "17 learnings"
+      "detail": "21 learnings"
     },
     {
       "id": "C-03",
@@ -30,7 +30,7 @@
       "check": "Git is clean or changes are understood",
       "automated": true,
       "status": "warn",
-      "detail": "50 dirty files"
+      "detail": "9 dirty files"
     },
     {
       "id": "C-05",
@@ -46,10 +46,10 @@
       "status": "pass",
       "detail": "4 actions from last session",
       "last_session_actions": [
-        "Daniel: request Fleetio API credentials from Robert Heath (API key + Account Token)",
-        "Once creds arrive: build FleetioConnector following sage_intacct_connector.py pattern",
-        "Create fleetio_bronze schema migration in cerebro-migrations (SQL already designed in infra/vendors/fleetio/api-data-model.md)",
-        "TASK-0051: verify Financial LIVE badge \u2014 still blocked on verifier creds"
+        "Push latest commits (wrike_update tool + BLUF format) via PR",
+        "TASK-0051: verify Financial LIVE badge \u2014 blocked on verifier creds",
+        "TASK-0056: Fleetio connector \u2014 blocked on API credentials (who has admin?)",
+        "Good stopping point \u2014 next session should /compact and start fresh"
       ]
     },
     {
@@ -90,22 +90,6 @@
       "all_critical_prs": [
         {
           "repo": "cerebro",
-          "number": 25,
-          "title": "Bump @types/node from 20.19.33 to 25.6.0",
-          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/25",
-          "ci_failing": false,
-          "failures": []
-        },
-        {
-          "repo": "cerebro",
-          "number": 24,
-          "title": "Bump shadcn from 3.8.4 to 4.2.0",
-          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/24",
-          "ci_failing": false,
-          "failures": []
-        },
-        {
-          "repo": "cerebro",
           "number": 22,
           "title": "Bump eslint from 9.39.2 to 10.2.0",
           "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/22",
@@ -133,7 +117,7 @@
       "status": "pass",
       "detail": "MISSION: Get real Sage financial data onto the Cerebro dashboard so Michael and Alex can see their business on Monday morning.",
       "milestone": "'M-04: Sage Medallion Complete'",
-      "progress": "29 done, 12 open",
+      "progress": "30 done, 11 open",
       "north_star": "Alex's Greenmark_Metrics spreadsheet \u2014 populated with real numbers, not mocks.",
       "guardrail_tests": [
         "Is this task on the M-01\u2192M-07 critical path? If not, why am I doing it?",
@@ -144,81 +128,38 @@
         "Did I create_work() before writing code? Is the issue on Project #1? Will the PR close it?"
       ],
       "directive": "Every task this session must advance this mission. If the top whats_next task is infrastructure, ask: does it unblock the dashboard for Monday? If not, skip it."
-    }
-  ],
-  "summary": "Committed all session state (39 files) to chore/session-31-state branch and pushed. create_work MCP tool still broken (needs server restart for _run fix). Fleetio access steps documented on data-daemon#38 and Wrike. Both mission tasks (TASK-0051, TASK-0056) blocked on credentials.",
-  "next_actions": [
-    "Daniel: /mcp reconnect cerebro-github to fix create_work tool",
-    "Daniel: request Fleetio creds from Robert (steps on data-daemon#38)",
-    "Daniel: set verifier creds for TASK-0051",
-    "Merge chore/session-31-state PR once issue is created"
-  ],
-  "tasks_completed": [],
-  "learnings_added": [],
-  "adjourn_results": [
+    },
     {
-      "id": "A-01",
-      "check": "All work is committed and pushed",
+      "id": "C-10",
+      "check": "What are you avoiding?",
       "automated": true,
       "status": "fail",
-      "detail": "2 uncommitted files",
-      "fix": "Commit and push before adjourning."
+      "detail": "AVOIDANCE DETECTED: 1 task(s) deferred 3+ cycles without progress",
+      "avoided_tasks": [
+        {
+          "task": "task-0040",
+          "sessions_deferred": 4
+        }
+      ],
+      "directive": "You have been deferring these tasks. Before doing anything else: pick the hardest one, decompose it into what you CAN do right now, and make partial progress. Do not fall back to easy work."
     },
     {
-      "id": "A-02",
-      "check": "Ike state reflects what was accomplished",
+      "id": "C-11",
+      "check": "Comfort-zone detection",
       "automated": true,
-      "status": "warn",
-      "detail": "2 tasks still in-progress"
-    },
-    {
-      "id": "A-03",
-      "check": "Learnings from this session are saved",
-      "automated": false,
-      "status": "manual",
-      "note": "Did anything go wrong or almost go wrong?",
-      "fix": "Call ariadne_learn() for each lesson."
-    },
-    {
-      "id": "A-04",
-      "check": "PRs are opened for completed work",
-      "automated": false,
-      "status": "manual",
-      "note": "Code committed but no PR = invisible work.",
-      "fix": "Open PRs with Closes #N."
-    },
-    {
-      "id": "A-05",
-      "check": "Migration state is consistent",
-      "automated": false,
-      "status": "manual",
-      "note": "If applied manually, is it also in the PR?",
-      "fix": "Ensure migration file matches what's on the database."
-    },
-    {
-      "id": "A-06",
-      "check": "Next actions are concrete",
-      "automated": false,
-      "status": "manual",
-      "note": "Can the next convene start without context?",
-      "fix": "Write specific next_actions, not vague goals."
-    },
-    {
-      "id": "A-07",
-      "check": "Stakeholders updated if work is visible",
-      "automated": false,
-      "status": "manual",
-      "note": "Did we ship something Michael/Alex would see?",
-      "fix": "Update Wrike in Daniel's voice."
-    },
-    {
-      "id": "A-08",
-      "check": "Personas updated if calibration changed",
-      "automated": false,
-      "status": "manual",
-      "note": "Did Rhea hedge? Did Ariadne miss? Did the mayor drift?",
-      "fix": "Update the relevant persona JSON."
+      "status": "pass",
+      "detail": "Work variety OK: ['unknown', 'merge', 'unknown']",
+      "recent_categories": [
+        "unknown",
+        "merge",
+        "unknown",
+        "mission",
+        "ci"
+      ]
     }
   ],
-  "docs_surfaced": []
+  "summary": null,
+  "next_actions": null,
+  "tasks_completed": [],
+  "learnings_added": []
 }

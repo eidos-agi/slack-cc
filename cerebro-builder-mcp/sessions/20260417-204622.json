@@ -1,7 +1,7 @@
 {
-  "id": "20260417-200118",
-  "convened_at": "2026-04-17T20:01:18.804677+00:00",
-  "adjourned_at": "2026-04-17T20:03:14.057497+00:00",
+  "id": "20260417-204622",
+  "convened_at": "2026-04-17T20:46:22.253823+00:00",
+  "adjourned_at": "2026-04-17T20:47:23.891824+00:00",
   "milestone": "'M-04: Sage Medallion Complete'",
   "convene_results": [
     {
@@ -16,7 +16,7 @@
       "check": "Learnings are loaded",
       "automated": true,
       "status": "pass",
-      "detail": "17 learnings"
+      "detail": "19 learnings"
     },
     {
       "id": "C-03",
@@ -30,7 +30,7 @@
       "check": "Git is clean or changes are understood",
       "automated": true,
       "status": "warn",
-      "detail": "50 dirty files"
+      "detail": "5 dirty files"
     },
     {
       "id": "C-05",
@@ -46,10 +46,10 @@
       "status": "pass",
       "detail": "4 actions from last session",
       "last_session_actions": [
-        "Daniel: request Fleetio API credentials from Robert Heath (API key + Account Token)",
-        "Once creds arrive: build FleetioConnector following sage_intacct_connector.py pattern",
-        "Create fleetio_bronze schema migration in cerebro-migrations (SQL already designed in infra/vendors/fleetio/api-data-model.md)",
-        "TASK-0051: verify Financial LIVE badge \u2014 still blocked on verifier creds"
+        "Daniel: confirm Fleetio account owner with Michael, or approve trial signup to test API independently",
+        "Daniel: set verifier creds (VERIFIER_EMAIL/PASSWORD/TOTP_SECRET) to close TASK-0051",
+        "Fix failing cerebro PRs #21 (lucide-react 0\u21921) and #22 (eslint 9\u219210) \u2014 need code changes in a focused session",
+        "Consider: this is a good stopping point for this session. Next session should start fresh with /compact."
       ]
     },
     {
@@ -90,22 +90,6 @@
       "all_critical_prs": [
         {
           "repo": "cerebro",
-          "number": 25,
-          "title": "Bump @types/node from 20.19.33 to 25.6.0",
-          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/25",
-          "ci_failing": false,
-          "failures": []
-        },
-        {
-          "repo": "cerebro",
-          "number": 24,
-          "title": "Bump shadcn from 3.8.4 to 4.2.0",
-          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/24",
-          "ci_failing": false,
-          "failures": []
-        },
-        {
-          "repo": "cerebro",
           "number": 22,
           "title": "Bump eslint from 9.39.2 to 10.2.0",
           "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/22",
@@ -144,14 +128,42 @@
         "Did I create_work() before writing code? Is the issue on Project #1? Will the PR close it?"
       ],
       "directive": "Every task this session must advance this mission. If the top whats_next task is infrastructure, ask: does it unblock the dashboard for Monday? If not, skip it."
+    },
+    {
+      "id": "C-10",
+      "check": "What are you avoiding?",
+      "automated": true,
+      "status": "fail",
+      "detail": "AVOIDANCE DETECTED: 1 task(s) deferred 3+ cycles without progress",
+      "avoided_tasks": [
+        {
+          "task": "task-0040",
+          "sessions_deferred": 4
+        }
+      ],
+      "directive": "You have been deferring these tasks. Before doing anything else: pick the hardest one, decompose it into what you CAN do right now, and make partial progress. Do not fall back to easy work."
+    },
+    {
+      "id": "C-11",
+      "check": "Comfort-zone detection",
+      "automated": true,
+      "status": "pass",
+      "detail": "Work variety OK: ['merge', 'unknown', 'mission']",
+      "recent_categories": [
+        "merge",
+        "unknown",
+        "mission",
+        "ci",
+        "merge"
+      ]
     }
   ],
-  "summary": "Committed all session state (39 files) to chore/session-31-state branch and pushed. create_work MCP tool still broken (needs server restart for _run fix). Fleetio access steps documented on data-daemon#38 and Wrike. Both mission tasks (TASK-0051, TASK-0056) blocked on credentials.",
+  "summary": "C-10 avoidance detection is LIVE and working \u2014 caught TASK-0040 deferred 4 cycles, blocked convene. Confronted it: posted BLUF update on Cerebro parent card in Wrike with HTML formatting. wrike_update tool confirmed working with HTML/BLUF format. TASK-0040 closed. Board: 30 done, 11 open.",
   "next_actions": [
-    "Daniel: /mcp reconnect cerebro-github to fix create_work tool",
-    "Daniel: request Fleetio creds from Robert (steps on data-daemon#38)",
-    "Daniel: set verifier creds for TASK-0051",
-    "Merge chore/session-31-state PR once issue is created"
+    "Push latest commits (wrike_update tool + BLUF format) via PR",
+    "TASK-0051: verify Financial LIVE badge \u2014 blocked on verifier creds",
+    "TASK-0056: Fleetio connector \u2014 blocked on API credentials (who has admin?)",
+    "Good stopping point \u2014 next session should /compact and start fresh"
   ],
   "tasks_completed": [],
   "learnings_added": [],
@@ -161,7 +173,7 @@
       "check": "All work is committed and pushed",
       "automated": true,
       "status": "fail",
-      "detail": "2 uncommitted files",
+      "detail": "8 uncommitted files",
       "fix": "Commit and push before adjourning."
     },
     {

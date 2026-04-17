@@ -209,5 +209,59 @@
     ],
     "lesson": "Wrike MCP has two comment tools: `add_comment` (direct, works) and `pm_add_comment` (needs PM database, fails without it). Use `add_comment` with `plainText: true` for simple updates. The pm_ tools require PM_DATABASE_URL env var which isn't set in this environment.",
     "source": "Session 20260417: pm_add_comment failed with 'Invalid Task ID', add_comment worked fine with same ID."
+  },
+  {
+    "id": "L018",
+    "trigger": [
+      "robert",
+      "fleetio",
+      "owns",
+      "credentials",
+      "vendor owner",
+      "account owner"
+    ],
+    "lesson": "Don't state provenance you can't trace. 'Robert Heath owns Fleetio' appeared in CLAUDE.md and glossary but no meeting transcript or recorded conversation confirms it. When citing who owns a vendor system, trace to the specific conversation where it was established. If you can't trace it, say 'CLAUDE.md says X but I can't find where we learned this' \u2014 don't present it as verified fact. Same applies to all vendor-ownership claims.",
+    "source": "Session 31: Daniel caught that Robert-owns-Fleetio was stated as fact without traceable provenance. Not in any meeting transcript."
+  },
+  {
+    "id": "L019",
+    "trigger": [
+      "wrike",
+      "cerebro",
+      "michael",
+      "weekly review",
+      "accounting",
+      "vendor card",
+      "fleetio",
+      "navusoft",
+      "sage"
+    ],
+    "lesson": "Wrike Cerebro structure lives under Weekly Review - Accounting \u2192 Special Projects \u2192 Cerebro, with per-vendor subtasks (Sage, Navusoft, FleetIO, Paylocity, HubSpot). Post data integration updates to the vendor-specific subtask, NOT to 'AIC Related' (that's for AIC management fee business). Michael created this structure on April 7. The old 'Project Cerebro' folder was deleted by Michael (in recycle bin).",
+    "source": "Session 31: found Cerebro subtasks under Special Projects. Michael created vendor cards (Sage, Navusoft, FleetIO, Paylocity, HubSpot) on 2026-04-07."
+  },
+  {
+    "id": "L020",
+    "trigger": [
+      "wrike",
+      "michael",
+      "github link",
+      "stakeholder",
+      "update card",
+      "action steps"
+    ],
+    "lesson": "Wrike comments must be self-contained for Michael. He will not click GitHub links. Put all action steps, context, and outcomes directly on the card. GitHub links go at the bottom in italics as a reference for Daniel only. The card should answer: what's the ask, who does it, how long, what's the outcome. No technical jargon, no \"see GitHub for details.\"",
+    "source": "Session 31: Daniel corrected FleetIO card \u2014 \"don't force michael to read github, just link to it for me\""
+  },
+  {
+    "id": "L021",
+    "trigger": [
+      "wrike",
+      "update_comment",
+      "delete_comment",
+      "403",
+      "own comments"
+    ],
+    "lesson": "Wrike update_comment returns 403 on comments authored by other users. Can only edit your own. delete_comment likely has the same restriction. When cleaning up stale comments, you can only delete ones you posted. For other users' comments, you'd need to ask them or have admin rights.",
+    "source": "Session 31: tried to update own comment on FleetIO card, got 403. API restricts to author's own comments."
   }
 ]
