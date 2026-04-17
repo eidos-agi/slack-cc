@@ -17,7 +17,7 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .mission import get_current_milestone, get_next_tasks, MISSION, GUARDRAILS
+from .mission import get_current_milestone, get_next_tasks, _read_ike_tasks, MISSION, GUARDRAILS
 
 SESSIONS_DIR = Path(__file__).parent.parent / "sessions"
 LEARNINGS_PATH = Path(__file__).parent.parent / "learnings.json"
@@ -80,6 +80,9 @@ CONVENE_CHECKS = [
     {"id": "C-06", "check": "Last session's next_actions are accounted for", "automated": True},
     {"id": "C-07", "check": "Database state matches expectations", "automated": True},
     {"id": "C-08", "check": "No open PRs blocking the critical path", "automated": True},
+    {"id": "C-09", "check": "Mission alignment — what are we here to do?", "automated": True},
+    {"id": "C-10", "check": "What are you avoiding?", "automated": True},
+    {"id": "C-11", "check": "Comfort-zone detection", "automated": True},
 ]
 
 ADJOURN_CHECKS = [
@@ -150,6 +153,158 @@ def _check_database_state() -> dict:
         return {"status": "warn", "detail": "psql timed out after 10s"}
     except Exception as e:
         return {"status": "warn", "detail": f"DB check failed: {str(e)[:100]}"}
+
+
+def _check_mission_alignment() -> dict:
+    """C-09: Surface mission, milestone progress, and guardrails.
+
+    Forces the agent to see the end goal every single convene.
+    Not a pass/fail — always 'pass' with the mission as detail,
+    so the agent can't skip it or treat it as noise.
+    """
+    ms = get_current_milestone()
+    tasks = get_next_tasks()
+    done_count = len([t for t in _read_ike_tasks() if t.get("in_completed")])
+    open_count = len(tasks)
+
+    ms_title = ms.get("title", "unknown") if ms else "All milestones complete"
+
+    return {
+        "status": "pass",
+        "detail": f"MISSION: {MISSION['statement']}",
+        "milestone": ms_title,
+        "progress": f"{done_count} done, {open_count} open",
+        "north_star": MISSION["north_star"],
+        "guardrail_tests": [g["test"] for g in GUARDRAILS],
+        "directive": (
+            "Every task this session must advance this mission. "
+            "If the top whats_next task is infrastructure, ask: "
+            "does it unblock the dashboard for Monday? If not, skip it."
+        ),
+    }
+
+
+def _check_avoidance() -> dict:
+    """C-10: Which hard tasks have you seen the most cycles without touching?
+
+    Scans session history for tasks that appear in next_actions repeatedly
+    but never show up in summaries as completed. These are the tasks the
+    agent keeps deferring — name them so avoidance is visible.
+    """
+    sessions = _load_session_history(last_n=10)
+    if len(sessions) < 2:
+        return {"status": "pass", "detail": "Not enough history to detect avoidance"}
+
+    # Count how many sessions each task appeared in next_actions
+    task_mentions = {}  # task fragment → count of sessions mentioning it
+    task_completed = set()  # task fragments that appeared in a summary as done
+
+    for s in sessions:
+        summary = (s.get("summary") or "").lower()
+        next_actions = s.get("next_actions") or []
+
+        for action in next_actions:
+            # Normalize: extract TASK-NNNN if present, else use first 60 chars
+            key = action.strip()[:60].lower()
+            import re
+            task_match = re.search(r"task-\d{4}", action, re.IGNORECASE)
+            if task_match:
+                key = task_match.group(0).lower()
+
+            task_mentions[key] = task_mentions.get(key, 0) + 1
+
+            # Check if this task was completed in any summary
+            if key in summary or "done" in summary and key in summary:
+                task_completed.add(key)
+
+    # Find tasks mentioned 3+ times but never completed
+    avoided = [
+        {"task": k, "sessions_deferred": v}
+        for k, v in sorted(task_mentions.items(), key=lambda x: -x[1])
+        if v >= 3 and k not in task_completed
+    ]
+
+    if avoided:
+        return {
+            "status": "fail",
+            "detail": f"AVOIDANCE DETECTED: {len(avoided)} task(s) deferred 3+ cycles without progress",
+            "avoided_tasks": avoided[:5],
+            "directive": (
+                "You have been deferring these tasks. Before doing anything else: "
+                "pick the hardest one, decompose it into what you CAN do right now, "
+                "and make partial progress. Do not fall back to easy work."
+            ),
+        }
+
+    # Check for tasks deferred 2 times (warning)
+    warning = [k for k, v in task_mentions.items() if v >= 2 and k not in task_completed]
+    if warning:
+        return {
+            "status": "warn",
+            "detail": f"{len(warning)} task(s) deferred 2 cycles — approaching avoidance threshold",
+            "watch_list": warning[:5],
+        }
+
+    return {"status": "pass", "detail": "No avoidance pattern detected"}
+
+
+def _check_comfort_zone() -> dict:
+    """C-11: Are you repeating the same type of work cycle after cycle?
+
+    Classifies recent session summaries by work category and flags
+    when 3+ consecutive sessions are the same category.
+    Merging PRs is not the mission. Building is.
+    """
+    sessions = _load_session_history(last_n=5)
+    if len(sessions) < 3:
+        return {"status": "pass", "detail": "Not enough history for comfort-zone detection"}
+
+    CATEGORIES = {
+        "merge": ["merge", "dependabot", "bump", "pr #"],
+        "ci": ["ci", "workflow", "pipeline", "github action"],
+        "docs": ["readme", "docs", "documentation", "claude.md"],
+        "governance": ["settings.yml", "adr", "tier", "codeowners"],
+        "infrastructure": ["hook", "ceremony", "mcp server", "refactor"],
+        "mission": ["sage", "dashboard", "financial", "revenue", "parity", "verify", "live badge"],
+    }
+
+    def classify(summary: str) -> str:
+        s = summary.lower()
+        scores = {}
+        for cat, keywords in CATEGORIES.items():
+            scores[cat] = sum(1 for kw in keywords if kw in s)
+        if not any(scores.values()):
+            return "unknown"
+        return max(scores, key=scores.get)
+
+    recent = [classify(s.get("summary") or "") for s in sessions[:5]]
+
+    # Check for 3+ consecutive same category (most recent first)
+    if len(recent) >= 3 and recent[0] == recent[1] == recent[2] and recent[0] != "mission":
+        return {
+            "status": "fail",
+            "detail": f"COMFORT ZONE: Last 3 sessions were all '{recent[0]}' work",
+            "recent_categories": recent,
+            "directive": (
+                f"You've done '{recent[0]}' work 3 sessions in a row. "
+                "That's a comfort pattern. Switch to mission-critical work NOW. "
+                "What's the hardest open task that advances the dashboard?"
+            ),
+        }
+
+    # Check for 2 consecutive non-mission
+    if len(recent) >= 2 and recent[0] == recent[1] and recent[0] != "mission":
+        return {
+            "status": "warn",
+            "detail": f"2 consecutive '{recent[0]}' sessions — one more triggers comfort-zone block",
+            "recent_categories": recent,
+        }
+
+    return {
+        "status": "pass",
+        "detail": f"Work variety OK: {recent[:3]}",
+        "recent_categories": recent,
+    }
 
 
 def _check_blocking_prs() -> dict:
@@ -267,6 +422,15 @@ def run_convene() -> dict:
 
             elif check["id"] == "C-08":
                 result.update(_check_blocking_prs())
+
+            elif check["id"] == "C-09":
+                result.update(_check_mission_alignment())
+
+            elif check["id"] == "C-10":
+                result.update(_check_avoidance())
+
+            elif check["id"] == "C-11":
+                result.update(_check_comfort_zone())
 
             else:
                 result["status"] = "skip"

@@ -7,6 +7,7 @@ from .config import (
     CI_NON_FAILURE_CONCLUSIONS, T1_SERVICES,
 )
 from . import gate
+from .topology import Service, SERVICES, DEPLOY_ORDER
 
 
 def create_work(
@@ -195,9 +196,9 @@ def merge_pr(repo: str, pr_number: int, gate_token: str = "", rhea_decision: str
             environment="production",
             pr_number=pr_number,
             what_changes=f"Merging PR #{pr_number} to {base} on {repo}",
-            deploy_target=gate.SERVICES.get(repo, gate.Service(name=repo, repo=repo)).domains.get("production", ""),
+            deploy_target=SERVICES.get(repo, Service(name=repo, repo=repo)).domains.get("production", ""),
             rollback_path=f"git revert on {base}, or Railway rollback via railguey",
-            upstream_dependencies=gate.DEPLOY_ORDER[:gate.DEPLOY_ORDER.index(repo)] if repo in gate.DEPLOY_ORDER else [],
+            upstream_dependencies=DEPLOY_ORDER[:DEPLOY_ORDER.index(repo)] if repo in DEPLOY_ORDER else [],
         )
 
         # Validate gate token (checks hash + expiry)

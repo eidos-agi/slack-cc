@@ -165,16 +165,56 @@ def get_current_milestone() -> dict | None:
 
 
 def get_next_tasks() -> list[dict]:
-    """Get the highest-priority open tasks from ike."""
+    """Get open tasks scored by mission impact, not just priority label.
+
+    Impact scoring: mission-aligned tasks score higher than infrastructure.
+    A task that proves the dashboard shows real revenue beats a task that
+    improves CI — even if CI is labeled 'high' priority.
+    """
     tasks = _read_ike_tasks()
     open_tasks = [
         t for t in tasks
         if t.get("status", "").lower() in ("to do", "in progress", "in_progress")
         and not t.get("in_completed")
     ]
-    # Sort by priority
-    priority_order = {"p0": 0, "p1": 1, "high": 1, "p2": 2, "medium": 2, "p3": 3, "low": 3}
-    open_tasks.sort(key=lambda t: priority_order.get(t.get("priority", "medium").lower(), 2))
+
+    # Mission keywords → these tasks directly advance the deliverable
+    MISSION_KEYWORDS = [
+        "sage", "dashboard", "financial", "revenue", "parity", "verify",
+        "live badge", "notify", "michael", "alex", "staging", "production",
+        "render", "data", "metric", "kpi",
+    ]
+    # Infrastructure keywords → these support the mission but aren't it
+    INFRA_KEYWORDS = [
+        "refactor", "ci", "hook", "ceremony", "mcp", "tool", "docs",
+        "documentation", "readme", "vault", "telemetry", "learning",
+        "verifier", "stress", "security",
+    ]
+
+    def impact_score(task: dict) -> float:
+        """Lower = higher priority. Mission tasks sort first."""
+        title = task.get("title", "").lower()
+        priority_order = {"p0": 0, "p1": 1, "high": 1, "p2": 2, "medium": 2, "p3": 3, "low": 3}
+        base = priority_order.get(task.get("priority", "medium").lower(), 2)
+
+        # Mission alignment bonus (subtract = sort earlier)
+        mission_hits = sum(1 for kw in MISSION_KEYWORDS if kw in title)
+        infra_hits = sum(1 for kw in INFRA_KEYWORDS if kw in title)
+
+        if mission_hits > 0 and infra_hits == 0:
+            base -= 1.5  # Mission-pure: sort way up
+        elif mission_hits > infra_hits:
+            base -= 0.5  # Mission-leaning: sort up
+        elif infra_hits > 0 and mission_hits == 0:
+            base += 1.0  # Pure infrastructure: sort down
+
+        # In-progress tasks get a small boost (don't abandon started work)
+        if task.get("status", "").lower() in ("in progress", "in_progress"):
+            base -= 0.3
+
+        return base
+
+    open_tasks.sort(key=impact_score)
     return open_tasks
 
 
