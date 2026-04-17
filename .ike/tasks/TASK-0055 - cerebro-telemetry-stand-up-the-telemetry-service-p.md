@@ -17,7 +17,7 @@ definition-of-done:
   - healthz returns 200 from the deployed URL
   - Python client emit() succeeds against deployed URL
   - Registered in cerebro-builder topology + greenmark-cockpit tier-map
-updated: '2026-04-15'
+updated: '2026-04-17'
 ---
 Build a dedicated telemetry service (Node + Hono + better-sqlite3) that every Greenmark component writes to, with a persistent Railway volume + Litestream backup to R2. Single source of truth for "what happened" across MCP, dashboard, bot, data-daemon. Decouples observability from Supabase so a Supabase outage can still be debugged.
 
@@ -54,3 +54,14 @@ Shipped end-to-end in one pass:
 - Register in greenmark-cockpit tier-map as T2
 - Bake for 48h in develop with real traffic (cerebro-mcp is now producing events)
 - Then: promote to `production` Railway env with fresh INGEST_TOKEN + volume
+
+**Status update 2026-04-17:**
+- Service live on develop: healthz returns 200, 2,346 events ingested
+- Settings.yml merged (ADR-2026-03 T2 compliant)
+- Registered in builder topology
+- Baking with real cerebro-mcp traffic since 2026-04-15
+
+**Remaining for production promotion:**
+- [ ] R2 bucket + API token for Litestream (needs Daniel in Cloudflare dashboard)
+- [ ] Promote to production Railway env with fresh INGEST_TOKEN + volume
+- [ ] Production healthz returns 200

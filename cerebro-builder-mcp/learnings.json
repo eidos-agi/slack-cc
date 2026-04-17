@@ -263,5 +263,17 @@
     ],
     "lesson": "Wrike update_comment returns 403 on comments authored by other users. Can only edit your own. delete_comment likely has the same restriction. When cleaning up stale comments, you can only delete ones you posted. For other users' comments, you'd need to ask them or have admin rights.",
     "source": "Session 31: tried to update own comment on FleetIO card, got 403. API restricts to author's own comments."
+  },
+  {
+    "id": "L022",
+    "trigger": [
+      "cerebro repo",
+      "gh api contents",
+      "base64 -d",
+      "not cloned",
+      "clone repo"
+    ],
+    "lesson": "The cerebro repo is cloned locally at /home/dev/repos/cerebro/. Don't use gh api to read cerebro files \u2014 read them directly. Same for cerebro-migrations (/home/dev/repos/cerebro-migrations/), data-daemon, and other Greenmark repos. Check /home/dev/repos/ before assuming a repo isn't available locally.",
+    "source": "Session 31: Daniel caught me using gh api to read cerebro files when the repo was at /home/dev/repos/cerebro/ the whole time."
   }
 ]

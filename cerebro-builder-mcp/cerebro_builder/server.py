@@ -299,6 +299,93 @@ def wrike_update(vendor: str = "", summary: str = "") -> dict:
     return result
 
 
+# ── Self-improvement ───────────────────────────────────
+
+
+@mcp.tool()
+def improve_builder() -> dict:
+    """The builder builds the builder.
+
+    Call at adjourn time. Reads the last 5 session logs, compiles them
+    into a friction report, and returns a prompt for Rhea to analyze.
+
+    The agent then calls mcp__rhea__rhea_challenge with the returned
+    prompt. Rhea reasons about what tooling gap caused the most friction
+    and proposes a concrete improvement the builder author didn't anticipate.
+
+    This is NOT keyword matching — it's adversarial reasoning over real
+    session history. The improvement should be novel, not obvious.
+    """
+    from .ceremony import _load_session_history
+
+    sessions = _load_session_history(last_n=5)
+    if len(sessions) < 2:
+        return {"proposal": None, "reason": "Not enough session history to analyze (need 2+)"}
+
+    # Compile session digest for Rhea
+    digest_parts = []
+    for s in sessions:
+        summary = s.get("summary") or "(no summary)"
+        actions = s.get("next_actions") or []
+        learnings = s.get("learnings_added") or []
+
+        digest_parts.append(
+            f"Session {s.get('id', '?')}:\n"
+            f"  Summary: {summary}\n"
+            f"  Next actions: {actions}\n"
+            f"  Learnings added: {[l.get('lesson', '')[:80] for l in learnings]}"
+        )
+
+    digest = "\n\n".join(digest_parts)
+
+    # Build the current tool inventory
+    tool_list = [
+        "convene() — roll call + C-01 through C-11 checks",
+        "adjourn() — session close + minutes",
+        "whats_next() — impact-scored task ordering",
+        "check_mission() — alignment check for proposed work",
+        "wrike_update() — tells agent where/how to post stakeholder updates",
+        "improve_builder() — this tool (self-improvement)",
+        "how_to_ship() — ceremony for code changes",
+        "pre_advance_checks() — checks before completing a task",
+        "which_forge() — routes work to the right MCP",
+        "ariadne / ariadne_learn — serendipity + learning from mistakes",
+        "docs() — knowledge base search",
+    ]
+
+    rhea_prompt = f"""You are reviewing the cerebro-builder MCP's effectiveness as an agent orchestrator.
+
+Below are the last {len(sessions)} session logs from a beepboop loop. Each session is one convene→execute→adjourn cycle.
+
+SESSION HISTORY:
+{digest}
+
+CURRENT BUILDER TOOLS:
+{chr(10).join(f'  - {t}' for t in tool_list)}
+
+QUESTION: What is the single biggest tooling gap that caused friction across these sessions?
+
+Rules:
+- Don't propose tools that already exist (check the tool list above)
+- The gap must be evidenced by something that actually went wrong or was harder than it should have been
+- Propose ONE concrete tool: name, what it does, what file it goes in, and WHY it would have prevented the friction you identified
+- "Concrete" means: function signature, 2-3 sentence behavior description, which session(s) it would have helped
+- Don't propose vague improvements like "better monitoring" — propose a specific callable tool
+- Novel means: something the builder's author wouldn't have thought to build. The obvious stuff is already there."""
+
+    return {
+        "sessions_analyzed": len(sessions),
+        "digest_preview": digest[:500] + "..." if len(digest) > 500 else digest,
+        "rhea_prompt": rhea_prompt,
+        "instruction": (
+            "Call mcp__rhea__rhea_challenge with this rhea_prompt. "
+            "Stakes: medium. The Dreamer proposes improvements, the Doubter "
+            "challenges whether they'd actually help, the Decider picks one. "
+            "Then build whatever the Decider approves — or explain why not."
+        ),
+    }
+
+
 # ── Shipping ────────────────────────────────────────────
 
 
