@@ -1,0 +1,222 @@
+{
+  "id": "20260417-181614",
+  "convened_at": "2026-04-17T18:16:14.724077+00:00",
+  "adjourned_at": "2026-04-17T18:22:15.749586+00:00",
+  "milestone": "'M-04: Sage Medallion Complete'",
+  "convene_results": [
+    {
+      "id": "C-01",
+      "check": "Ike state is current",
+      "automated": true,
+      "status": "pass",
+      "detail": "Milestone: 'M-04: Sage Medallion Complete', 13 open tasks"
+    },
+    {
+      "id": "C-02",
+      "check": "Learnings are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "15 learnings"
+    },
+    {
+      "id": "C-03",
+      "check": "Personas are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "3/3 personas"
+    },
+    {
+      "id": "C-04",
+      "check": "Git is clean or changes are understood",
+      "automated": true,
+      "status": "warn",
+      "detail": "17 dirty files"
+    },
+    {
+      "id": "C-05",
+      "check": "Current milestone is identified",
+      "automated": true,
+      "status": "pass",
+      "detail": "'M-04: Sage Medallion Complete'"
+    },
+    {
+      "id": "C-06",
+      "check": "Last session's next_actions are accounted for",
+      "automated": true,
+      "status": "pass",
+      "detail": "5 actions from last session",
+      "last_session_actions": [
+        "Restart cerebro-github MCP to verify gate fix works end-to-end",
+        "Merge cerebro PR #23 (vitest bump) \u2014 next green PR in queue",
+        "Investigate failing PRs: #21 lucide-react Type Check failure, #22 eslint Lint failure \u2014 may need code changes",
+        "Visual spot-check cerebro staging after tailwindcss deploy lands",
+        "Resume M-04 Sage Medallion milestone tasks once board is clear"
+      ]
+    },
+    {
+      "id": "C-07",
+      "check": "Database state matches expectations",
+      "automated": true,
+      "status": "skip",
+      "detail": "No DATABASE_URL \u2014 cannot check sage_bronze"
+    },
+    {
+      "id": "C-08",
+      "check": "No open PRs blocking the critical path",
+      "automated": true,
+      "status": "warn",
+      "detail": "2 PR(s) with failing CI on critical-path repos",
+      "blocking_prs": [
+        {
+          "repo": "cerebro",
+          "number": 22,
+          "title": "Bump eslint from 9.39.2 to 10.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/22",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "cerebro",
+          "number": 21,
+          "title": "Bump lucide-react from 0.563.0 to 1.8.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/21",
+          "ci_failing": true,
+          "failures": [
+            "Type Check"
+          ]
+        }
+      ],
+      "all_critical_prs": [
+        {
+          "repo": "cerebro",
+          "number": 26,
+          "title": "Bump tailwind-merge from 3.4.0 to 3.5.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/26",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 25,
+          "title": "Bump @types/node from 20.19.33 to 25.6.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/25",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 24,
+          "title": "Bump shadcn from 3.8.4 to 4.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/24",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 23,
+          "title": "Bump vitest from 3.2.4 to 4.1.4",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/23",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 22,
+          "title": "Bump eslint from 9.39.2 to 10.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/22",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "cerebro",
+          "number": 21,
+          "title": "Bump lucide-react from 0.563.0 to 1.8.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/21",
+          "ci_failing": true,
+          "failures": [
+            "Type Check"
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": "Merged cerebro PR #23 (vitest 3.2\u21924.1) with Rhea ceremony + spy surface verification (13 uses across 34 test files, all passing). Board status: 3 green PRs remain (#24-#26), 2 failing (#21 lucide-react major, #22 eslint major \u2014 need code changes). Dependabot queue nearly clear.",
+  "next_actions": [
+    "Merge cerebro PR #24 (shadcn 3.8\u21924.2), #25 (@types/node), #26 (tailwind-merge) \u2014 all green, one per cycle",
+    "PRs #21 and #22 need code changes (lucide-react 0\u21921, eslint 9\u219210) \u2014 schedule focused session",
+    "Push greenmark-cockpit main with ceremony.py fix (committed but not pushed)",
+    "Resume M-04 Sage Medallion milestone tasks once dependabot queue is clear"
+  ],
+  "tasks_completed": [],
+  "learnings_added": [],
+  "adjourn_results": [
+    {
+      "id": "A-01",
+      "check": "All work is committed and pushed",
+      "automated": true,
+      "status": "fail",
+      "detail": "18 uncommitted files",
+      "fix": "Commit and push before adjourning."
+    },
+    {
+      "id": "A-02",
+      "check": "Ike state reflects what was accomplished",
+      "automated": true,
+      "status": "warn",
+      "detail": "1 tasks still in-progress"
+    },
+    {
+      "id": "A-03",
+      "check": "Learnings from this session are saved",
+      "automated": false,
+      "status": "manual",
+      "note": "Did anything go wrong or almost go wrong?",
+      "fix": "Call ariadne_learn() for each lesson."
+    },
+    {
+      "id": "A-04",
+      "check": "PRs are opened for completed work",
+      "automated": false,
+      "status": "manual",
+      "note": "Code committed but no PR = invisible work.",
+      "fix": "Open PRs with Closes #N."
+    },
+    {
+      "id": "A-05",
+      "check": "Migration state is consistent",
+      "automated": false,
+      "status": "manual",
+      "note": "If applied manually, is it also in the PR?",
+      "fix": "Ensure migration file matches what's on the database."
+    },
+    {
+      "id": "A-06",
+      "check": "Next actions are concrete",
+      "automated": false,
+      "status": "manual",
+      "note": "Can the next convene start without context?",
+      "fix": "Write specific next_actions, not vague goals."
+    },
+    {
+      "id": "A-07",
+      "check": "Stakeholders updated if work is visible",
+      "automated": false,
+      "status": "manual",
+      "note": "Did we ship something Michael/Alex would see?",
+      "fix": "Update Wrike in Daniel's voice."
+    },
+    {
+      "id": "A-08",
+      "check": "Personas updated if calibration changed",
+      "automated": false,
+      "status": "manual",
+      "note": "Did Rhea hedge? Did Ariadne miss? Did the mayor drift?",
+      "fix": "Update the relevant persona JSON."
+    }
+  ],
+  "docs_surfaced": []
+}

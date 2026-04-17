@@ -1,0 +1,224 @@
+{
+  "id": "20260417-194616",
+  "convened_at": "2026-04-17T19:46:16.094596+00:00",
+  "adjourned_at": "2026-04-17T19:47:40.440420+00:00",
+  "milestone": "'M-04: Sage Medallion Complete'",
+  "convene_results": [
+    {
+      "id": "C-01",
+      "check": "Ike state is current",
+      "automated": true,
+      "status": "pass",
+      "detail": "Milestone: 'M-04: Sage Medallion Complete', 12 open tasks"
+    },
+    {
+      "id": "C-02",
+      "check": "Learnings are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "17 learnings"
+    },
+    {
+      "id": "C-03",
+      "check": "Personas are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "3/3 personas"
+    },
+    {
+      "id": "C-04",
+      "check": "Git is clean or changes are understood",
+      "automated": true,
+      "status": "warn",
+      "detail": "49 dirty files"
+    },
+    {
+      "id": "C-05",
+      "check": "Current milestone is identified",
+      "automated": true,
+      "status": "pass",
+      "detail": "'M-04: Sage Medallion Complete'"
+    },
+    {
+      "id": "C-06",
+      "check": "Last session's next_actions are accounted for",
+      "automated": true,
+      "status": "pass",
+      "detail": "4 actions from last session",
+      "last_session_actions": [
+        "Restart cerebro-builder + cerebro-github MCP to activate governance code",
+        "TASK-0051: verify Financial LIVE badge \u2014 blocked on verifier creds from Daniel",
+        "TASK-0056: Start Fleetio connector research \u2014 read infra repo API docs, design fleetio_bronze schema",
+        "Merge remaining cerebro PRs #24 and #25 opportunistically"
+      ]
+    },
+    {
+      "id": "C-07",
+      "check": "Database state matches expectations",
+      "automated": true,
+      "status": "skip",
+      "detail": "No DATABASE_URL \u2014 cannot check sage_bronze"
+    },
+    {
+      "id": "C-08",
+      "check": "No open PRs blocking the critical path",
+      "automated": true,
+      "status": "warn",
+      "detail": "2 PR(s) with failing CI on critical-path repos",
+      "blocking_prs": [
+        {
+          "repo": "cerebro",
+          "number": 22,
+          "title": "Bump eslint from 9.39.2 to 10.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/22",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "cerebro",
+          "number": 21,
+          "title": "Bump lucide-react from 0.563.0 to 1.8.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/21",
+          "ci_failing": true,
+          "failures": [
+            "Type Check"
+          ]
+        }
+      ],
+      "all_critical_prs": [
+        {
+          "repo": "cerebro",
+          "number": 25,
+          "title": "Bump @types/node from 20.19.33 to 25.6.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/25",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 24,
+          "title": "Bump shadcn from 3.8.4 to 4.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/24",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 22,
+          "title": "Bump eslint from 9.39.2 to 10.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/22",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "cerebro",
+          "number": 21,
+          "title": "Bump lucide-react from 0.563.0 to 1.8.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/21",
+          "ci_failing": true,
+          "failures": [
+            "Type Check"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C-09",
+      "check": "Mission alignment \u2014 what are we here to do?",
+      "automated": true,
+      "status": "pass",
+      "detail": "MISSION: Get real Sage financial data onto the Cerebro dashboard so Michael and Alex can see their business on Monday morning.",
+      "milestone": "'M-04: Sage Medallion Complete'",
+      "progress": "29 done, 12 open",
+      "north_star": "Alex's Greenmark_Metrics spreadsheet \u2014 populated with real numbers, not mocks.",
+      "guardrail_tests": [
+        "Is this task on the M-01\u2192M-07 critical path? If not, why am I doing it?",
+        "Am I building tools or shipping the thing the client sees?",
+        "If I'm updating Wrike, is it in Daniel's voice? If I'm in GitHub, is it actionable?",
+        "Would Michael recognize this as Daniel writing, or as AI writing?",
+        "Does the output match Alex's Greenmark_Metrics format?",
+        "Did I create_work() before writing code? Is the issue on Project #1? Will the PR close it?"
+      ],
+      "directive": "Every task this session must advance this mission. If the top whats_next task is infrastructure, ask: does it unblock the dashboard for Monday? If not, skip it."
+    }
+  ],
+  "summary": "Reviewed Fleetio API research in infra repo \u2014 thorough: 8 bronze tables designed, field mappings complete, sync strategy defined, connector pattern in data-daemon identified (base.py + sage_intacct_connector.py as template). Blocker: Robert Heath's Fleetio API credentials (API key + Account Token). Daniel needs to request these.",
+  "next_actions": [
+    "Daniel: request Fleetio API credentials from Robert Heath (API key + Account Token)",
+    "Once creds arrive: build FleetioConnector following sage_intacct_connector.py pattern",
+    "Create fleetio_bronze schema migration in cerebro-migrations (SQL already designed in infra/vendors/fleetio/api-data-model.md)",
+    "TASK-0051: verify Financial LIVE badge \u2014 still blocked on verifier creds"
+  ],
+  "tasks_completed": [],
+  "learnings_added": [],
+  "adjourn_results": [
+    {
+      "id": "A-01",
+      "check": "All work is committed and pushed",
+      "automated": true,
+      "status": "fail",
+      "detail": "50 uncommitted files",
+      "fix": "Commit and push before adjourning."
+    },
+    {
+      "id": "A-02",
+      "check": "Ike state reflects what was accomplished",
+      "automated": true,
+      "status": "warn",
+      "detail": "2 tasks still in-progress"
+    },
+    {
+      "id": "A-03",
+      "check": "Learnings from this session are saved",
+      "automated": false,
+      "status": "manual",
+      "note": "Did anything go wrong or almost go wrong?",
+      "fix": "Call ariadne_learn() for each lesson."
+    },
+    {
+      "id": "A-04",
+      "check": "PRs are opened for completed work",
+      "automated": false,
+      "status": "manual",
+      "note": "Code committed but no PR = invisible work.",
+      "fix": "Open PRs with Closes #N."
+    },
+    {
+      "id": "A-05",
+      "check": "Migration state is consistent",
+      "automated": false,
+      "status": "manual",
+      "note": "If applied manually, is it also in the PR?",
+      "fix": "Ensure migration file matches what's on the database."
+    },
+    {
+      "id": "A-06",
+      "check": "Next actions are concrete",
+      "automated": false,
+      "status": "manual",
+      "note": "Can the next convene start without context?",
+      "fix": "Write specific next_actions, not vague goals."
+    },
+    {
+      "id": "A-07",
+      "check": "Stakeholders updated if work is visible",
+      "automated": false,
+      "status": "manual",
+      "note": "Did we ship something Michael/Alex would see?",
+      "fix": "Update Wrike in Daniel's voice."
+    },
+    {
+      "id": "A-08",
+      "check": "Personas updated if calibration changed",
+      "automated": false,
+      "status": "manual",
+      "note": "Did Rhea hedge? Did Ariadne miss? Did the mayor drift?",
+      "fix": "Update the relevant persona JSON."
+    }
+  ],
+  "docs_surfaced": []
+}

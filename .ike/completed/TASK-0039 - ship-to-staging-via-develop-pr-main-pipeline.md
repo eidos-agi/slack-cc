@@ -1,7 +1,7 @@
 ---
 id: TASK-0039
 title: Ship to staging via develop → PR → main pipeline
-status: done
+status: Done
 created: '2026-04-10'
 priority: high
 milestone: 'M-06: Sage Live on Staging Cerebro'
@@ -21,8 +21,10 @@ acceptance-criteria:
   - Sage parity check green on staging
   - Daniel can open staging financial page and see real numbers
   - Screenshot captured for stakeholder communication
-updated: '2026-04-13'
+updated: '2026-04-17'
 ---
 Create PR against cerebro main from the Sage work branch. CI must pass (type check, lint, tests, build). Post-deploy smoke tests must pass (health check, auth gate, and critically: the new sage parity check). Merge. Verify staging deploy succeeds. Open the staging dashboard and confirm Sage data renders. Capture a screenshot.
 
 Auto-deployed via Railway on merge to main. Deploy 945672e6 succeeded at 2026-04-13T17:11Z. sage_gold exposed via PostgREST, dashboard fetcher live.
+
+**Completion notes:** Done — shipped to staging and production via Railway pipeline 2026-04-13.

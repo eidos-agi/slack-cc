@@ -173,5 +173,41 @@
     ],
     "lesson": "Browserbase sessions need the `fingerprint` option to pass Cloudflare captchas. Without it, the user agent says 'HeadlessChrome' and Cloudflare verification fails. Create sessions with `browserSettings.fingerprint: {browsers: ['chrome'], devices: ['desktop'], operatingSystems: ['macos']}` for sites behind Cloudflare. Also: persistent auth contexts expire \u2014 GitHub OAuth cookies survived but Railway needed re-login. Don't assume a context ID means authenticated.",
     "source": "Session 28: Cloudflare blocked Railway login via Browserbase because HeadlessChrome user agent was detected"
+  },
+  {
+    "id": "L015",
+    "trigger": [
+      "mcp server fix",
+      "gate module",
+      "ceremony fix",
+      "mcp restart",
+      "pip install mcp"
+    ],
+    "lesson": "Editing MCP server source files locally doesn't take effect until the MCP server process restarts. Python MCP servers (FastMCP) load modules at startup and keep them in memory. `pip install -e .` updates the package but the running process still has old bytecode. To apply fixes to cerebro-github or other Python MCP servers: edit the file, reinstall with pip, then restart the MCP server (reconnect in Claude Code settings or restart the claude session). Until then, the old buggy code runs.",
+    "source": "Session 20260417-174615: Fixed gate.Service bug in ceremony.py but MCP server kept running old code. Had to fall back to gh CLI for merges."
+  },
+  {
+    "id": "L016",
+    "trigger": [
+      "ap_aging",
+      "parity",
+      "fixture",
+      "golden",
+      "vendor paid"
+    ],
+    "lesson": "AP aging fixtures are time-variant \u2014 vendors get paid and disappear from the view. Unlike entity_pnl and gl_summary (which are immutable for closed periods), ap_aging reflects current outstanding balances. Don't treat ap_aging fixtures as immutable golden data. Either re-bless ap_aging periodically, or compare only entity_pnl and gl_summary for parity and treat ap_aging as a smoke test (row count floor, not row-by-row match).",
+    "source": "Session 20260417-184617: sage-parity CI caught vendor v00235 missing from live ap_aging (paid off). 10,055 pass, 1 fail."
+  },
+  {
+    "id": "L017",
+    "trigger": [
+      "wrike",
+      "comment",
+      "pm_add_comment",
+      "add_comment",
+      "stakeholder update"
+    ],
+    "lesson": "Wrike MCP has two comment tools: `add_comment` (direct, works) and `pm_add_comment` (needs PM database, fails without it). Use `add_comment` with `plainText: true` for simple updates. The pm_ tools require PM_DATABASE_URL env var which isn't set in this environment.",
+    "source": "Session 20260417: pm_add_comment failed with 'Invalid Task ID', add_comment worked fine with same ID."
   }
 ]

@@ -1,0 +1,191 @@
+{
+  "id": "20260417-171818",
+  "convened_at": "2026-04-17T17:18:18.195398+00:00",
+  "adjourned_at": null,
+  "milestone": "'M-04: Sage Medallion Complete'",
+  "convene_results": [
+    {
+      "id": "C-01",
+      "check": "Ike state is current",
+      "automated": true,
+      "status": "pass",
+      "detail": "Milestone: 'M-04: Sage Medallion Complete', 15 open tasks"
+    },
+    {
+      "id": "C-02",
+      "check": "Learnings are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "14 learnings"
+    },
+    {
+      "id": "C-03",
+      "check": "Personas are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "3/3 personas"
+    },
+    {
+      "id": "C-04",
+      "check": "Git is clean or changes are understood",
+      "automated": true,
+      "status": "warn",
+      "detail": "8 dirty files"
+    },
+    {
+      "id": "C-05",
+      "check": "Current milestone is identified",
+      "automated": true,
+      "status": "pass",
+      "detail": "'M-04: Sage Medallion Complete'"
+    },
+    {
+      "id": "C-06",
+      "check": "Last session's next_actions are accounted for",
+      "automated": true,
+      "status": "pass",
+      "detail": "5 actions from last session",
+      "last_session_actions": [
+        "Merge outstanding dependabot PRs on cerebro (#22 eslint, #23 vitest, #24 shadcn, #25 @types/node, #26 tailwind-merge) \u2014 routine upkeep",
+        "Merge cerebro-migrations PR #27 (settings.yml adoption) \u2014 completes governance-as-code wave",
+        "If OAuth UX ever wants the specific-client banner on /login: open a research.md finding on SECURITY DEFINER RPC pattern to expose authz-by-id pre-auth. Not needed for current UX (consent page already does this).",
+        "Consider adding a one-shot integration test in cerebro that hits Supabase admin endpoints with real service-role to catch future pattern-match API hallucinations. Low priority \u2014 the memory + ADR should deter recurrence.",
+        "Follow through on broader M-04 (Sage Medallion) milestone work; OAuth UX was a tangent from that."
+      ]
+    },
+    {
+      "id": "C-07",
+      "check": "Database state matches expectations",
+      "automated": true,
+      "status": "skip",
+      "detail": "No DATABASE_URL \u2014 cannot check sage_bronze"
+    },
+    {
+      "id": "C-08",
+      "check": "No open PRs blocking the critical path",
+      "automated": true,
+      "status": "warn",
+      "detail": "2 PR(s) with failing CI on critical-path repos",
+      "blocking_prs": [
+        {
+          "repo": "cerebro",
+          "number": 22,
+          "title": "Bump eslint from 9.39.2 to 10.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/22",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "cerebro",
+          "number": 21,
+          "title": "Bump lucide-react from 0.563.0 to 1.8.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/21",
+          "ci_failing": true,
+          "failures": [
+            "Type Check"
+          ]
+        }
+      ],
+      "all_critical_prs": [
+        {
+          "repo": "cerebro",
+          "number": 26,
+          "title": "Bump tailwind-merge from 3.4.0 to 3.5.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/26",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 25,
+          "title": "Bump @types/node from 20.19.33 to 25.6.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/25",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 24,
+          "title": "Bump shadcn from 3.8.4 to 4.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/24",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 23,
+          "title": "Bump vitest from 3.2.4 to 4.1.4",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/23",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 22,
+          "title": "Bump eslint from 9.39.2 to 10.2.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/22",
+          "ci_failing": true,
+          "failures": [
+            "Lint"
+          ]
+        },
+        {
+          "repo": "cerebro",
+          "number": 21,
+          "title": "Bump lucide-react from 0.563.0 to 1.8.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/21",
+          "ci_failing": true,
+          "failures": [
+            "Type Check"
+          ]
+        },
+        {
+          "repo": "cerebro",
+          "number": 20,
+          "title": "Bump dotenv from 17.3.1 to 17.4.2",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/20",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 19,
+          "title": "Bump @supabase/supabase-js from 2.98.0 to 2.103.0",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/19",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 18,
+          "title": "Bump tailwindcss from 4.1.18 to 4.2.2",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/18",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro",
+          "number": 17,
+          "title": "Bump react from 19.2.3 to 19.2.5",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/17",
+          "ci_failing": false,
+          "failures": []
+        },
+        {
+          "repo": "cerebro-migrations",
+          "number": 27,
+          "title": "chore: add .github/settings.yml \u2014 adopt ADR-2026-03 (T1)",
+          "url": "https://github.com/greenmark-waste-solutions/cerebro-migrations/pull/27",
+          "ci_failing": false,
+          "failures": []
+        }
+      ]
+    }
+  ],
+  "summary": null,
+  "next_actions": null,
+  "tasks_completed": [],
+  "learnings_added": []
+}

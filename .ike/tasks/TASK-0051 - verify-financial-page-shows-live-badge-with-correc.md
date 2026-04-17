@@ -1,7 +1,7 @@
 ---
 id: TASK-0051
 title: Verify Financial page shows LIVE badge with correct revenue
-status: To Do
+status: In Progress
 created: '2026-04-13'
 priority: high
 milestone: 'M-08: cerebro-verifier — Learning QA System'
@@ -17,5 +17,6 @@ acceptance-criteria:
   - Revenue KPI extracted from rendered page
   - Revenue matches sage_gold.entity_pnl to within 1%
   - Screenshot saved as evidence
+updated: '2026-04-17'
 ---
 The thing we should have done in session 26. Open the Financial dashboard in a real browser, confirm LIVE badge shows (not MOCK), extract the revenue KPI, compare against sage_gold ground truth. Screenshot as evidence.

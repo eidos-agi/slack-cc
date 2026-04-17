@@ -1,7 +1,7 @@
 ---
 id: TASK-0016
 title: Migrate Warp Speed into Cerebro — replace /ask with real Agent SDK experience
-status: To Do
+status: Done
 created: '2026-04-09'
 priority: high
 tags:
@@ -17,7 +17,7 @@ acceptance-criteria:
   - 'Phase 3: Python service retired only after 5 business days parallel run with zero
   incidents'
   - 'Phase 3: cerebro-warp-speed repo archived, not deleted'
-updated: '2026-04-09'
+updated: '2026-04-17'
 ---
 Replace the canned-response /dashboard/ask page with the real Warp Speed agent experience. Port the Python FastAPI + Agent SDK backend to TypeScript using @anthropic-ai/agent-sdk and refactor-forge for behavioral parity.
 
@@ -49,3 +49,5 @@ Phase 3 — Cutover (after 5 business days parallel run):
 4. Retire separate Railway service
 
 Rhea ruling: Phase 1 is no-brainer. Phase 2 only if 1-day streaming spike passes. Don't archive Python repo until TS version runs 5 days in prod without incident.
+
+**Completion notes:** Obsolete per ADR-2026-40: "AI is the edge, not the core." We don't build chat UIs — we build MCP tools. Warp Speed chat was retired; cerebro-mcp + RBTC replaces it with 650 lines instead of 35,000.
