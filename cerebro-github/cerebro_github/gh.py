@@ -38,7 +38,8 @@ def create_issue(org: str, repo: str, title: str, body: str, assignee: str) -> d
         "--assignee", assignee,
     ])
     number = int(url.rstrip("/").split("/")[-1])
-    node_id = _run_json([
+    # --jq returns a raw string, not JSON — use _run not _run_json
+    node_id = _run([
         "api", f"repos/{org}/{repo}/issues/{number}",
         "--jq", ".node_id",
     ])
