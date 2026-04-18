@@ -287,5 +287,18 @@
     ],
     "lesson": "Rhea gate tokens for T1 merges expire after 600 seconds. The round-trip time for getting a gate token \u2192 running rhea_challenge \u2192 calling merge_pr back with the decision routinely exceeds 600s because Rhea debate takes 2-5 minutes plus tool call latency. The ceremony defeats itself. Workaround: if Rhea has already approved in a prior attempt, use gh CLI directly for the merge rather than burning more tokens. Or: the gate token TTL should be extended to 900s to accommodate Rhea round-trips.",
     "source": "Session 31 \u2014 PR #21 merge attempt, 3 expired tokens before discovering PR was already merged"
+  },
+  {
+    "id": "L024",
+    "trigger": [
+      "railway production",
+      "no deploys",
+      "connect repo",
+      "service source",
+      "deploymentRedeploy",
+      "Not Authorized"
+    ],
+    "lesson": "Railway multi-environment services don't automatically share source connections. A service can exist in the production environment (created when the env was provisioned) but have no GitHub repo linked \u2014 it shows 'no deploys' and deploy/redeploy commands fail with 'Not Authorized'. You can set env vars and create volumes via API, but linking the source repo requires the Railway dashboard (Settings \u2192 Connect repo). Check service_info latestDeployment before setting vars \u2014 if it's null, the service has never deployed and needs manual source connection first.",
+    "source": "Session 32 \u2014 cerebro-telemetry production promotion attempt"
   }
 ]

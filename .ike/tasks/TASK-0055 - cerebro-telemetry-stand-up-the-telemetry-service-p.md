@@ -65,3 +65,18 @@ Shipped end-to-end in one pass:
 - [ ] R2 bucket + API token for Litestream (needs Daniel in Cloudflare dashboard)
 - [ ] Promote to production Railway env with fresh INGEST_TOKEN + volume
 - [ ] Production healthz returns 200
+
+
+**Session 32 progress (2026-04-18):**
+
+Production environment partially provisioned:
+- ✅ INGEST_TOKEN set (fresh token, different from develop)
+- ✅ DB_PATH set to /data/telemetry.sqlite
+- ✅ SUPABASE_URL set
+- ✅ Volume created (50 GB at /data, ID: 1d434a67-c8cc-4b98-8e5c-8f3dae8202f8)
+- ❌ Service has no source connected — needs Daniel to link GitHub repo in Railway dashboard
+- ❌ No domain assigned yet
+
+**Daniel action needed:** In Railway dashboard → production env → cerebro-telemetry service → Settings → Connect repo → select `greenmark-waste-solutions/cerebro-telemetry`. Once connected, Railway will auto-deploy. Then assign a public domain.
+
+R2/Litestream still deferred — service works without it.

@@ -1,0 +1,195 @@
+{
+  "id": "20260418-023017",
+  "convened_at": "2026-04-18T02:30:17.886960+00:00",
+  "adjourned_at": "2026-04-18T02:30:35.250229+00:00",
+  "milestone": "'M-04: Sage Medallion Complete'",
+  "convene_results": [
+    {
+      "id": "C-01",
+      "check": "Ike state is current",
+      "automated": true,
+      "status": "pass",
+      "detail": "Milestone: 'M-04: Sage Medallion Complete', 11 open tasks"
+    },
+    {
+      "id": "C-02",
+      "check": "Learnings are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "23 learnings"
+    },
+    {
+      "id": "C-03",
+      "check": "Personas are loaded",
+      "automated": true,
+      "status": "pass",
+      "detail": "3/3 personas"
+    },
+    {
+      "id": "C-04",
+      "check": "Git is clean or changes are understood",
+      "automated": true,
+      "status": "warn",
+      "detail": "3 dirty files"
+    },
+    {
+      "id": "C-05",
+      "check": "Current milestone is identified",
+      "automated": true,
+      "status": "pass",
+      "detail": "'M-04: Sage Medallion Complete'"
+    },
+    {
+      "id": "C-06",
+      "check": "Last session's next_actions are accounted for",
+      "automated": true,
+      "status": "pass",
+      "detail": "5 actions from last session",
+      "last_session_actions": [
+        "Follow up Monday Apr 21: confirm Navusoft API server is live after weekend maintenance",
+        "Wait for Michael's Fleetio API key + Account Token",
+        "Get verifier creds set up to unblock TASK-0048 and TASK-0051",
+        "Consider promoting cerebro-telemetry to production (TASK-0055)",
+        "Reinstall cerebro-github MCP to pick up the gate TTL fix"
+      ]
+    },
+    {
+      "id": "C-07",
+      "check": "Database state matches expectations",
+      "automated": true,
+      "status": "skip",
+      "detail": "No DATABASE_URL \u2014 cannot check sage_bronze"
+    },
+    {
+      "id": "C-08",
+      "check": "No open PRs blocking the critical path",
+      "automated": true,
+      "status": "pass",
+      "detail": "0 open PR(s) on critical-path repos, all CI green",
+      "all_critical_prs": []
+    },
+    {
+      "id": "C-09",
+      "check": "Mission alignment \u2014 what are we here to do?",
+      "automated": true,
+      "status": "pass",
+      "detail": "MISSION: Get real Sage financial data onto the Cerebro dashboard so Michael and Alex can see their business on Monday morning.",
+      "milestone": "'M-04: Sage Medallion Complete'",
+      "progress": "31 done, 11 open",
+      "north_star": "Alex's Greenmark_Metrics spreadsheet \u2014 populated with real numbers, not mocks.",
+      "guardrail_tests": [
+        "Is this task on the M-01\u2192M-07 critical path? If not, why am I doing it?",
+        "Am I building tools or shipping the thing the client sees?",
+        "If I'm updating Wrike, is it in Daniel's voice? If I'm in GitHub, is it actionable?",
+        "Would Michael recognize this as Daniel writing, or as AI writing?",
+        "Does the output match Alex's Greenmark_Metrics format?",
+        "Did I create_work() before writing code? Is the issue on Project #1? Will the PR close it?"
+      ],
+      "directive": "Every task this session must advance this mission. If the top whats_next task is infrastructure, ask: does it unblock the dashboard for Monday? If not, skip it."
+    },
+    {
+      "id": "C-10",
+      "check": "What are you avoiding?",
+      "automated": true,
+      "status": "warn",
+      "detail": "4 task(s) deferred 2 cycles \u2014 approaching avoidance threshold",
+      "watch_list": [
+        "follow up monday apr 21: confirm navusoft api server is live",
+        "task-0048",
+        "task-0055",
+        "task-0056"
+      ]
+    },
+    {
+      "id": "C-11",
+      "check": "Comfort-zone detection",
+      "automated": true,
+      "status": "fail",
+      "detail": "COMFORT ZONE: Last 3 sessions were all 'merge' work",
+      "recent_categories": [
+        "merge",
+        "merge",
+        "merge",
+        "ci",
+        "merge"
+      ],
+      "directive": "You've done 'merge' work 3 sessions in a row. That's a comfort pattern. Switch to mission-critical work NOW. What's the hardest open task that advances the dashboard?"
+    }
+  ],
+  "summary": "Stopped the 15-minute loop. C-11 comfort-zone triggered (3 consecutive merge sessions). C-10 flagged 4 tasks approaching avoidance \u2014 but all are blocked on external deps (Fleetio API key, Navusoft API server, verifier creds, R2 bucket). No mission-critical work is executable without Daniel providing credentials or Monday arriving. Loop cancelled to stop burning context on no-ops.",
+  "next_actions": [
+    "Monday Apr 21: confirm Navusoft API server is live, get API credentials",
+    "Daniel: share Fleetio API key + Account Token via LastPass",
+    "Daniel: set up verifier test account (VERIFIER_EMAIL/PASSWORD/TOTP_SECRET) to unblock TASK-0048/0051",
+    "Daniel: create R2 bucket in Cloudflare for cerebro-telemetry Litestream backup (TASK-0055)",
+    "Reinstall cerebro-github MCP to pick up gate TTL fix (PR #70)"
+  ],
+  "tasks_completed": [],
+  "learnings_added": [],
+  "adjourn_results": [
+    {
+      "id": "A-01",
+      "check": "All work is committed and pushed",
+      "automated": true,
+      "status": "fail",
+      "detail": "4 uncommitted files",
+      "fix": "Commit and push before adjourning."
+    },
+    {
+      "id": "A-02",
+      "check": "Ike state reflects what was accomplished",
+      "automated": true,
+      "status": "warn",
+      "detail": "2 tasks still in-progress"
+    },
+    {
+      "id": "A-03",
+      "check": "Learnings from this session are saved",
+      "automated": false,
+      "status": "manual",
+      "note": "Did anything go wrong or almost go wrong?",
+      "fix": "Call ariadne_learn() for each lesson."
+    },
+    {
+      "id": "A-04",
+      "check": "PRs are opened for completed work",
+      "automated": false,
+      "status": "manual",
+      "note": "Code committed but no PR = invisible work.",
+      "fix": "Open PRs with Closes #N."
+    },
+    {
+      "id": "A-05",
+      "check": "Migration state is consistent",
+      "automated": false,
+      "status": "manual",
+      "note": "If applied manually, is it also in the PR?",
+      "fix": "Ensure migration file matches what's on the database."
+    },
+    {
+      "id": "A-06",
+      "check": "Next actions are concrete",
+      "automated": false,
+      "status": "manual",
+      "note": "Can the next convene start without context?",
+      "fix": "Write specific next_actions, not vague goals."
+    },
+    {
+      "id": "A-07",
+      "check": "Stakeholders updated if work is visible",
+      "automated": false,
+      "status": "manual",
+      "note": "Did we ship something Michael/Alex would see?",
+      "fix": "Update Wrike in Daniel's voice."
+    },
+    {
+      "id": "A-08",
+      "check": "Personas updated if calibration changed",
+      "automated": false,
+      "status": "manual",
+      "note": "Did Rhea hedge? Did Ariadne miss? Did the mayor drift?",
+      "fix": "Update the relevant persona JSON."
+    }
+  ],
+  "docs_surfaced": []
+}
