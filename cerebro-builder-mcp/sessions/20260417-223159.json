@@ -1,7 +1,7 @@
 {
-  "id": "20260417-215039",
-  "convened_at": "2026-04-17T21:50:39.542780+00:00",
-  "adjourned_at": "2026-04-17T21:51:50.897187+00:00",
+  "id": "20260417-223159",
+  "convened_at": "2026-04-17T22:31:59.628072+00:00",
+  "adjourned_at": "2026-04-18T01:39:42.671559+00:00",
   "milestone": "'M-04: Sage Medallion Complete'",
   "convene_results": [
     {
@@ -30,7 +30,7 @@
       "check": "Git is clean or changes are understood",
       "automated": true,
       "status": "warn",
-      "detail": "8 dirty files"
+      "detail": "3 dirty files"
     },
     {
       "id": "C-05",
@@ -44,12 +44,13 @@
       "check": "Last session's next_actions are accounted for",
       "automated": true,
       "status": "pass",
-      "detail": "4 actions from last session",
+      "detail": "5 actions from last session",
       "last_session_actions": [
-        "Fix lucide-react icon renames (Github\u2192ExternalLink, Chrome\u2192Globe) in cerebro repo, push to PR #21 branch or new branch",
-        "Investigate eslint #22 failure (Lint check)",
-        "Wait for Michael's Fleetio API key in LastPass",
-        "TASK-0051 blocked on verifier creds"
+        "Merge cerebro PR #21 (lucide-react) once CI passes on rebased branch",
+        "Investigate eslint PR #22 Lint failure",
+        "Build blocker_cascade() or augment whats_next with blocker awareness (Rhea's recommendation)",
+        "Wait for Michael's Fleetio API key",
+        "/compact before next session \u2014 context is at limit"
       ]
     },
     {
@@ -64,7 +65,7 @@
       "check": "No open PRs blocking the critical path",
       "automated": true,
       "status": "warn",
-      "detail": "2 PR(s) with failing CI on critical-path repos",
+      "detail": "1 PR(s) with failing CI on critical-path repos",
       "blocking_prs": [
         {
           "repo": "cerebro",
@@ -74,16 +75,6 @@
           "ci_failing": true,
           "failures": [
             "Lint"
-          ]
-        },
-        {
-          "repo": "cerebro",
-          "number": 21,
-          "title": "Bump lucide-react from 0.563.0 to 1.8.0",
-          "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/21",
-          "ci_failing": true,
-          "failures": [
-            "Type Check"
           ]
         }
       ],
@@ -103,10 +94,8 @@
           "number": 21,
           "title": "Bump lucide-react from 0.563.0 to 1.8.0",
           "url": "https://github.com/greenmark-waste-solutions/cerebro/pull/21",
-          "ci_failing": true,
-          "failures": [
-            "Type Check"
-          ]
+          "ci_failing": false,
+          "failures": []
         }
       ]
     },
@@ -133,44 +122,46 @@
       "id": "C-10",
       "check": "What are you avoiding?",
       "automated": true,
-      "status": "warn",
-      "detail": "1 task(s) deferred 2 cycles \u2014 approaching avoidance threshold",
-      "watch_list": [
-        "task-0040"
-      ]
+      "status": "pass",
+      "detail": "No avoidance pattern detected"
     },
     {
       "id": "C-11",
       "check": "Comfort-zone detection",
       "automated": true,
       "status": "pass",
-      "detail": "Work variety OK: ['ci', 'merge', 'unknown']",
+      "detail": "Work variety OK: ['merge', 'ci', 'merge']",
       "recent_categories": [
+        "merge",
         "ci",
         "merge",
         "unknown",
-        "merge",
-        "unknown"
+        "merge"
       ]
     }
   ],
-  "summary": "Rebased lucide-react PR #21 against main (has icon fixes now). Session state pushed and merged via full ceremony. improve_builder v2 committed (Rhea-powered). Rhea's first finding: build blocker_cascade() with automatable-only data. Context is very heavy \u2014 next session must /compact.",
+  "summary": "Cleared carry-forward: PR #21 (lucide-react) confirmed merged, PR #22 (eslint 9\u219210) closed \u2014 eslint-plugin-react incompatible with ESLint 10 upstream. Recorded Sharae's call: Michael authorized Navusoft site downtime this weekend for API server setup. Learned L023: Rhea gate tokens expire too fast for the merge ceremony round-trip. All high-priority tasks blocked on external deps (verifier creds, Fleetio API key, Navusoft API server).",
   "next_actions": [
-    "Merge cerebro PR #21 (lucide-react) once CI passes on rebased branch",
-    "Investigate eslint PR #22 Lint failure",
-    "Build blocker_cascade() or augment whats_next with blocker awareness (Rhea's recommendation)",
-    "Wait for Michael's Fleetio API key",
-    "/compact before next session \u2014 context is at limit"
+    "Follow up Monday Apr 21: confirm Navusoft API server is live after weekend maintenance",
+    "Wait for Michael's Fleetio API key + Account Token (email sent, Wrike updated)",
+    "Get verifier creds set up (VERIFIER_EMAIL/PASSWORD/TOTP_SECRET) to unblock TASK-0048 and TASK-0051",
+    "Consider promoting cerebro-telemetry to production (TASK-0055) \u2014 develop env healthy with 2,346+ events",
+    "Fix Rhea gate token TTL in cerebro-github (extend from 600s to 900s to accommodate Rhea round-trips)"
   ],
   "tasks_completed": [],
-  "learnings_added": [],
+  "learnings_added": [
+    {
+      "id": "L023",
+      "lesson": "Rhea gate tokens for T1 merges expire after 600 seconds. The round-trip time for"
+    }
+  ],
   "adjourn_results": [
     {
       "id": "A-01",
       "check": "All work is committed and pushed",
       "automated": true,
       "status": "fail",
-      "detail": "2 uncommitted files",
+      "detail": "6 uncommitted files",
       "fix": "Commit and push before adjourning."
     },
     {
