@@ -73,11 +73,12 @@ def create_gate_token(context: GateContext) -> str:
     return f"gate-{_hash_context(context)}-{int(context.timestamp)}"
 
 
-def validate_gate_token(token: str, context: GateContext, max_age_seconds: int = 600) -> tuple[bool, str]:
+def validate_gate_token(token: str, context: GateContext, max_age_seconds: int = 900) -> tuple[bool, str]:
     """Validate a gate token against the context.
 
     Returns (valid, reason).
-    Token expires after max_age_seconds (default 10 minutes).
+    Token expires after max_age_seconds (default 15 minutes).
+    Extended from 10min to 15min to accommodate Rhea debate round-trips (L023).
     """
     if not token or not token.startswith("gate-"):
         return False, "Invalid token format. Must start with 'gate-'."
