@@ -1,7 +1,7 @@
 {
   "id": "20260418-042157",
   "convened_at": "2026-04-18T04:21:57.065195+00:00",
-  "adjourned_at": null,
+  "adjourned_at": "2026-04-18T04:25:07.483712+00:00",
   "milestone": "'M-04: Sage Medallion Complete'",
   "convene_results": [
     {
@@ -121,8 +121,80 @@
       "directive": "You've done 'merge' work 3 sessions in a row. That's a comfort pattern. Switch to mission-critical work NOW. What's the hardest open task that advances the dashboard?"
     }
   ],
-  "summary": null,
-  "next_actions": null,
+  "summary": "Broke comfort zone and addressed avoidance. TASK-0053 (cerebro-vault rewrite) completed \u2014 Railway env vars replace Supabase Vault, same 4 tools, supabase dep removed. TASK-0048 partial progress \u2014 ran agent-browser against staging, confirmed login page renders correctly post-lucide-react upgrade, screenshots captured, blocked on auth creds. TASK-0055 still waiting on Daniel to connect repo in Railway dashboard. PR #74 merged.",
+  "next_actions": [
+    "Daniel: set up staging test account OR share creds to unblock full dogfood (TASK-0048)",
+    "Daniel: Railway dashboard \u2014 connect cerebro-telemetry repo to production service",
+    "Monday Apr 21: confirm Navusoft API server is live",
+    "Wait for Michael's Fleetio API key",
+    "Reconnect cerebro-vault MCP after setting RAILWAY_* env vars"
+  ],
   "tasks_completed": [],
-  "learnings_added": []
+  "learnings_added": [],
+  "adjourn_results": [
+    {
+      "id": "A-01",
+      "check": "All work is committed and pushed",
+      "automated": true,
+      "status": "fail",
+      "detail": "2 uncommitted files",
+      "fix": "Commit and push before adjourning."
+    },
+    {
+      "id": "A-02",
+      "check": "Ike state reflects what was accomplished",
+      "automated": true,
+      "status": "warn",
+      "detail": "2 tasks still in-progress"
+    },
+    {
+      "id": "A-03",
+      "check": "Learnings from this session are saved",
+      "automated": false,
+      "status": "manual",
+      "note": "Did anything go wrong or almost go wrong?",
+      "fix": "Call ariadne_learn() for each lesson."
+    },
+    {
+      "id": "A-04",
+      "check": "PRs are opened for completed work",
+      "automated": false,
+      "status": "manual",
+      "note": "Code committed but no PR = invisible work.",
+      "fix": "Open PRs with Closes #N."
+    },
+    {
+      "id": "A-05",
+      "check": "Migration state is consistent",
+      "automated": false,
+      "status": "manual",
+      "note": "If applied manually, is it also in the PR?",
+      "fix": "Ensure migration file matches what's on the database."
+    },
+    {
+      "id": "A-06",
+      "check": "Next actions are concrete",
+      "automated": false,
+      "status": "manual",
+      "note": "Can the next convene start without context?",
+      "fix": "Write specific next_actions, not vague goals."
+    },
+    {
+      "id": "A-07",
+      "check": "Stakeholders updated if work is visible",
+      "automated": false,
+      "status": "manual",
+      "note": "Did we ship something Michael/Alex would see?",
+      "fix": "Update Wrike in Daniel's voice."
+    },
+    {
+      "id": "A-08",
+      "check": "Personas updated if calibration changed",
+      "automated": false,
+      "status": "manual",
+      "note": "Did Rhea hedge? Did Ariadne miss? Did the mayor drift?",
+      "fix": "Update the relevant persona JSON."
+    }
+  ],
+  "docs_surfaced": []
 }
