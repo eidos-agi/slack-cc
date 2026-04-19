@@ -328,15 +328,7 @@ def run_sql(query: str, limit: int = 100) -> dict:
     """
     if limit > 1000:
         limit = 1000
-    result = db.run_sql(query, limit=limit)
-    if "error" in result and "connection" in result["error"].lower():
-        result["hint"] = (
-            "Direct Postgres connection failed. This tool requires DATABASE_URL "
-            "to be set to a reachable Postgres connection string. On sandboxed "
-            "environments without direct DB access, use query_gold() or the "
-            "PostgREST-based tools instead."
-        )
-    return result
+    return db.run_sql(query, limit=limit)
 
 
 @mcp.tool()
@@ -406,39 +398,33 @@ def explain_account(account_no: str) -> dict:
     Args:
         account_no: Sage GL account number (e.g., "4010", "5010", "6010")
     """
-    try:
-        results = db.run_sql(f"""
-            SELECT "ACCOUNTNO" as account_no, "TITLE" as title,
-                   "ACCOUNTTYPE" as account_type, "NORMALBALANCE" as normal_balance,
-                   "STATUS" as status
-            FROM sage_bronze.gl_accounts
-            WHERE "ACCOUNTNO" = '{account_no}'
-            LIMIT 1
-        """)
-        if "error" in results:
-            return results
-        if not results["rows"]:
-            return {"error": f"Account {account_no} not found in sage_bronze.gl_accounts"}
+    results = db.run_sql(f"""
+        SELECT source_id as account_no, title, category, entity, status
+        FROM sage_silver.gl_accounts
+        WHERE source_id = '{account_no}'
+        LIMIT 5
+    """)
+    if "error" in results:
+        return results
+    if not results["rows"]:
+        return {"error": f"Account {account_no} not found in sage_silver.gl_accounts"}
 
-        acct = results["rows"][0]
-        # Map to P&L category
-        prefix = account_no[0] if account_no else ""
-        category = {
-            "4": "Revenue",
-            "5": "Cost of Goods Sold (COGS)",
-            "6": "Operating Expenses",
-            "7": "Operating Expenses",
-            "8": "Operating Expenses",
-            "9": "Operating Expenses",
-            "1": "Assets",
-            "2": "Liabilities",
-            "3": "Equity",
-        }.get(prefix, "Unknown")
+    # Map to P&L category based on account number prefix
+    prefix = account_no[0] if account_no else ""
+    pnl_category = {
+        "4": "Revenue",
+        "5": "Cost of Goods Sold (COGS)",
+        "6": "Operating Expenses",
+        "7": "Operating Expenses",
+        "8": "Operating Expenses",
+        "9": "Operating Expenses",
+        "1": "Assets",
+        "2": "Liabilities",
+        "3": "Equity",
+    }.get(prefix, "Unknown")
 
-        return {
-            **acct,
-            "pnl_category": category,
-            "note": f"This is a {category} account. In sage_gold.entity_pnl, revenue comes from 4xxx accounts, COGS from 5xxx, and OpEx from 6xxx-9xxx.",
-        }
-    except Exception as e:
-        return {"error": str(e)}
+    return {
+        "accounts": results["rows"],
+        "pnl_category": pnl_category,
+        "note": f"In sage_gold.entity_pnl, revenue = 4xxx, COGS = 5xxx, OpEx = 6-9xxx.",
+    }

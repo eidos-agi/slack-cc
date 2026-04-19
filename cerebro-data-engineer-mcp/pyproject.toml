@@ -9,7 +9,6 @@ description = "AI data engineer MCP — knows the company's data topology, runs 
 requires-python = ">=3.10"
 dependencies = [
     "mcp>=1.0.0",
-    "psycopg2-binary>=2.9.0",
 ]
 
 [project.scripts]

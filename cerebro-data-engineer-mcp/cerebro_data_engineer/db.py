@@ -16,7 +16,6 @@ from typing import Any
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://wwmcgtyngnziepeynccz.supabase.co")
 SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
-DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
 
 def _request(path: str, schema: str = "public", params: str = "") -> list[dict[str, Any]]:
@@ -71,44 +70,56 @@ def check_table_accessible(table: str, schema: str) -> dict:
         return {"accessible": False, "error": str(e)}
 
 
-# ── Direct Postgres (ad-hoc SQL) ────────────────────────────
+# ── SQL execution via Supabase exec_sql RPC ─────────────────
 
 def run_sql(query: str, limit: int = 100) -> dict[str, Any]:
     """Execute a read-only SQL query against the warehouse.
 
-    Uses DATABASE_URL (direct Postgres connection via psycopg2).
-    Enforces read-only at the transaction level. Returns column names
-    + rows as dicts, capped at `limit` rows.
+    Uses the Supabase exec_sql() RPC function with the service role key.
+    No direct Postgres connection needed — works from any environment.
+    The exec_sql function enforces read-only at the Postgres level.
+
+    Returns rows as a list of dicts. If the query fails, returns an
+    error dict with the Postgres error code and message.
     """
-    if not DATABASE_URL:
-        return {"error": "DATABASE_URL not set — cannot run ad-hoc SQL. Set it to the Supabase direct connection string."}
+    service_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    if not service_key:
+        return {"error": "SUPABASE_SERVICE_ROLE_KEY not set — cannot run SQL"}
 
-    import psycopg2
-    import psycopg2.extras
+    # Append LIMIT if not already present (prevent accidental full-table scans)
+    q = query.strip().rstrip(";")
+    if "limit" not in q.lower():
+        q += f" LIMIT {limit}"
 
+    body = json.dumps({"query": q}).encode()
+    req = urllib.request.Request(
+        f"{SUPABASE_URL}/rest/v1/rpc/exec_sql",
+        data=body,
+        method="POST",
+        headers={
+            "apikey": service_key,
+            "Authorization": f"Bearer {service_key}",
+            "Content-Type": "application/json",
+        },
+    )
     try:
-        conn = psycopg2.connect(DATABASE_URL, options="-c default_transaction_read_only=on")
-        conn.set_session(readonly=True, autocommit=True)
-        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute(query)
-            if cur.description is None:
-                # DDL or statement with no results
-                return {"columns": [], "rows": [], "row_count": 0, "note": "Statement returned no rows (possibly DDL — blocked by read-only mode)"}
-            columns = [d.name for d in cur.description]
-            rows = [dict(row) for row in cur.fetchmany(limit)]
+        resp = urllib.request.urlopen(req, timeout=30)
+        rows = json.loads(resp.read())
+        if isinstance(rows, list):
             return {
-                "columns": columns,
-                "rows": rows,
-                "row_count": len(rows),
-                "truncated": cur.rowcount > limit if cur.rowcount >= 0 else False,
+                "rows": rows[:limit],
+                "row_count": len(rows[:limit]),
+                "columns": list(rows[0].keys()) if rows else [],
+                "truncated": len(rows) > limit,
             }
-    except psycopg2.Error as e:
-        return {"error": f"SQL error: {e.pgerror or str(e)}"}
-    finally:
-        try:
-            conn.close()
-        except Exception:
-            pass
+        return {"rows": [], "row_count": 0, "result": rows}
+    except urllib.error.HTTPError as e:
+        error_body = json.loads(e.read().decode())
+        return {
+            "error": f"SQL error: {error_body.get('message', str(e))}",
+            "code": error_body.get("code"),
+            "hint": error_body.get("hint"),
+        }
 
 
 def call_rpc(function_name: str, params: dict | None = None) -> dict[str, Any]:
