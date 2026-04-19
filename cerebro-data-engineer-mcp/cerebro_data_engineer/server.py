@@ -20,10 +20,20 @@ from mcp.server.fastmcp import FastMCP
 from .topology import ALL_SYSTEMS, MEDALLION_LAYERS, REFRESH_CHAIN, KNOWN_PARITY
 from . import qa, db
 
-# Contract: healthy + runs + answers questions.
-# "Healthy" → data_qa(), parity_check(), freshness()
-# "Runs"    → refresh_gold(), run_sql()
-# "Answers" → run_sql(), diagnose(), explain_table(), query_gold()
+# Contract: healthy + runs + answers questions + measures itself.
+# "Healthy"  → data_qa(), parity_check(), freshness()
+# "Runs"     → refresh_gold(), run_sql() (escape hatch)
+# "Answers"  → query_gold(), diagnose(), explain_table(), explain_account()
+# "Measures" → self_check() — am I using tools well or over-relying on run_sql?
+
+# Tool call counter — tracks which tools are called in this session
+# so self_check() can report imbalance.
+_tool_calls: dict[str, int] = {}
+
+
+def _track(name: str) -> None:
+    """Increment the session-local call counter for a tool."""
+    _tool_calls[name] = _tool_calls.get(name, 0) + 1
 
 
 mcp = FastMCP("cerebro-data-engineer")
@@ -41,6 +51,7 @@ def systems(status_filter: str = "") -> dict:
     Args:
         status_filter: Filter by status (connected, pending, blocked, deprioritized). Empty = all.
     """
+    _track("systems")
     results = []
     for s in ALL_SYSTEMS:
         if status_filter and s.status != status_filter:
@@ -110,6 +121,7 @@ def pipeline() -> dict:
 
     The medallion architecture: bronze → silver → gold → dashboard.
     """
+    _track("pipeline")
     return {
         "architecture": "medallion",
         "layers": MEDALLION_LAYERS,
@@ -275,6 +287,7 @@ def freshness() -> dict:
 
     Checks entity_pnl for the most recent period with meaningful revenue.
     """
+    _track("freshness")
     results = qa.check_freshness()
     return {
         "results": [{"status": r.status, "detail": r.detail, "severity": r.severity} for r in results],
@@ -292,6 +305,7 @@ def parity_check(period: str = "2025-12") -> dict:
     Args:
         period: Period to check in YYYY-MM format (default: 2025-12)
     """
+    _track("parity_check")
     results = qa.check_parity(period)
     passed = all(r.status == "pass" for r in results)
     return {
@@ -306,26 +320,32 @@ def parity_check(period: str = "2025-12") -> dict:
 
 @mcp.tool()
 def run_sql(query: str, limit: int = 100) -> dict:
-    """Run read-only SQL against the Greenmark warehouse.
+    """Escape hatch: run read-only SQL against the Greenmark warehouse.
 
-    This is the data engineer's most important tool. Any question about
-    the data that isn't covered by a specialized tool can be answered
-    with SQL. The query runs against the real Supabase Postgres database
-    with read-only transaction isolation — it cannot modify data.
+    USE THE SPECIALIZED TOOLS FIRST. This tool exists for questions that
+    no other tool can answer — ad-hoc exploration, debugging, one-off
+    investigations. If you find yourself using run_sql repeatedly for
+    the same query pattern, that's a signal to create a dedicated tool.
 
-    All schemas are accessible: sage_bronze, sage_silver, sage_gold,
-    public, auth (with service role). Use schema-qualified names.
+    Prefer these over run_sql:
+    - query_gold()       → entity_pnl, gl_summary, ap_aging
+    - explain_table()    → table lineage and dependencies
+    - explain_account()  → GL account lookup
+    - parity_check()     → compare gold vs Alex's spreadsheet
+    - row_counts()       → table sizes across the pipeline
+    - diagnose()         → trace a metric from dashboard to source
+    - data_qa()          → run all quality checks
 
-    Examples:
-        "SELECT * FROM sage_gold.entity_pnl WHERE period = '2025-12'"
-        "SELECT count(*) FROM sage_bronze.gl_journal_entries"
-        "SELECT account_no, title FROM sage_bronze.gl_accounts WHERE account_no LIKE '4%' LIMIT 20"
-        "SELECT schemaname, tablename FROM pg_tables WHERE schemaname NOT IN ('pg_catalog','information_schema')"
+    Only reach for run_sql when the above can't answer the question.
+
+    Runs via Supabase exec_sql() RPC with service role access.
+    Read-only. Schemas: sage_bronze, sage_silver, sage_gold, public.
 
     Args:
-        query: SQL query to execute (read-only enforced)
+        query: SQL query to execute (read-only)
         limit: Maximum rows to return (default 100, max 1000)
     """
+    _track("run_sql")
     if limit > 1000:
         limit = 1000
     return db.run_sql(query, limit=limit)
@@ -342,6 +362,7 @@ def refresh_gold() -> dict:
     Takes ~5-30 seconds depending on data volume. Safe to call anytime —
     the views are CONCURRENTLY refreshed so existing queries aren't blocked.
     """
+    _track("refresh_gold")
     return db.call_rpc("refresh_all")
 
 
@@ -354,6 +375,7 @@ def row_counts() -> dict:
     spot anomalies (e.g., silver has 1M rows but gold has 0 → refresh
     needed; bronze grew by 500K overnight → check extraction).
     """
+    _track("row_counts")
     try:
         results = db.run_sql("""
             SELECT
@@ -427,4 +449,73 @@ def explain_account(account_no: str) -> dict:
         "accounts": results["rows"],
         "pnl_category": pnl_category,
         "note": f"In sage_gold.entity_pnl, revenue = 4xxx, COGS = 5xxx, OpEx = 6-9xxx.",
+    }
+
+
+# ── Self-measurement ───────────────────────────────────────
+
+@mcp.tool()
+def self_check() -> dict:
+    """How am I doing? Am I using the right tools or over-relying on run_sql?
+
+    Reports this session's tool call distribution and flags imbalances:
+    - run_sql > 30% of total calls → "over-relying on escape hatch"
+    - No health checks (data_qa/parity/freshness) called → "not checking health"
+    - Only querying, never diagnosing → "answering but not understanding"
+
+    Call this periodically to stay honest about how you're working.
+    """
+    _track("self_check")
+
+    total = sum(_tool_calls.values())
+    if total == 0:
+        return {"message": "No tools called yet this session.", "calls": {}}
+
+    sql_count = _tool_calls.get("run_sql", 0)
+    sql_pct = sql_count / total * 100
+
+    health_tools = {"data_qa", "parity_check", "freshness"}
+    health_count = sum(_tool_calls.get(t, 0) for t in health_tools)
+
+    answer_tools = {"query_gold", "explain_table", "explain_account", "diagnose"}
+    answer_count = sum(_tool_calls.get(t, 0) for t in answer_tools)
+
+    ops_tools = {"refresh_gold", "row_counts"}
+    ops_count = sum(_tool_calls.get(t, 0) for t in ops_tools)
+
+    warnings = []
+    if sql_pct > 30:
+        warnings.append(
+            f"run_sql is {sql_pct:.0f}% of calls ({sql_count}/{total}). "
+            "Over-relying on the escape hatch. Use query_gold, explain_table, "
+            "or diagnose instead — they encode domain knowledge."
+        )
+    if total > 5 and health_count == 0:
+        warnings.append(
+            "No health checks called (data_qa, parity_check, freshness). "
+            "A data engineer should verify health before answering questions."
+        )
+    if answer_count > 10 and health_count == 0:
+        warnings.append(
+            "Answering lots of questions but never checking if the data is right. "
+            "Run data_qa() or parity_check() to validate before trusting."
+        )
+    if total > 3 and ops_count == 0 and sql_count == 0:
+        warnings.append(
+            "Only reading, never operating. Consider refresh_gold() or row_counts() "
+            "to check if the pipeline needs attention."
+        )
+
+    return {
+        "session_calls": dict(sorted(_tool_calls.items(), key=lambda x: -x[1])),
+        "total": total,
+        "distribution": {
+            "health": {"count": health_count, "pct": f"{health_count/total*100:.0f}%"},
+            "answers": {"count": answer_count, "pct": f"{answer_count/total*100:.0f}%"},
+            "operations": {"count": ops_count, "pct": f"{ops_count/total*100:.0f}%"},
+            "escape_hatch": {"count": sql_count, "pct": f"{sql_pct:.0f}%"},
+            "meta": {"count": _tool_calls.get("self_check", 0)},
+        },
+        "warnings": warnings if warnings else ["Looking good — balanced tool usage."],
+        "guidance": "Ideal balance: health checks first, then targeted answers via specialized tools, run_sql only for genuinely novel questions.",
     }
