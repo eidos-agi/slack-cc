@@ -1,0 +1,2 @@
+[console_scripts]
+cerebro-data-engineer = cerebro_data_engineer.cli:main
