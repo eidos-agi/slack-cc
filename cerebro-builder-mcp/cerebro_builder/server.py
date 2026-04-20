@@ -23,7 +23,28 @@ from .mission import (
 )
 from .topology import CHANGE_LIFECYCLE, SERVICES, ENVIRONMENTS, DEPLOY_ORDER, VENDOR_CREDENTIALS
 
-mcp = FastMCP("cerebro-builder")
+mcp = FastMCP(
+    "cerebro-builder",
+    instructions=(
+        "cerebro-builder is the session orchestrator — the mayor's office. "
+        "It holds the mission, guardrails, and tells you what to work on next. "
+        "Use `convene` to start a work session, `adjourn` to end it. "
+        "Use `whats_next` to get prioritized tasks, `check_mission` to validate alignment. "
+        "Use `docs` to search the knowledge base, `get_topology` for service/deploy topology. "
+        "Use `how_to_ship` and `how_to_migrate` for deployment ceremony. "
+        "\n\n"
+        "WHEN TO USE WHICH MCP:\n"
+        "- cerebro-builder: session orchestration, mission, what to work on, guardrails, knowledge base\n"
+        "- cerebro-web-builder: shipping code (ship_to_staging, promote_to_production), "
+        "deploy topology, browser login, page smoke tests, deploy status\n"
+        "- cerebro-verifier: data correctness — are the NUMBERS right? "
+        "Ground truth SQL comparison, golden fixtures, KPI extraction, evidence trails\n"
+        "- cerebro-data-engineer: warehouse operations — query gold views, check freshness, "
+        "run parity checks, diagnose pipeline issues\n"
+        "- cerebro-github: git ceremony — issues, PRs, CI, merges, changelog\n\n"
+        "For full ecosystem documentation, use cerebro-docs."
+    ),
+)
 
 
 # ── Builder ceremony — convene and adjourn ───────────────

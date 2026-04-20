@@ -11,5 +11,8 @@ dependencies = [
     "mcp>=1.0.0",
 ]
 
+[tool.setuptools.packages.find]
+include = ["cerebro_builder*"]
+
 [project.scripts]
 cerebro-builder = "cerebro_builder.cli:main"

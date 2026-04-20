@@ -1,37 +1,51 @@
-# Greenmark Cockpit — Takeoff #23
+# Greenmark Cockpit — Takeoff #24
 
-**Pilot** Daniel Shanklin &nbsp;|&nbsp; **Date** Apr 13, 2026 &nbsp;|&nbsp; **Time** session start
+**Pilot** Daniel Shanklin &nbsp;|&nbsp; **Date** Apr 19, 2026 &nbsp;|&nbsp; **Time** 12:37 PM
 
-**Session** #23 &nbsp;|&nbsp; **Branch** `feat/branch-flow-guards` &nbsp;|&nbsp; **Working tree** 2 dirty &nbsp;|&nbsp; **Last landing** 2 days ago
+**Session** #24 &nbsp;|&nbsp; **Branch** `session-33` &nbsp;|&nbsp; **Working tree** dirty (23 files) &nbsp;|&nbsp; **Last landing** earlier today
 
-> **Resume:** Session 22 (double session). Built tiered release practices (ADR-2026-02, 13/13 compliant), cerebro-github MCP (14 tools, 3 layers, persistent ledger, topology model), Rhea token-gate pattern for production merges (19 tests), SageIntacctConnector (15 tests, merged), Jam.dev bug reporter (deployed), bulk merged 9 PRs. GitHub Project board live with milestones and Gantt.
+> **Resume:** Shipped cerebro-mcp (CF Worker, 9 tools, OAuth, RLS, telemetry-wired), cerebro-telemetry (Railway, SQLite, persistent volume, 32/32 live tests), and cerebro-data-engineer MCP (12 tools, parity MATCH). Collapsed architectures to simpler forms. Added railguey volume tools. Fixed MFA redirect bug. Proved ab -p browserbase works.
+
+> **Drift:** 2 new commits since landing (run_sql exec_sql RPC rewrite + self_check tool). Working tree now dirty with .ike task/milestone files and agent-browser artifacts.
 
 ---
 
 ## Where We Were
 
-Session 22 was a double-header that fundamentally changed how we work. The tiered release practices system (ADR-2026-02) classified all 13 repos into Production/Supporting/Reference tiers with appropriate ceremony enforced by `bootstrap-repo.sh` and audited by `ensure-release.sh`. The cerebro-github MCP encodes 14 tools across three layers (Do/See/Know) with a persistent incident ledger — the ceremony that knows itself. The Rhea token-gate pattern means T1 production merges require adversarial reasoning before execution. SageIntacctConnector shipped with 15 tests covering XML session auth, cursor pagination, date-range chunking for GLENTRY, and entity resolution from LOCATION codes. Jam.dev bug reporter deployed so Michael/Alex/Robert can screen-capture issues.
+Session 33 was a major MCP shipping session. Three new MCPs were built and deployed to staging:
+
+- **cerebro-mcp** — Cloudflare Worker with 9 tools, Supabase OAuth + RLS, telemetry wired. The remote MCP that gives claude.ai access to Greenmark's data warehouse.
+- **cerebro-telemetry** — Dedicated telemetry service on Railway with SQLite persistent volume. 32/32 integration tests passing. Every Greenmark service writes to this single endpoint.
+- **cerebro-data-engineer MCP** — 12 tools for data analysis, parity checking, and pipeline diagnostics. Verified with parity MATCH against Alex's spreadsheet.
+
+We also proved the ab -p browserbase pattern works for automated browser testing, collapsed redundant architectures to simpler forms, and added railguey volume management tools (create, resize, delete).
+
+The session landed with the exec_sql RPC proven working but run_sql not yet rewritten. Two post-landing commits fixed that: run_sql now uses exec_sql RPC instead of psycopg2, and a self_check tool was added to the data-engineer MCP.
 
 ## Where We Are
 
-The Sage pipeline rebuild sits at M-03: connector merged, credentials from warp-speed set on both Railway environments. sage_bronze is live on staging (7 tables, RBAC 19/19). The PL04000005 blocker remains an open question — warp-speed's credentials work for downloading GL data, so the same credentials on data-daemon should work. This needs to be tested.
+The MCP ecosystem is functionally complete for the Sage pipeline. Three MCPs are deployed to staging and verified independently. The Sage medallion pipeline is LIVE with full parity confirmed — 10,056 rows, zero failures, December 2025 revenue matching Alex's Greenmark_Metrics to the penny.
 
-Infrastructure is solid: 13/13 repos tier-compliant, GitHub Project board has 47+ items with milestones M-01 through M-07, sub-issues, and dates. cerebro-github MCP is registered and working. Two strategic PRs remain: cerebro #14 (staging build-info banner) and cockpit #2 (all session 22 work).
+The run_sql psycopg2 blocker from the bookmark has been resolved (2 post-landing commits). The remaining gate is MFA enrollment for Daniel's personal claude.ai account, which blocks binding cerebro-mcp as a connector.
 
-Daniel asked for "great docs" — documentation permanence was a theme in session 22. README.md is the hub, every leaf links back, ADR-2026-02 explains why, tools/README.md covers the full enforcement picture. Documentation should be verified against current reality this session.
+Working tree is dirty with .ike project management artifacts (14 tasks, 4 milestones), a cerebro-web-builder-mcp directory, and agent-browser session files. These are new artifacts from ongoing work.
 
 ## Where We're Going
 
-1. **Merge cerebro #14 + cockpit #2** — close the strategic PR backlog from session 22
-2. **M-04: sage_silver + sage_gold views** — materialized views transforming bronze → silver (cleaned, typed) → gold (Alex's spreadsheet layout)
-3. **M-05: Excel parity validation** — compare pipeline gold against warp-speed golden fixtures
-4. **M-06: Wire Financial dashboard** — replace mock data with live gold queries
-5. **Documentation audit** — verify all docs reflect current reality
+1. **Complete MFA enrollment + retry claude.ai connector** — MFA is the single gate to dogfooding cerebro-mcp with real query patterns in claude.ai. Once enrolled, retry the connector binding. This is the highest-leverage unblock.
+
+2. **Merge railguey PR #3** — Volume CRUD tools are ready and reviewed. Merge unblocks persistent storage management across all Railway services.
+
+3. **Open release PR develop→main for cerebro** — PRs #58 and #60 are queued. The release promotes live Sage data visibility to production for Michael and Alex. Gate: telemetry soak complete + MCP verified.
+
+4. **Let cerebro-telemetry bake 48h in develop** — Intentional soak period ends ~Apr 21. Monitor for any SQLite/volume issues under real traffic before promoting to production.
 
 ## Blockers
 
-**Sage API PL04000005 (soft blocker):** Warp-speed credentials set on Railway in session 22. These credentials pull 1.38M GL entries via warp-speed-excel. Same credentials on data-daemon should work but haven't been tested live. If it fails, requires Sage support investigation.
+**Daniel's MFA enrollment** — Required for personal claude.ai connector binding. Has been pending since session 32. No technical workaround; this is a human action item. Escalate if it hasn't happened by next session.
+
+**Cerebro production promotion** — Gated on: (a) cerebro-telemetry 48h soak completing Apr 21, (b) cerebro-mcp verified working in claude.ai, (c) final parity check on staging. Timeline is clean if MFA and soak complete this week.
 
 ---
 
-*Generated 2026-04-13 by /takeoff*
+*Generated 2026-04-19T12:37:07-0500 by /takeoff*

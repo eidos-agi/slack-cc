@@ -36,7 +36,24 @@ def _track(name: str) -> None:
     _tool_calls[name] = _tool_calls.get(name, 0) + 1
 
 
-mcp = FastMCP("cerebro-data-engineer")
+mcp = FastMCP(
+    "cerebro-data-engineer",
+    instructions=(
+        "cerebro-data-engineer is for warehouse operations — querying gold views, "
+        "checking data freshness, running parity checks, and diagnosing pipeline issues. "
+        "Use `self_check` to verify connectivity, `query_gold` for natural language queries, "
+        "`freshness` for staleness checks, `parity_check` to compare against references, "
+        "`diagnose` for end-to-end issue tracing."
+        "\n\n"
+        "WHEN TO USE WHICH MCP:\n"
+        "- cerebro-data-engineer (this): warehouse queries, freshness, parity, pipeline diagnostics\n"
+        "- cerebro-verifier: data correctness on rendered pages — 'are the numbers right?'\n"
+        "- cerebro-web-builder: shipping code, deploy topology, browser login\n"
+        "- cerebro-builder: session orchestration, mission, what to work on next\n"
+        "- cerebro-github: git ceremony — issues, PRs, CI, merges\n\n"
+        "For full ecosystem documentation, use cerebro-docs."
+    ),
+)
 
 
 # ── System Knowledge ────────────────────────────────────────

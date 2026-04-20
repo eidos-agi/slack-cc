@@ -90,6 +90,7 @@ Browserbase supports persistent browser contexts so cookies/localStorage/session
 | Context ID | Purpose | Auth state captured |
 |------------|---------|---------------------|
 | `870a8efe-dfd9-4ee3-aab8-c1843e9d8d74` | `cerebro` | Signed into `cerebro.greenmark.jettaintelligence.com` production dashboard. Session 28 2026-04-13. |
+| *(needs capture)* | `claude-ai` | Daniel's claude.ai account (`dshanklin@aicholdings.com`). Cerebro MCP connector configured. Needs fresh context capture — session 29 used Live View handoff, no persistent context saved. |
 
 ### Creating a new context
 
@@ -107,7 +108,7 @@ Browserbase supports persistent browser contexts so cookies/localStorage/session
 | Query a vendor's log/data system | Check for a Management API first (Supabase has PATs, Railway has tokens, Cloudflare has API tokens). Prefer APIs over scraping. |
 | Log into a vendor dashboard requiring creds + MFA | Browserbase session via API + Live View for manual MFA + save context for reuse |
 | Scrape data from a post-login page | Browserbase session attached via Playwright CDP, then navigate + extract |
-| Anything the `ab` CLI is designed for but needs a real browser | **Don't use `ab -p browserbase` — use Browserbase API directly** per section above |
+| Anything the `ab` CLI is designed for but needs a real browser | `ab -p browserbase` works. For multi-step auth flows, use Browserbase API + Live View (see below) |
 
 ## Supabase-specific: logs access
 
@@ -120,18 +121,19 @@ Three real paths to Supabase auth logs:
 
 For OAuth Server events specifically, `/auth/v1/admin/audit` returns empty (endpoint exists but OAuth events don't flow through it in the current Supabase OAuth Server version). Use the dashboard UI or the Management API.
 
-## Failure modes I hit and resolved (2026-04-14)
+## Failure modes I hit and resolved
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ab -p browserbase` returns success but no session appears in Browserbase | Silent fallback to local Chromium. Proven via direct Browserbase API listing showing zero sessions after `ab` claimed success | Use Browserbase REST API directly; don't trust the CLI provider flag |
-| `TLS handshake failure (alert 40)` curling `*.workers.dev` | Sandbox TLS fingerprint being flagged by Cloudflare | Eventually passed through on retry; intermittent. For reliable access, use Browserbase |
-| `PGRST106 Invalid schema: auth` | PostgREST doesn't expose `auth` schema | Either create a view in `public` or use Supabase Management API |
-| `ab close --all` leaves the CLI unable to start new sessions | Daemon file cleanup issue | Restart the shell session; start sessions with fresh `--session-name` |
+| Symptom | Cause | Fix | Date |
+|---------|-------|-----|------|
+| `ab -p browserbase` returns success but no session appears | Was a real issue in session 28 — silent fallback to local Chromium | **Resolved** in `agent-browser 0.25.4`. `-p browserbase` now works reliably. Verified 2026-04-15. | 2026-04-14 |
+| Multi-step auth flows lose state between `ab` invocations | Each `ab` command creates/releases its own Browserbase session. Refs go stale, pages navigate to `about:blank` between commands. | For multi-step flows (login + MFA + navigate), use Browserbase REST API to create a persistent session with `keepAlive: true`, then hand Live View URL to human for auth steps. Single-command operations (open, screenshot, snapshot) work fine. | 2026-04-15 |
+| `TLS handshake failure (alert 40)` curling `*.workers.dev` | Sandbox TLS fingerprint flagged by Cloudflare | Intermittent. Retry or use Browserbase for reliable access. | 2026-04-14 |
+| `PGRST106 Invalid schema: auth` | PostgREST doesn't expose `auth` schema | Create a view in `public` or use Supabase Management API | 2026-04-14 |
+| `ab close --all` leaves CLI unable to start new sessions | Daemon file cleanup issue | Restart shell; start sessions with fresh `--session-name` | 2026-04-14 |
+| Browserbase session expires mid-login | Default timeout is 300s (5 min) — not enough for human MFA | Always pass `"timeout": 3600` when creating sessions via REST API. `keepAlive: true` only survives CDP disconnects, does NOT extend wall-clock timeout. | 2026-04-15 |
 
 ## What to update here going forward
 
-- When you verify `ab -p browserbase` works (someone fixes the upstream issue), delete the "Known-broken" section
 - When you capture a new auth context via Browserbase, add it to the context table with the exact URLs it's authenticated for
 - When you hit a new failure mode, document symptom → cause → fix
 - When API keys rotate, update them here AND remove old values from anywhere they leaked

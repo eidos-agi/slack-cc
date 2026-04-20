@@ -1,0 +1,2 @@
+[console_scripts]
+cerebro-docs = cerebro_docs.cli:main

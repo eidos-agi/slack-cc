@@ -282,13 +282,21 @@ This section adapts to the vendor's specific situation:
 When credentials arrive, do these in order:
 
 1. **Authentication test** — verify credentials work, note any MFA or IP allowlisting requirements
-2. **List endpoints** — hit the API root or docs endpoint to confirm available objects
-3. **Sample pull** — GET 1 page of each core object, save raw JSON to `fixtures/samples/<vendor>/`
-4. **Schema validation** — compare real fields to proposed bronze tables (Section D). Note any missing/extra columns.
-5. **Entity check** — find how NTX vs Hometown is distinguished (custom field, location ID, separate accounts?)
-6. **Volume estimation** — count total records per object to size sync strategy
-7. **Rate limit test** — hit the API at increasing rates to find the practical limit
-8. **Update this doc** — fill in gaps from Section G, correct any assumptions
+2. **Endpoint probe** — hit every documented endpoint, record HTTP status, row count, sample fields. Save to `reference/<vendor>-api-probe.md`
+3. **Deep exploration (4 approaches)** — go beyond docs to find unknown unknowns:
+   - *Systematic*: try every plausible REST endpoint pattern (plurals, underscores, nested resources like `/vehicles/{id}/fuel_entries`)
+   - *Follow the links*: fetch a rich object by ID, follow every field and URL that references another resource
+   - *Introspection*: try API root, /me, /accounts, OpenAPI/Swagger endpoints, custom_fields per object type
+   - *Undocumented*: try /reports, /analytics, /integrations, /telematics, /compliance — vendors often have APIs not in public docs
+4. **Schema validation** — compare real fields to proposed bronze tables (Section D). Note corrections (field names, types, nesting, cents vs dollars)
+5. **Entity check** — find how NTX vs Hometown/Memphis is distinguished (custom field, group, location ID, separate accounts?)
+6. **Volume estimation** — count total records per object. Note: first-page estimates are often wrong (Fleetio probe estimated 550 fuel entries, actual was 5,408)
+7. **Rate limit test** — note published limits, implement rate limiter with sliding window + 429/503 retry
+8. **Vault credentials** — `cerebro-vault.secret_set` for API keys and tokens
+9. **Update this doc** — fill in gaps from Section G, correct any assumptions
+10. **Save probe results** — `reference/<vendor>-api-probe.md` + `reference/<vendor>-api-deep-exploration.md`
+
+**Lesson from Fleetio (2026-04-19):** The deep exploration (step 3) found 16 endpoints not in Fleetio's public docs, including tires (202 records), documents (1,021 files), inspection schedules (265 records), VMRS codes (59), and GPS via nested vehicle resources. Always explore beyond the docs.
 ```
 
 ---

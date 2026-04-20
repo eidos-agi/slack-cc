@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cerebro-web-builder"
+version = "0.1.0"
+description = "Web deployment pipeline MCP — encoded knowledge for Cerebro ship/verify/promote"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+    "pyotp>=2.9.0",
+    "httpx>=0.27.0",
+]
+
+[project.scripts]
+cerebro-web-builder = "cerebro_web_builder.cli:main"

@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+#
+# ab-login — automated Cerebro login with programmatic TOTP
+#
+# Usage:
+#   ./ab-login [staging|production] [viewer|admin]
+#
+# Logs into Cerebro using test accounts with automated MFA.
+# No human needed. Saves a screenshot as proof.
+#
+# Requires: CEREBRO_TEST_EMAIL, CEREBRO_TEST_PASSWORD, CEREBRO_TEST_TOTP_SECRET
+#           (or CEREBRO_ADMIN_* variants for admin login)
+#
+# These are read from cerebro/.env.local or can be set in environment.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+AB="$SCRIPT_DIR/ab"
+CEREBRO_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
+CEREBRO_REPO="$CEREBRO_DIR/../cerebro"
+
+# ── Parse args ─────────────────────────────────────────────────
+ENV="${1:-staging}"
+ROLE="${2:-viewer}"
+
+case "$ENV" in
+  staging)  BASE_URL="https://staging-cerebro-greenmark.jettaintelligence.com" ;;
+  production) BASE_URL="https://cerebro.greenmark.jettaintelligence.com" ;;
+  *) echo "Usage: ab-login [staging|production] [viewer|admin]"; exit 1 ;;
+esac
+
+# ── Load credentials ──────────────────────────────────────────
+# Source from cerebro/.env.local if not already in env
+if [ -f "$CEREBRO_REPO/.env.local" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source <(grep -E '^(E2E_TEST_|E2E_ADMIN_)' "$CEREBRO_REPO/.env.local" | sed 's/#.*//')
+  set +a
+fi
+
+# Load TOTP secrets from e2e auth dir
+TOTP_SECRETS_FILE="$CEREBRO_REPO/e2e/.auth/.totp-secrets.json"
+
+case "$ROLE" in
+  viewer)
+    EMAIL="${E2E_TEST_EMAIL:?E2E_TEST_EMAIL not set}"
+    PASSWORD="${E2E_TEST_PASSWORD:?E2E_TEST_PASSWORD not set}"
+    TOTP_SECRET="${E2E_TEST_TOTP_SECRET:-}"
+    ;;
+  admin)
+    EMAIL="${E2E_ADMIN_EMAIL:?E2E_ADMIN_EMAIL not set}"
+    PASSWORD="${E2E_ADMIN_PASSWORD:?E2E_ADMIN_PASSWORD not set}"
+    TOTP_SECRET="${E2E_ADMIN_TOTP_SECRET:-}"
+    ;;
+  *) echo "Role must be viewer or admin"; exit 1 ;;
+esac
+
+# If no TOTP secret in env, try the secrets file
+if [ -z "$TOTP_SECRET" ] && [ -f "$TOTP_SECRETS_FILE" ]; then
+  TOTP_SECRET=$(python3 -c "import json; d=json.load(open('$TOTP_SECRETS_FILE')); print(d.get('$EMAIL',''))" 2>/dev/null || true)
+fi
+
+if [ -z "$TOTP_SECRET" ]; then
+  echo "ERROR: No TOTP secret found for $EMAIL"
+  echo "Run: cd $CEREBRO_REPO && npx playwright test --project=setup"
+  exit 1
+fi
+
+echo "── ab-login ──────────────────────────────────────"
+echo "  env:   $ENV"
+echo "  url:   $BASE_URL"
+echo "  role:  $ROLE"
+echo "  email: $EMAIL"
+echo "─────────────────────────────────────────────────"
+
+# ── Generate TOTP code ─────────────────────────────────────────
+generate_totp() {
+  python3 -c "
+import hmac, struct, time, base64, hashlib
+
+secret_b32 = '$TOTP_SECRET'
+key = base64.b32decode(secret_b32, casefold=True)
+counter = int(time.time()) // 30
+msg = struct.pack('>Q', counter)
+h = hmac.new(key, msg, hashlib.sha1).digest()
+offset = h[-1] & 0x0F
+code = (struct.unpack('>I', h[offset:offset+4])[0] & 0x7FFFFFFF) % 1000000
+print(f'{code:06d}')
+"
+}
+
+# ── Login flow ─────────────────────────────────────────────────
+
+# Step 1: Navigate to login
+echo "→ Opening login page..."
+$AB open "$BASE_URL/login" 2>&1 | grep -v "^$"
+
+# Step 2: Fill email and password
+echo "→ Filling credentials..."
+sleep 1
+$AB fill 'input[name="email"]' "$EMAIL" 2>&1 | grep -v "^$"
+$AB fill 'input[name="password"]' "$PASSWORD" 2>&1 | grep -v "^$"
+
+# Step 3: Click sign in
+echo "→ Clicking sign in..."
+$AB click 'button[type="submit"]' 2>&1 | grep -v "^$"
+
+# Step 4: Wait for page to settle after login submit
+echo "→ Waiting for redirect..."
+sleep 1
+$AB screenshot /tmp/ab-login-postauth.png 2>&1 | grep -v "^$"
+
+# Step 5: Always attempt MFA — it's cheap to try and fail
+# Generate code now so we're ready if needed
+CODE=$(generate_totp)
+echo "→ TOTP code ready: $CODE"
+
+# Try to find and fill the MFA input. If we're on the dashboard
+# already, this will fail silently and we continue.
+MFA_FILLED=false
+for attempt in 1 2 3; do
+  PAGE_STATE=$($AB snapshot 2>&1 || true)
+
+  if echo "$PAGE_STATE" | grep -qi "Two-factor\|verify-mfa\|setup-mfa\|Verification\|authenticator"; then
+    echo "→ MFA page detected (attempt $attempt) — entering code..."
+
+    # Regenerate code in case we're on attempt 2+ and 30s window passed
+    CODE=$(generate_totp)
+
+    # Find the input via snapshot ref
+    MFA_REF=$(echo "$PAGE_STATE" | grep -i 'textbox\|input' | grep -oE 'ref=e[0-9]+' | head -1 | sed 's/ref=//')
+    if [ -n "$MFA_REF" ]; then
+      $AB fill "@$MFA_REF" "$CODE" 2>&1 | grep -v "^$"
+      MFA_FILLED=true
+    fi
+
+    # Find and click Verify/Submit
+    VERIFY_REF=$(echo "$PAGE_STATE" | grep -i 'button.*Verify\|button.*submit' | grep -oE 'ref=e[0-9]+' | head -1 | sed 's/ref=//')
+    if [ -n "$VERIFY_REF" ]; then
+      sleep 1
+      $AB click "@$VERIFY_REF" 2>&1 | grep -v "^$"
+    fi
+
+    sleep 1
+    break
+  elif echo "$PAGE_STATE" | grep -qi "Executive\|Financial\|Cerebro\|Revenue\|dashboard"; then
+    echo "→ Already on dashboard — no MFA needed"
+    break
+  fi
+
+  sleep 1
+done
+
+if [ "$MFA_FILLED" = "true" ]; then
+  echo "→ Waiting for dashboard after MFA..."
+  sleep 1
+fi
+
+# Step 6: Verify we're on the dashboard
+echo "→ Verifying dashboard..."
+$AB screenshot /tmp/ab-login-result.png 2>&1 | grep -v "^$"
+FINAL_STATE=$($AB snapshot 2>&1 || true)
+
+if echo "$FINAL_STATE" | grep -qi "dashboard\|Executive\|Financial\|Cerebro\|Revenue"; then
+  echo ""
+  echo "✓ Login successful — on dashboard"
+  echo "  Screenshot: /tmp/ab-login-result.png"
+
+  # If extra args were passed, navigate there too
+  NAVIGATE_TO="${3:-}"
+  if [ -n "$NAVIGATE_TO" ]; then
+    echo "→ Navigating to $NAVIGATE_TO..."
+    $AB open "$BASE_URL$NAVIGATE_TO" 2>&1 | grep -v "^$"
+    sleep 1
+    $AB screenshot "/tmp/ab-login-navigate.png" 2>&1 | grep -v "^$"
+    echo "  Screenshot: /tmp/ab-login-navigate.png"
+  fi
+
+  exit 0
+else
+  echo ""
+  echo "✗ Login may have failed — check screenshot"
+  echo "  Screenshot: /tmp/ab-login-result.png"
+  exit 1
+fi

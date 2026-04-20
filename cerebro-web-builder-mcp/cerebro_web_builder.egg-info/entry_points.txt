@@ -1,0 +1,2 @@
+[console_scripts]
+cerebro-web-builder = cerebro_web_builder.cli:main

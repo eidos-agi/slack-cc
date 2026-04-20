@@ -1,0 +1,536 @@
+"""The Cerebro MCP ecosystem — encoded for progressive reveal.
+
+Level 0: Which MCP do I use? (the routing table)
+Level 1: What does this MCP do? (tool list + purpose)
+Level 2: How do these MCPs work together? (integration patterns)
+Level 3: Deep dive on a specific tool or workflow
+"""
+
+from dataclasses import dataclass, field
+
+
+@dataclass(frozen=True)
+class Tool:
+    name: str
+    summary: str
+    args: str = ""  # brief arg description
+    example: str = ""
+
+
+@dataclass(frozen=True)
+class MCP:
+    name: str
+    purpose: str
+    question: str  # the question this MCP answers
+    tools: list[Tool] = field(default_factory=list)
+    depends_on: list[str] = field(default_factory=list)
+
+
+# ── The ecosystem ─────────────────────────────────────────────
+
+CEREBRO_BUILDER = MCP(
+    name="cerebro-builder",
+    purpose="Session orchestrator — the mayor's office. Holds the mission, guardrails, and tells you what to work on next.",
+    question="What should I work on?",
+    tools=[
+        Tool("convene", "Start a work session with context loading"),
+        Tool("adjourn", "End a session, capture state"),
+        Tool("whats_next", "Get prioritized tasks from the mission"),
+        Tool("check_mission", "Validate proposed work against guardrails"),
+        Tool("get_mission", "Read the current mission document"),
+        Tool("get_topology", "Service/deploy topology for all Cerebro services"),
+        Tool("docs", "Search the builder's knowledge base", "query: str"),
+        Tool("how_to_ship", "Deployment ceremony for a repo", "repo: str"),
+        Tool("how_to_migrate", "Database migration ceremony"),
+        Tool("plan_session", "Generate a session plan from priorities"),
+        Tool("verify_milestone", "Check milestone completion criteria"),
+        Tool("which_forge", "Route a task to the right tool/MCP"),
+        Tool("loop_contract", "Get the contract for autonomous loop execution"),
+        Tool("pre_advance_checks", "Pre-flight before advancing milestones"),
+        Tool("ariadne", "Serendipity — surface relevant docs while working"),
+        Tool("ariadne_learn", "Teach Ariadne from engagement signals"),
+        Tool("improve_builder", "Suggest improvements to the builder itself"),
+        Tool("beepboop", "Quick session cycle: finish, adjourn, compress, reconvene"),
+        Tool("wrike_update", "Post session summary to Wrike"),
+    ],
+    depends_on=["cerebro-github", "ike-md", "wrike", "rhea"],
+)
+
+CEREBRO_WEB_BUILDER = MCP(
+    name="cerebro-web-builder",
+    purpose="Web deployment pipeline — encoded knowledge for shipping code, verifying deploys, and browser automation.",
+    question="How do I ship this code / did the deploy work?",
+    tools=[
+        Tool("docs", "Learn about cerebro-web-builder", "query: str"),
+        Tool("topology", "Full deploy topology: environments, branches, URLs, Railway accounts"),
+        Tool("test_accounts", "Test account credentials with TOTP secrets"),
+        Tool("login", "Automated browser login with TOTP via ab-login", "environment, role"),
+        Tool("verify_page", "Login, navigate, screenshot, check for errors", "url, environment, role"),
+        Tool("verify_sidebar", "Verify Dashboard/Preview/Tools sidebar sections", "environment, role"),
+        Tool("smoke_test", "Login once, visit all pages, screenshot each", "environment, role, pages"),
+        Tool("test_overlay", "Verify preview page overlay appears and dismisses", "page_slug, environment"),
+        Tool("ship_to_staging", "Step-by-step ceremony to ship to develop", "branch, title, closes_issue"),
+        Tool("promote_to_production", "Step-by-step ceremony to promote to main (Rhea gate)", "pr_number, branch"),
+        Tool("deploy_status", "Check Railway deployment status", "environment"),
+    ],
+    depends_on=["cerebro-github", "railguey"],
+)
+
+CEREBRO_VERIFIER = MCP(
+    name="cerebro-verifier",
+    purpose="Independent QA — the builder proposes, the verifier disposes. Checks that rendered numbers match the database.",
+    question="Are the numbers right?",
+    tools=[
+        Tool("smoke_test", "Hit every page, confirm no 500s or blanks", "environment, pages"),
+        Tool("verify_page", "Extract KPIs from a page, compare against ground truth SQL", "page_slug, environment"),
+        Tool("verify_live_badge", "Confirm LIVE badge on data-wired pages", "environment, pages"),
+        Tool("verify_against_ground_truth", "Compare rendered values against database", "page_slug, period, entity"),
+        Tool("query_ground_truth", "Run raw SQL against the warehouse", "sql, table, entity, period"),
+        Tool("bless_fixture", "Snapshot current data as golden fixture for a closed period", "name, period"),
+        Tool("compare_fixture", "Compare a blessed fixture against current data", "name, page_slug"),
+        Tool("list_fixtures", "List all blessed golden fixtures"),
+        Tool("take_evidence", "Quick screenshot + value extraction for proof", "page_slug, environment"),
+        Tool("verification_report", "Get the report for a verification run", "run_id"),
+    ],
+    depends_on=[],
+)
+
+CEREBRO_DATA_ENGINEER = MCP(
+    name="cerebro-data-engineer",
+    purpose="Warehouse operations — query gold views, check data freshness, run parity checks, diagnose pipeline issues.",
+    question="What's in the warehouse / is the pipeline healthy?",
+    tools=[
+        Tool("self_check", "Verify the MCP's own connectivity and capabilities"),
+        Tool("systems", "List all integrated vendor systems"),
+        Tool("explain_account", "Explain how a Supabase account maps to vendor systems"),
+        Tool("explain_table", "Describe a table's schema, row count, freshness"),
+        Tool("query_gold", "Query gold views with natural language", "question"),
+        Tool("run_sql", "Execute raw SQL via exec_sql RPC", "sql"),
+        Tool("row_counts", "Row counts across all bronze/silver/gold tables"),
+        Tool("freshness", "Check data freshness across all tables"),
+        Tool("parity_check", "Compare warehouse totals against a known reference", "table, reference"),
+        Tool("refresh_gold", "Trigger gold view refresh", "view_name"),
+        Tool("pipeline", "Check data-daemon pipeline status"),
+        Tool("diagnose", "Diagnose a data issue end-to-end", "symptom"),
+        Tool("data_qa", "Run data quality checks", "table"),
+    ],
+    depends_on=[],
+)
+
+CEREBRO_GITHUB = MCP(
+    name="cerebro-github",
+    purpose="Git ceremony — issues, PRs, CI, merges, changelog. Encodes the engineering workflow.",
+    question="How do I manage this PR / what's the CI status?",
+    tools=[
+        Tool("create_work", "Create a GitHub issue", "title, repo"),
+        Tool("open_pr", "Open a pull request", "repo, branch, closes, base"),
+        Tool("check_ci", "Poll CI status until terminal", "repo, pr_number"),
+        Tool("merge_pr", "Merge a PR (Rhea gate for main)", "repo, pr_number"),
+        Tool("bulk_merge", "Merge multiple PRs in sequence", "repo, pr_numbers"),
+        Tool("close_work", "Close an issue", "repo, issue_number"),
+        Tool("dashboard", "GitHub activity dashboard across all repos"),
+        Tool("health_check", "Repo health: CI, protection, stale PRs"),
+        Tool("changelog", "Generate changelog from recent commits", "repo"),
+        Tool("stale", "Find stale PRs and issues", "repo"),
+        Tool("onboard", "Onboarding guide for a repo", "repo"),
+        Tool("why", "Explain why a decision was made", "query"),
+        Tool("retro", "Session retrospective"),
+        Tool("learn", "Teach the MCP from incidents"),
+        Tool("mission_check", "Validate work against the mission"),
+        Tool("mission_status", "Current mission progress"),
+    ],
+    depends_on=["rhea"],
+)
+
+CEREBRO_MCP = MCP(
+    name="cerebro-mcp",
+    purpose="Remote MCP for claude.ai — Cloudflare Worker with OAuth, RLS, telemetry. Gives stakeholders access to warehouse data.",
+    question="How do stakeholders query data from claude.ai?",
+    tools=[
+        Tool("(remote tools)", "9 tools exposed via OAuth to claude.ai users"),
+    ],
+    depends_on=[],
+)
+
+CEREBRO_VAULT = MCP(
+    name="cerebro-vault",
+    purpose="Secrets management — get/set/list/delete secrets stored in Railway.",
+    question="Where are the credentials?",
+    tools=[
+        Tool("secret_get", "Read a secret", "key"),
+        Tool("secret_set", "Write a secret", "key, value"),
+        Tool("secret_list", "List all secret keys"),
+        Tool("secret_delete", "Delete a secret", "key"),
+    ],
+    depends_on=[],
+)
+
+# ── Registry ──────────────────────────────────────────────────
+
+ALL_MCPS = {
+    m.name: m for m in [
+        CEREBRO_BUILDER, CEREBRO_WEB_BUILDER, CEREBRO_VERIFIER,
+        CEREBRO_DATA_ENGINEER, CEREBRO_GITHUB, CEREBRO_MCP, CEREBRO_VAULT,
+    ]
+}
+
+# ── Integration patterns ──────────────────────────────────────
+
+WORKFLOWS = {
+    "upgrade_website": {
+        "summary": "Make changes to the Cerebro dashboard and ship them",
+        "mcps": ["cerebro-web-builder", "cerebro-github", "railguey", "cerebro-verifier"],
+        "flow": [
+            "1. cerebro-web-builder.topology() → learn branches, URLs, CI checks",
+            "2. Make code changes in the cerebro repo (Next.js app at ~/repos/cerebro)",
+            "3. git checkout -b feat/your-feature develop",
+            "4. Edit files, test locally with `npm run dev`",
+            "5. git push -u origin feat/your-feature",
+            "6. cerebro-web-builder.ship_to_staging(branch='feat/your-feature', title='Add new feature')",
+            "   → returns step-by-step ceremony, execute each step",
+            "7. cerebro-web-builder.login(environment='staging', role='viewer')",
+            "   → automated browser login to staging",
+            "8. cerebro-web-builder.verify_page(url='/dashboard/financial', environment='staging')",
+            "   → screenshot + error check",
+            "9. cerebro-verifier.verify_page(page_slug='financial', environment='staging')",
+            "   → KPI extraction + ground truth comparison",
+            "10. If all green: cerebro-web-builder.promote_to_production()",
+            "    → generates promotion ceremony with Rhea gate",
+        ],
+        "example": {
+            "scenario": "Add a new KPI card to the Financial page",
+            "calls": [
+                "mcp__cerebro-web-builder__topology()",
+                "# Make code changes in ~/repos/cerebro/app/dashboard/financial/page.tsx",
+                "# git checkout -b feat/new-kpi-card develop && git push",
+                "mcp__cerebro-web-builder__ship_to_staging(branch='feat/new-kpi-card', title='Add disposal cost trend KPI')",
+                "mcp__cerebro-web-builder__login(environment='staging', role='viewer')",
+                "mcp__cerebro-web-builder__verify_page(url='/dashboard/financial', environment='staging')",
+                "mcp__cerebro-verifier__verify_page(page_slug='financial', environment='staging')",
+                "mcp__cerebro-web-builder__promote_to_production()",
+            ],
+        },
+    },
+    "ship_to_staging": {
+        "summary": "Ship a feature branch to staging",
+        "mcps": ["cerebro-github", "cerebro-web-builder", "railguey"],
+        "flow": [
+            "1. cerebro-github.create_work(title='Feature name', repo='cerebro') → issue #N",
+            "2. cerebro-github.open_pr(repo='cerebro', branch='feat/x', closes=N, base='develop')",
+            "3. cerebro-github.check_ci(repo='cerebro', pr_number=M) → poll every 30s until all_green",
+            "4. cerebro-github.merge_pr(repo='cerebro', pr_number=M) → merge to develop",
+            "5. railguey.railguey_account_default(name='develop') → switch to staging account",
+            "6. railguey.railguey_service_info(workspace='~/repos/cerebro', service='cerebro') → poll until SUCCESS",
+            "7. cerebro-web-builder.smoke_test(environment='staging', role='viewer') → verify all pages load",
+        ],
+        "example": {
+            "scenario": "Ship the 'live-badges' branch to staging",
+            "calls": [
+                "mcp__cerebro-github__create_work(title='Add live badges to sidebar', repo='cerebro', status='in_progress')",
+                "mcp__cerebro-github__open_pr(repo='cerebro', branch='feat/live-badges', closes=42, base='develop', title='Add live badges to sidebar')",
+                "mcp__cerebro-github__check_ci(repo='cerebro', pr_number=61)",
+                "mcp__cerebro-github__merge_pr(repo='cerebro', pr_number=61)",
+                "mcp__railguey__railguey_account_default(name='develop')",
+                "mcp__railguey__railguey_service_info(workspace='/home/dev/repos/cerebro', service='cerebro')",
+                "mcp__cerebro-web-builder__smoke_test(environment='staging', role='viewer')",
+            ],
+        },
+    },
+    "promote_to_production": {
+        "summary": "Promote staging to production (Rhea gate required)",
+        "mcps": ["cerebro-github", "cerebro-web-builder", "railguey", "rhea"],
+        "flow": [
+            "1. cerebro-github.open_pr(repo='cerebro', branch='develop', base='main', title='Release: ...') → PR #N",
+            "2. cerebro-github.check_ci(repo='cerebro', pr_number=N) → wait for green",
+            "3. cerebro-github.merge_pr(repo='cerebro', pr_number=N) → triggers Rhea gate, returns challenge_prompt",
+            "4. rhea.rhea_quick(prompt=challenge_prompt) → returns rhea_decision",
+            "5. cerebro-github.merge_pr(repo='cerebro', pr_number=N, gate_token=token, rhea_decision=decision) → merge",
+            "6. railguey.railguey_account_default(name='production') → switch to prod account",
+            "7. railguey.railguey_service_info(...) → poll until SUCCESS",
+            "8. cerebro-web-builder.smoke_test(environment='production') → verify production",
+        ],
+        "example": {
+            "scenario": "Promote current staging to production",
+            "calls": [
+                "mcp__cerebro-github__open_pr(repo='cerebro', branch='develop', base='main', title='Release: Sage live data + badges')",
+                "mcp__cerebro-github__check_ci(repo='cerebro', pr_number=62)",
+                "mcp__cerebro-github__merge_pr(repo='cerebro', pr_number=62)",
+                "# Rhea gate fires — answer the challenge",
+                "mcp__cerebro-web-builder__smoke_test(environment='production', role='viewer')",
+            ],
+        },
+    },
+    "verify_data_correctness": {
+        "summary": "Confirm rendered dashboard numbers match the warehouse",
+        "mcps": ["cerebro-verifier", "cerebro-data-engineer"],
+        "flow": [
+            "1. cerebro-data-engineer.freshness() → check all tables are fresh",
+            "2. cerebro-verifier.verify_page(page_slug='financial', environment='staging') → extract KPIs + compare",
+            "3. cerebro-verifier.query_ground_truth(sql='SELECT SUM(revenue) FROM sage_gold.entity_pnl WHERE period = ...') → raw value",
+            "4. cerebro-verifier.take_evidence(page_slug='financial', environment='staging') → save proof",
+        ],
+        "example": {
+            "scenario": "Verify December 2025 revenue matches Alex's spreadsheet",
+            "calls": [
+                "mcp__cerebro-data-engineer__freshness()",
+                "mcp__cerebro-verifier__verify_page(page_slug='financial', environment='production')",
+                "mcp__cerebro-verifier__query_ground_truth(sql=\"SELECT entity, revenue FROM sage_gold.entity_pnl WHERE period = '2025-12'\")",
+                "mcp__cerebro-verifier__take_evidence(page_slug='financial', environment='production', label='Dec 2025 revenue verification')",
+            ],
+        },
+    },
+    "bless_closed_period": {
+        "summary": "Snapshot a closed accounting period as golden fixture",
+        "mcps": ["cerebro-verifier", "cerebro-data-engineer"],
+        "flow": [
+            "1. cerebro-data-engineer.parity_check(table='sage_gold.entity_pnl', reference='Alex spreadsheet') → confirm match",
+            "2. cerebro-verifier.bless_fixture(name='dec_2025', period='2025-12') → snapshot all sage_gold tables",
+            "3. cerebro-verifier.compare_fixture(name='dec_2025') → verify fixture matches live (should be 0 diffs)",
+        ],
+        "example": {
+            "scenario": "Bless December 2025 after Alex confirms numbers",
+            "calls": [
+                "mcp__cerebro-data-engineer__parity_check(table='sage_gold.entity_pnl', reference='Greenmark_Metrics Dec 2025')",
+                "mcp__cerebro-verifier__bless_fixture(name='dec_2025', period='2025-12', source='sage_gold')",
+                "mcp__cerebro-verifier__compare_fixture(name='dec_2025')",
+            ],
+        },
+    },
+    "diagnose_data_issue": {
+        "summary": "End-to-end diagnosis of a data problem",
+        "mcps": ["cerebro-data-engineer", "cerebro-verifier"],
+        "flow": [
+            "1. cerebro-data-engineer.diagnose(symptom='Revenue showing $0 on financial page') → trace the issue",
+            "2. cerebro-data-engineer.freshness() → check pipeline lag",
+            "3. cerebro-data-engineer.row_counts() → check for missing data in bronze/silver/gold",
+            "4. cerebro-data-engineer.run_sql(sql='SELECT ...') → investigate specific tables",
+            "5. cerebro-verifier.verify_page(page_slug='financial') → see what's actually rendered",
+        ],
+        "example": {
+            "scenario": "Financial page showing stale data",
+            "calls": [
+                "mcp__cerebro-data-engineer__diagnose(symptom='Financial page revenue looks stale - still showing last month')",
+                "mcp__cerebro-data-engineer__freshness()",
+                "mcp__cerebro-data-engineer__run_sql(sql=\"SELECT MAX(period) FROM sage_gold.entity_pnl\")",
+                "mcp__cerebro-data-engineer__refresh_gold(view_name='entity_pnl')",
+                "mcp__cerebro-verifier__verify_page(page_slug='financial', environment='staging')",
+            ],
+        },
+    },
+    "fleetio_integration": {
+        "summary": "Fleetio fleet data — current state, gaps, and next steps",
+        "mcps": ["cerebro-data-engineer", "cerebro-verifier"],
+        "flow": [
+            "CURRENT STATE (session 34, 2026-04-19):",
+            "- Phase 0 (API probe): COMPLETE — 53 endpoints tested, full admin access",
+            "- Phase 1 (Warp Speed Excel): COMPLETE — 28 bronze tables, 29,497 records, 14-sheet workbook",
+            "- 40-check data quality audit: COMPLETE — 3 rounds, Rhea-designed",
+            "- Rate limiter: ADDED — sliding window 200 req/60s, 429/503 retry with backoff",
+            "- Credentials: VAULTED — SECRET_FLEETIO_API_KEY + SECRET_FLEETIO_ACCOUNT_TOKEN",
+            "",
+            "KNOWN GAPS (data we have but haven't used):",
+            "- Fuel-to-meter linkage: 5,408 entries have embedded odometer → real MPG per fill-up",
+            "- WO line items: 579 task-level cost breakdowns → should be own silver table",
+            "- Issue→WO linkage: 649 issues with linked work orders → traceability chain",
+            "- Tires: 102 records with tread depth/pressure → not in silver/gold/Excel",
+            "- Service reminders: 75 PM schedules → PM compliance analysis",
+            "- Inspection schedules: 265 records → which vehicles SHOULD get inspected",
+            "- Inventory journal: 393 parts movements → parts-without-WO analysis",
+            "- VMRS codes: 59 industry-standard repair codes → join to WO line items",
+            "- Vehicle renewals: 50 registration/insurance/permit expirations",
+            "",
+            "NOT YET EXTRACTED:",
+            "- /assets endpoint: richer vehicle specs (may have GVWR, tank capacity)",
+            "- /documents: 1,021 files (only got 100 due to pagination bug)",
+            "- /service_tasks: ~600 task catalog",
+            "- /images: 31 photos",
+            "",
+            "KEY FINDINGS FOR ROBERT:",
+            "- Memphis fleet costs 5x more per vehicle in R&M ($4,312 vs NTX $877)",
+            "- Vehicle 3004 has 7 hydraulic leak repairs (recurring failure)",
+            "- Vehicle 4502 has $180K fuel — possible depot allocation code",
+            "- 19 fuel entries at $52+/gal — data entry errors ($32,860 impact)",
+            "- Memphis has zero DVIR inspections in Fleetio (data gap or different system?)",
+            "- Benford's Law anomaly: digit 5 at 25.8% vs expected 7.9%",
+            "- 96% of maintenance is in-house ($151K of $160K)",
+            "",
+            "NEXT (Phase 2):",
+            "1. Flatten nested data (WO line items, fuel-meter linkage, issue-WO links)",
+            "2. Compute real MPG from consecutive fill-up odometer readings",
+            "3. Extract /assets for vehicle specs (GVWR, tank capacity)",
+            "4. Fix documents pagination (got 100 of 1,021)",
+            "5. Build FleetioConnector in data-daemon for production pipeline",
+            "6. Wire Maintenance dashboard page to fleetio_gold views",
+        ],
+        "example": {
+            "scenario": "Continue Fleetio integration from where session 34 left off",
+            "calls": [
+                "mcp__cerebro-docs__workflow(name='fleetio_integration')  # read current state",
+                "# Fix fuel-meter MPG computation in silver transforms",
+                "# Flatten WO line items to silver_fleetio_wo_line_items",
+                "# Extract /assets for GVWR and tank capacity",
+                "mcp__cerebro-data-engineer__freshness()  # check if data is stale",
+                "mcp__cerebro-verifier__verify_page(page_slug='maintenance')  # verify dashboard",
+            ],
+        },
+    },
+    "vendor_api_onboarding": {
+        "summary": "New vendor API key arrives — probe, vault, prototype, pipeline",
+        "mcps": ["cerebro-vault", "cerebro-data-engineer", "cerebro-web-builder"],
+        "flow": [
+            "Phase 0 — API Key Probe:",
+            "1. curl the vendor's /me or /accounts endpoint to verify the key works",
+            "2. Hit every documented endpoint — record HTTP status, row count, sample fields",
+            "3. Compare actual schemas against existing research in infra/",
+            "4. Note corrections (field names, types, nesting, pagination style)",
+            "5. Save results to reference/<vendor>-api-probe.md",
+            "6. cerebro-vault.secret_set(name='<VENDOR>_API_KEY', value=key) — vault the credentials",
+            "7. cerebro-vault.secret_set(name='<VENDOR>_ACCOUNT_TOKEN', value=token) — if applicable",
+            "",
+            "Phase 1 — Warp Speed Excel (prototype):",
+            "8. Write connection-forge spec: cerebro-warp-speed-excel/specs/<vendor>.yaml",
+            "9. Run elt-forge to generate extractor + SQLite DDL",
+            "10. Execute pipeline with ./scripts/warp.sh — land data in SQLite",
+            "11. Generate Excel workbook for stakeholder review",
+            "12. Stakeholder validates data makes sense",
+            "",
+            "Phase 2 — Production Pipeline:",
+            "13. Build data-daemon connector using proven schemas from Phase 1",
+            "14. Land in bronze tables in Supabase",
+            "15. Build silver/gold views",
+            "16. Wire into dashboard pages",
+            "17. cerebro-verifier.verify_page — confirm data renders correctly",
+        ],
+        "example": {
+            "scenario": "Fleetio API key arrives from Robert Heath (2026-04-19)",
+            "calls": [
+                "# Phase 0: Probe",
+                "curl -H 'Authorization: Token <key>' -H 'Account-Token: <token>' https://secure.fleetio.com/api/v1/vehicles",
+                "# → 200, 55 vehicles, full admin access, 3 groups (Dallas/Fort Worth/Memphis)",
+                "# Save to reference/fleetio-api-probe.md",
+                "mcp__cerebro-vault__secret_set(name='FLEETIO_API_KEY', value='<key>')",
+                "mcp__cerebro-vault__secret_set(name='FLEETIO_ACCOUNT_TOKEN', value='<token>')",
+                "",
+                "# Phase 1: Warp Speed Excel",
+                "# Write specs/fleetio.yaml, run elt-forge, ./scripts/warp.sh",
+                "# Generate fleet-operations.xlsx for Robert",
+                "",
+                "# Phase 2: data-daemon",
+                "# FleetioConnector in data-daemon, bronze tables, gold views",
+                "mcp__cerebro-data-engineer__freshness()",
+                "mcp__cerebro-verifier__verify_page(page_slug='maintenance', environment='staging')",
+            ],
+        },
+    },
+    "session_lifecycle": {
+        "summary": "Start and end a work session",
+        "mcps": ["cerebro-builder"],
+        "flow": [
+            "1. cerebro-builder.convene() → load mission, context, prioritized tasks",
+            "2. cerebro-builder.whats_next() → get the next task to work on",
+            "3. (do work using other MCPs — use cerebro-docs.route() if unsure which)",
+            "4. cerebro-builder.adjourn() → capture outcomes, update mission state",
+        ],
+        "example": {
+            "scenario": "Normal work session",
+            "calls": [
+                "mcp__cerebro-builder__convene()",
+                "mcp__cerebro-builder__whats_next()",
+                "# ... work happens ...",
+                "mcp__cerebro-builder__adjourn()",
+            ],
+        },
+    },
+}
+
+# ── Routing table ─────────────────────────────────────────────
+
+ROUTING_TABLE = {
+    "ship": "cerebro-web-builder",
+    "deploy": "cerebro-web-builder",
+    "staging": "cerebro-web-builder",
+    "production": "cerebro-web-builder",
+    "promote": "cerebro-web-builder",
+    "login": "cerebro-web-builder",
+    "browser": "cerebro-web-builder",
+    "smoke": "cerebro-web-builder",
+    "verify page": "cerebro-web-builder",
+    "numbers right": "cerebro-verifier",
+    "data correct": "cerebro-verifier",
+    "kpi": "cerebro-verifier",
+    "ground truth": "cerebro-verifier",
+    "fixture": "cerebro-verifier",
+    "evidence": "cerebro-verifier",
+    "badge": "cerebro-verifier",
+    "warehouse": "cerebro-data-engineer",
+    "query": "cerebro-data-engineer",
+    "freshness": "cerebro-data-engineer",
+    "pipeline": "cerebro-data-engineer",
+    "parity": "cerebro-data-engineer",
+    "row count": "cerebro-data-engineer",
+    "gold view": "cerebro-data-engineer",
+    "bronze": "cerebro-data-engineer",
+    "silver": "cerebro-data-engineer",
+    "pr": "cerebro-github",
+    "issue": "cerebro-github",
+    "ci": "cerebro-github",
+    "merge": "cerebro-github",
+    "changelog": "cerebro-github",
+    "mission": "cerebro-builder",
+    "session": "cerebro-builder",
+    "convene": "cerebro-builder",
+    "what next": "cerebro-builder",
+    "guardrail": "cerebro-builder",
+    "secret": "cerebro-vault",
+    "credential": "cerebro-vault",
+    "password": "cerebro-vault",
+    "revenue": "cerebro-verifier",
+    "correct": "cerebro-verifier",
+    "match": "cerebro-verifier",
+    "compare": "cerebro-verifier",
+    "render": "cerebro-verifier",
+    "display": "cerebro-verifier",
+    "number": "cerebro-verifier",
+    "amount": "cerebro-verifier",
+    "table": "cerebro-data-engineer",
+    "schema": "cerebro-data-engineer",
+    "sql": "cerebro-data-engineer",
+    "extract": "cerebro-data-engineer",
+    "sage": "cerebro-data-engineer",
+    "navusoft": "cerebro-data-engineer",
+    "fleetio": "cerebro-data-engineer",
+    "branch": "cerebro-web-builder",
+    "build": "cerebro-web-builder",
+    "release": "cerebro-web-builder",
+    "railway": "cerebro-web-builder",
+    "commit": "cerebro-github",
+    "review": "cerebro-github",
+    "approve": "cerebro-github",
+    # Common task phrases
+    "upgrade": "cerebro-web-builder",
+    "website": "cerebro-web-builder",
+    "feature": "cerebro-web-builder",
+    "page": "cerebro-web-builder",
+    "dashboard": "cerebro-web-builder",
+    "sidebar": "cerebro-web-builder",
+    "ui": "cerebro-web-builder",
+    "frontend": "cerebro-web-builder",
+    "next.js": "cerebro-web-builder",
+    "component": "cerebro-web-builder",
+    "card": "cerebro-web-builder",
+    "chart": "cerebro-web-builder",
+    # Data phrases
+    "stale": "cerebro-data-engineer",
+    "refresh": "cerebro-data-engineer",
+    "connector": "cerebro-data-engineer",
+    "vendor": "cerebro-data-engineer",
+    "api key": "cerebro-data-engineer",
+    "import": "cerebro-data-engineer",
+    "ingest": "cerebro-data-engineer",
+    # Verification phrases
+    "screenshot": "cerebro-verifier",
+    "proof": "cerebro-verifier",
+    "qa": "cerebro-verifier",
+    "regression": "cerebro-verifier",
+    "golden": "cerebro-verifier",
+}

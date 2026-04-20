@@ -6,7 +6,28 @@ The builder proposes. The verifier disposes.
 import re
 from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP("cerebro-verifier")
+mcp = FastMCP(
+    "cerebro-verifier",
+    instructions=(
+        "cerebro-verifier is the independent QA for the Cerebro dashboard. "
+        "The builder proposes, the verifier disposes. "
+        "Use it when you need to check DATA CORRECTNESS — are the numbers right? "
+        "Use `verify_page` for KPI extraction + ground truth SQL comparison, "
+        "`smoke_test` for full page sweep, `verify_live_badge` for LIVE/MOCK status, "
+        "`query_ground_truth` for raw warehouse queries, "
+        "`bless_fixture`/`compare_fixture` for golden fixture management, "
+        "`take_evidence` for proof screenshots."
+        "\n\n"
+        "WHEN TO USE WHICH MCP:\n"
+        "- cerebro-verifier (this): data correctness — 'are the numbers right?' "
+        "Ground truth SQL, golden fixtures, KPI extraction, evidence trails\n"
+        "- cerebro-web-builder: shipping code, deploy topology, 'does the page load?'\n"
+        "- cerebro-builder: session orchestration, mission, what to work on next\n"
+        "- cerebro-data-engineer: warehouse queries, freshness, parity, pipeline diagnostics\n"
+        "- cerebro-github: git ceremony — issues, PRs, CI, merges\n\n"
+        "For full ecosystem documentation, use cerebro-docs."
+    ),
+)
 
 
 # ── Smoke & Page Verification ───────────────────────────────────
