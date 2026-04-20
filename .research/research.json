@@ -1,0 +1,35 @@
+{
+  "id": "39622d8d-5c6d-4b44-8371-cd3f5ba79d05",
+  "version": "0.1.0",
+  "projectName": "Environment Isolation \u2014 Two Databases, Two Data-Daemons",
+  "created": "2026-04-20",
+  "phase": "decided",
+  "transitions": [
+    {
+      "phase": "research",
+      "date": "2026-04-20"
+    },
+    {
+      "phase": "locked",
+      "date": "2026-04-20",
+      "note": "Criteria weights frozen"
+    },
+    {
+      "phase": "reviewed",
+      "date": "2026-04-20",
+      "note": "Peer review by Rhea (3-model Socratic debate)"
+    },
+    {
+      "phase": "scored",
+      "date": "2026-04-20",
+      "note": "Scored candidate: staging-branch"
+    },
+    {
+      "phase": "decided",
+      "date": "2026-04-20",
+      "note": "Approach B: Staging branch pattern \u2014 develop deploys to develop Railway (staging), main deploys to p"
+    }
+  ],
+  "question": "How should we properly isolate develop and production environments for data-daemon, including separate databases, deploy pipelines, and migration workflows, using our existing toolkit (Railway, Supabase, GitHub Actions, railguey, cerebro-migrations)?",
+  "context": "Greenmark Cerebro has two Supabase instances: production (wwmcgtyngnziepeynccz) and dev (izmuckuepryqneebwwol). Both exist but currently both Railway environments (develop + production) point to the production database. data-daemon deploys to production via GitHub Actions on push to develop branch. There is no automated deploy to the develop Railway environment. Session 34 proved the danger: setting develop's DATABASE_URL to production caused develop workers to steal and fail production extraction jobs. The team is one engineer (Daniel) plus AI agents. The toolkit includes: railguey (Railway MCP with multi-account support for develop/production), cerebro-migrations (Supabase CLI for DDL), cerebro-builder (session orchestration), cerebro-docs (deployment workflows). Guardrail GR-ENV-001 now requires environment isolation. This research should produce the concrete wiring plan."
+}
