@@ -8,10 +8,14 @@ from __future__ import annotations
 
 from cerebro_deploy.config import ServiceConfig, resolve_service
 from cerebro_deploy.runner import Step, StepResult
-from cerebro_deploy.steps.common import (
-    load_topology, load_incidents, check_environment,
-    check_git_clean, check_git_branch, check_git_sync,
-    run_lint, check_ci, health_check,
+from cerebro_deploy.steps.preflight import (
+    step_read_topology, step_git_status, step_git_branch,
+    step_git_remote, step_run_lint, step_ci_status,
+    step_check_incidents, step_verify_credentials,
+)
+from cerebro_deploy.steps.deploy import step_verify_health
+from cerebro_deploy.steps.postdeploy import (
+    step_update_topology_file, step_log_incidents, step_done,
 )
 
 
@@ -20,78 +24,78 @@ def build_config(environment: str) -> ServiceConfig:
 
 
 def _run_type_check(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 7: run TypeScript type check (Next.js uses tsc, not pytest)."""
+    """Run TypeScript type check (Next.js uses tsc, not pytest)."""
     if ctx.get("skip_tests"):
-        return StepResult(True, "SKIPPED (--skip-tests flag)")
-    return StepResult(True, "Type check — delegated to agent (npm run type-check)")
+        return StepResult(passed=True, detail="SKIPPED (--skip-tests flag)")
+    return StepResult(passed=True, detail="Type check — delegated to agent (npm run type-check)")
 
 
 def _run_build(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 8: run next build locally to catch build errors."""
+    """Run next build locally to catch build errors."""
     if ctx.get("skip_tests"):
-        return StepResult(True, "SKIPPED (--skip-tests flag)")
-    return StepResult(True, "Build check — delegated to agent (npm run build)")
+        return StepResult(passed=True, detail="SKIPPED (--skip-tests flag)")
+    return StepResult(passed=True, detail="Build check — delegated to agent (npm run build)")
 
 
 def _trigger_deploy(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 13: trigger Railway deploy (push to branch or GH Actions)."""
-    return StepResult(True, "Deploy trigger — delegated to agent")
+    """Trigger Railway deploy (push to branch or GH Actions)."""
+    if ctx.get("dry_run"):
+        return StepResult(passed=True, detail="DRY RUN — would trigger deploy")
+    return StepResult(passed=True, detail="Deploy trigger — delegated to agent (railguey_deploy)")
 
 
 def _wait_railway(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 14: wait for Railway deployment."""
-    return StepResult(True, "Railway deployment wait — delegated to agent (railguey_service_info)")
+    """Wait for Railway deployment to succeed."""
+    if ctx.get("dry_run"):
+        return StepResult(passed=True, detail="DRY RUN")
+    return StepResult(passed=True, detail="Railway deployment wait — delegated to agent (railguey_service_info)")
 
 
 def _verify_key_pages(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 16: browser-verify key dashboard pages load."""
+    """Browser-verify key dashboard pages load."""
+    if ctx.get("dry_run"):
+        return StepResult(passed=True, detail="DRY RUN")
     pages = ["/", "/financial", "/executive", "/fleet"]
-    return StepResult(True, f"Page verification — delegated to agent (verify_page on {len(pages)} pages)")
+    return StepResult(passed=True, detail=f"Page verification — delegated to agent (verify_page on {len(pages)} pages)")
 
 
 def _check_live_badges(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 17: verify LIVE badges appear (not MOCK)."""
-    return StepResult(True, "LIVE badge check — delegated to agent (verify_live_badge)")
+    """Verify LIVE badges appear (not MOCK)."""
+    if ctx.get("dry_run"):
+        return StepResult(passed=True, detail="DRY RUN")
+    return StepResult(passed=True, detail="LIVE badge check — delegated to agent (verify_live_badge)")
 
 
 def _check_api_routes(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 18: verify API routes respond."""
-    return StepResult(True, "API route check — delegated to agent")
-
-
-def _log_result(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 20: log deployment result."""
-    return StepResult(True, "Result logged")
-
-
-def _health_recheck(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 21: final health re-check."""
-    return health_check(config, ctx)
+    """Verify API routes respond."""
+    if ctx.get("dry_run"):
+        return StepResult(passed=True, detail="DRY RUN")
+    return StepResult(passed=True, detail="API route check — delegated to agent")
 
 
 def build_steps(config: ServiceConfig, ctx: dict) -> list[Step]:
     return [
-        # PHASE 1: IDENTITY
-        Step(1,  "PHASE 1: IDENTITY",    "Load topology",            load_topology),
-        Step(2,  "PHASE 1: IDENTITY",    "Load incidents",           load_incidents),
-        Step(3,  "PHASE 1: IDENTITY",    "Check environment",        check_environment),
-        Step(4,  "PHASE 1: IDENTITY",    "Check git clean",          check_git_clean),
-        Step(5,  "PHASE 1: IDENTITY",    "Check git branch",         check_git_branch),
-        Step(6,  "PHASE 1: IDENTITY",    "Check git sync",           check_git_sync),
-        # PHASE 2: READINESS
-        Step(7,  "PHASE 2: READINESS",   "Type check",              _run_type_check),
-        Step(8,  "PHASE 2: READINESS",   "Build check",             _run_build),
-        Step(9,  "PHASE 2: READINESS",   "Run lint",                run_lint),
-        Step(10, "PHASE 2: READINESS",   "Check CI",                check_ci),
-        # PHASE 3: DEPLOY
-        Step(11, "PHASE 3: DEPLOY",      "Trigger deploy",          _trigger_deploy),
-        Step(12, "PHASE 3: DEPLOY",      "Wait for Railway deploy", _wait_railway),
-        Step(13, "PHASE 3: DEPLOY",      "Health check",            health_check),
-        # PHASE 4: VERIFY
-        Step(14, "PHASE 4: VERIFY",      "Verify key pages",        _verify_key_pages),
-        Step(15, "PHASE 4: VERIFY",      "Check LIVE badges",       _check_live_badges),
-        Step(16, "PHASE 4: VERIFY",      "Check API routes",        _check_api_routes),
-        # PHASE 5: POST-DEPLOY
-        Step(17, "PHASE 5: POST-DEPLOY", "Log result",              _log_result),
-        Step(18, "PHASE 5: POST-DEPLOY", "Health re-check",         _health_recheck),
+        # PHASE 1: PRE-FLIGHT (reuses existing data-daemon preflight steps)
+        Step(1,  "Phase 1: Pre-flight",  "Read topology",            step_read_topology),
+        Step(2,  "Phase 1: Pre-flight",  "Check git status (clean)", step_git_status),
+        Step(3,  "Phase 1: Pre-flight",  "Check git branch",         step_git_branch),
+        Step(4,  "Phase 1: Pre-flight",  "Check remote sync",        step_git_remote),
+        Step(5,  "Phase 1: Pre-flight",  "Type check",               _run_type_check),
+        Step(6,  "Phase 1: Pre-flight",  "Build check",              _run_build),
+        Step(7,  "Phase 1: Pre-flight",  "Run lint",                 step_run_lint),
+        Step(8,  "Phase 1: Pre-flight",  "Check CI status",          step_ci_status),
+        Step(9,  "Phase 1: Pre-flight",  "Check incidents",          step_check_incidents),
+        Step(10, "Phase 1: Pre-flight",  "Verify credentials",       step_verify_credentials),
+        # PHASE 2: DEPLOY
+        Step(11, "Phase 2: Deploy",      "Trigger deploy",           _trigger_deploy),
+        Step(12, "Phase 2: Deploy",      "Wait for Railway deploy",  _wait_railway),
+        Step(13, "Phase 2: Deploy",      "Verify health endpoint",   step_verify_health),
+        # PHASE 3: VERIFY
+        Step(14, "Phase 3: Verify",      "Verify key pages",         _verify_key_pages),
+        Step(15, "Phase 3: Verify",      "Check LIVE badges",        _check_live_badges),
+        Step(16, "Phase 3: Verify",      "Check API routes",         _check_api_routes),
+        # PHASE 4: POST-DEPLOY
+        Step(17, "Phase 4: Post-deploy", "Update topology",          step_update_topology_file),
+        Step(18, "Phase 4: Post-deploy", "Log incidents",            step_log_incidents),
+        Step(19, "Phase 4: Post-deploy", "Done",                     step_done),
     ]

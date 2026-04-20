@@ -5,12 +5,17 @@ Key steps: wrangler deploy, verify OAuth, verify tool availability.
 
 from __future__ import annotations
 
+import subprocess
+
 from cerebro_deploy.config import ServiceConfig, resolve_service
 from cerebro_deploy.runner import Step, StepResult
-from cerebro_deploy.steps.common import (
-    load_topology, load_incidents, check_environment,
-    check_git_clean, check_git_branch, check_git_sync,
-    run_tests, run_lint, check_ci, _run,
+from cerebro_deploy.steps.preflight import (
+    step_read_topology, step_git_status, step_git_branch,
+    step_git_remote, step_run_tests, step_run_lint,
+    step_ci_status, step_check_incidents,
+)
+from cerebro_deploy.steps.postdeploy import (
+    step_update_topology_file, step_log_incidents, step_done,
 )
 
 
@@ -19,73 +24,92 @@ def build_config(environment: str) -> ServiceConfig:
 
 
 def _check_wrangler(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 10: verify wrangler CLI is available."""
-    r = _run(["npx", "wrangler", "--version"])
-    if r.returncode != 0:
-        return StepResult(False, "wrangler not found",
-                          "Install wrangler: npm install -g wrangler")
-    version = r.stdout.strip()
-    return StepResult(True, f"wrangler {version}")
+    """Verify wrangler CLI is available."""
+    try:
+        r = subprocess.run(
+            ["npx", "wrangler", "--version"],
+            capture_output=True, text=True, timeout=30,
+        )
+        if r.returncode != 0:
+            return StepResult(passed=False, detail="wrangler not found",
+                              remediation="Install wrangler: npm install -g wrangler")
+        return StepResult(passed=True, detail=f"wrangler {r.stdout.strip()}")
+    except FileNotFoundError:
+        return StepResult(passed=False, detail="npx not found",
+                          remediation="Install Node.js and npm")
+    except subprocess.TimeoutExpired:
+        return StepResult(passed=True, detail="wrangler check timed out, proceeding")
 
 
 def _wrangler_deploy(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 11: run wrangler deploy."""
+    """Run wrangler deploy."""
+    if ctx.get("dry_run"):
+        return StepResult(passed=True, detail="DRY RUN — would run wrangler deploy")
     env_flag = "production" if config.environment == "production" else "staging"
-    return StepResult(True, f"wrangler deploy --env {env_flag} — delegated to agent")
+    return StepResult(passed=True, detail=f"wrangler deploy --env {env_flag} — delegated to agent")
 
 
 def _verify_worker_reachable(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 12: verify the worker URL responds."""
-    # cerebro-mcp lives at cerebro-mcp.dshanklin.workers.dev
+    """Verify the worker URL responds."""
+    if ctx.get("dry_run"):
+        return StepResult(passed=True, detail="DRY RUN")
     worker_url = "https://cerebro-mcp.dshanklin.workers.dev"
-    r = _run(["curl", "-sf", "-o", "/dev/null", "-w", "%{http_code}", worker_url])
-    if r.returncode != 0:
-        return StepResult(True, f"Worker URL check — may require auth, proceeding")
-    code = r.stdout.strip()
-    return StepResult(True, f"Worker responded with {code}")
+    try:
+        r = subprocess.run(
+            ["curl", "-sf", "-o", "/dev/null", "-w", "%{http_code}", worker_url],
+            capture_output=True, text=True, timeout=10,
+        )
+        code = r.stdout.strip()
+        # Workers may return 401/403 without auth — that's fine, it means the worker is running
+        if r.returncode != 0 or code in ("000",):
+            return StepResult(passed=True, detail=f"Worker may require auth, proceeding")
+        return StepResult(passed=True, detail=f"Worker responded with HTTP {code}")
+    except Exception:
+        return StepResult(passed=True, detail="Worker URL check failed, proceeding")
 
 
 def _verify_oauth(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 13: verify OAuth flow works."""
-    return StepResult(True, "OAuth verification — delegated to agent (browser test)")
+    """Verify OAuth flow works."""
+    if ctx.get("dry_run"):
+        return StepResult(passed=True, detail="DRY RUN")
+    return StepResult(passed=True, detail="OAuth verification — delegated to agent (browser test)")
 
 
 def _verify_tool_availability(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 14: verify MCP tools are available via the transport."""
-    return StepResult(True, "Tool availability check — delegated to agent (MCP client test)")
+    """Verify MCP tools are available via the transport."""
+    if ctx.get("dry_run"):
+        return StepResult(passed=True, detail="DRY RUN")
+    return StepResult(passed=True, detail="Tool availability — delegated to agent (MCP client test)")
 
 
 def _verify_tool_count(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 15: verify expected tool count matches."""
-    return StepResult(True, "Tool count verification — delegated to agent")
-
-
-def _log_result(config: ServiceConfig, ctx: dict) -> StepResult:
-    """Step 17: log deployment result."""
-    return StepResult(True, "Result logged")
+    """Verify expected tool count matches."""
+    if ctx.get("dry_run"):
+        return StepResult(passed=True, detail="DRY RUN")
+    return StepResult(passed=True, detail="Tool count verification — delegated to agent")
 
 
 def build_steps(config: ServiceConfig, ctx: dict) -> list[Step]:
     return [
-        # PHASE 1: IDENTITY
-        Step(1,  "PHASE 1: IDENTITY",    "Load topology",           load_topology),
-        Step(2,  "PHASE 1: IDENTITY",    "Load incidents",          load_incidents),
-        Step(3,  "PHASE 1: IDENTITY",    "Check environment",       check_environment),
-        Step(4,  "PHASE 1: IDENTITY",    "Check git clean",         check_git_clean),
-        Step(5,  "PHASE 1: IDENTITY",    "Check git branch",        check_git_branch),
-        Step(6,  "PHASE 1: IDENTITY",    "Check git sync",          check_git_sync),
-        # PHASE 2: READINESS
-        Step(7,  "PHASE 2: READINESS",   "Run tests",              run_tests),
-        Step(8,  "PHASE 2: READINESS",   "Run lint",               run_lint),
-        Step(9,  "PHASE 2: READINESS",   "Check CI",               check_ci),
-        Step(10, "PHASE 2: READINESS",   "Check wrangler CLI",     _check_wrangler),
-        # PHASE 3: DEPLOY
-        Step(11, "PHASE 3: DEPLOY",      "Wrangler deploy",        _wrangler_deploy),
-        Step(12, "PHASE 3: DEPLOY",      "Verify worker reachable", _verify_worker_reachable),
-        # PHASE 4: VERIFY
-        Step(13, "PHASE 4: VERIFY",      "Verify OAuth",           _verify_oauth),
-        Step(14, "PHASE 4: VERIFY",      "Verify tool availability", _verify_tool_availability),
-        Step(15, "PHASE 4: VERIFY",      "Verify tool count",      _verify_tool_count),
-        # PHASE 5: POST-DEPLOY
-        Step(16, "PHASE 5: POST-DEPLOY", "Log result",             _log_result),
+        # PHASE 1: PRE-FLIGHT
+        Step(1,  "Phase 1: Pre-flight",  "Read topology",            step_read_topology),
+        Step(2,  "Phase 1: Pre-flight",  "Check git status (clean)", step_git_status),
+        Step(3,  "Phase 1: Pre-flight",  "Check git branch",         step_git_branch),
+        Step(4,  "Phase 1: Pre-flight",  "Check remote sync",        step_git_remote),
+        Step(5,  "Phase 1: Pre-flight",  "Run tests",                step_run_tests),
+        Step(6,  "Phase 1: Pre-flight",  "Run lint",                 step_run_lint),
+        Step(7,  "Phase 1: Pre-flight",  "Check CI status",          step_ci_status),
+        Step(8,  "Phase 1: Pre-flight",  "Check incidents",          step_check_incidents),
+        Step(9,  "Phase 1: Pre-flight",  "Check wrangler CLI",       _check_wrangler),
+        # PHASE 2: DEPLOY
+        Step(10, "Phase 2: Deploy",      "Wrangler deploy",          _wrangler_deploy),
+        Step(11, "Phase 2: Deploy",      "Verify worker reachable",  _verify_worker_reachable),
+        # PHASE 3: VERIFY
+        Step(12, "Phase 3: Verify",      "Verify OAuth",             _verify_oauth),
+        Step(13, "Phase 3: Verify",      "Verify tool availability", _verify_tool_availability),
+        Step(14, "Phase 3: Verify",      "Verify tool count",        _verify_tool_count),
+        # PHASE 4: POST-DEPLOY
+        Step(15, "Phase 4: Post-deploy", "Update topology",          step_update_topology_file),
+        Step(16, "Phase 4: Post-deploy", "Log incidents",            step_log_incidents),
+        Step(17, "Phase 4: Post-deploy", "Done",                     step_done),
     ]

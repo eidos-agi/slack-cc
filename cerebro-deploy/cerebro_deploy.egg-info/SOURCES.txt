@@ -9,7 +9,6 @@ cerebro_deploy.egg-info/dependency_links.txt
 cerebro_deploy.egg-info/entry_points.txt
 cerebro_deploy.egg-info/top_level.txt
 cerebro_deploy/steps/__init__.py
-cerebro_deploy/steps/common.py
 cerebro_deploy/steps/deploy.py
 cerebro_deploy/steps/postdeploy.py
 cerebro_deploy/steps/preflight.py
