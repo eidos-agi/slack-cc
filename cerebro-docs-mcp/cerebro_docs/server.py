@@ -149,6 +149,41 @@ def architecture() -> dict:
 
 
 @mcp.tool()
+def incidents(search: str = "") -> dict:
+    """Incident log — problems that occurred and how they were fixed.
+
+    Check this before debugging. The same problem may have happened before.
+
+    Args:
+        search: Optional keyword to filter incidents (e.g. "cache", "entity", "vault")
+    """
+    from .knowledge import INCIDENTS
+
+    if not search.strip():
+        return {
+            "count": len(INCIDENTS),
+            "incidents": INCIDENTS,
+            "hint": "Use incidents('keyword') to filter by symptom, root cause, fix, or prevention.",
+        }
+
+    keyword = search.lower()
+    matched = [
+        inc for inc in INCIDENTS
+        if any(
+            keyword in str(v).lower()
+            for v in inc.values()
+        )
+    ]
+
+    return {
+        "search": search,
+        "count": len(matched),
+        "incidents": matched,
+        "hint": f"Showing {len(matched)} of {len(INCIDENTS)} incidents matching '{search}'.",
+    }
+
+
+@mcp.tool()
 def route(task: str) -> dict:
     """Find the right MCP and tool for a task.
 
