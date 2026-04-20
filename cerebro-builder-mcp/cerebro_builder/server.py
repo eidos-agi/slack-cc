@@ -42,7 +42,16 @@ mcp = FastMCP(
         "- cerebro-data-engineer: warehouse operations — query gold views, check freshness, "
         "run parity checks, diagnose pipeline issues\n"
         "- cerebro-github: git ceremony — issues, PRs, CI, merges, changelog\n\n"
-        "For full ecosystem documentation, use cerebro-docs."
+        "For full ecosystem documentation, use cerebro-docs.\n\n"
+        "MANDATORY BEFORE DEPLOY OPERATIONS:\n"
+        "Before merging a PR, applying a migration, deploying a service, or triggering "
+        "an extraction, you MUST call cerebro-docs.workflow() to load the deployment "
+        "procedure. Specifically:\n"
+        "- Before merging to data-daemon: workflow('deploy_data_daemon')\n"
+        "- Before applying any migration: workflow('apply_migration')\n"
+        "- Before shipping cerebro changes: workflow('ship_to_staging') or workflow('promote_to_production')\n"
+        "- Before onboarding a new vendor API key: workflow('vendor_api_onboarding')\n"
+        "Do NOT rely on memory or assumptions about how deploys work. Read the workflow first. Every time."
     ),
 )
 
@@ -459,12 +468,24 @@ def how_to_ship(repo: str) -> dict:
         if after:
             deploy_context = (deploy_context or "") + f" | Deploy BEFORE: {', '.join(after)}"
 
+    # Map repos to cerebro-docs workflows
+    docs_workflows = {
+        "data-daemon": "deploy_data_daemon",
+        "cerebro": "ship_to_staging",
+        "cerebro-migrations": "apply_migration",
+    }
+    docs_workflow = docs_workflows.get(repo)
+
     return {
         "repo": repo,
         "tier": tier,
         "steps": steps,
         "deploy_order": deploy_context,
         "environments": env_info,
+        "prerequisite": (
+            f"BEFORE EXECUTING: call mcp__cerebro-docs__workflow(name='{docs_workflow}') "
+            f"to load the full deployment procedure with gotchas and failure modes."
+        ) if docs_workflow else None,
     }
 
 
@@ -505,6 +526,10 @@ def how_to_migrate() -> dict:
             "cerebro-github": "PR ceremony for the migration repo",
             "railguey": "NOT used for migrations — Supabase deploys via CLI, not Railway",
         },
+        "prerequisite": (
+            "BEFORE EXECUTING: call mcp__cerebro-docs__workflow(name='apply_migration') "
+            "to load the full migration procedure. NEVER apply DDL via raw psql."
+        ),
     }
 
 
