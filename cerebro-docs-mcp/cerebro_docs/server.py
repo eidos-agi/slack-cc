@@ -19,7 +19,8 @@ mcp = FastMCP(
         "Use `overview` for a quick routing table, "
         "`explain` for a deep dive on one MCP, "
         "`workflow` for multi-MCP workflow guides, "
-        "`route` to find the right tool for a task."
+        "`route` to find the right tool for a task, "
+        "`topology` (or `maps` / `architecture`) for the full system architecture (services, databases, deploy pipelines, credentials)."
     ),
 )
 
@@ -43,7 +44,7 @@ def overview() -> dict:
             }
             for name, m in ALL_MCPS.items()
         },
-        "hint": "Use explain('<name>') for tool details, workflow('<name>') for multi-MCP patterns, route('<task>') to find the right tool.",
+        "hint": "Use explain('<name>') for tool details, workflow('<name>') for multi-MCP patterns, route('<task>') to find the right tool, topology() for the full system architecture.",
     }
 
 
@@ -118,6 +119,33 @@ def workflow(name: str = "") -> dict:
         result["example"] = wf["example"]
 
     return result
+
+
+@mcp.tool()
+def topology() -> dict:
+    """System topology — every service, database, deploy pipeline, and credential.
+
+    The architecture contract. Read this before touching infrastructure.
+    """
+    from .knowledge import TOPOLOGY
+
+    return TOPOLOGY
+
+
+@mcp.tool()
+def maps() -> dict:
+    """System map — alias for topology(). Shows every service, database, and connection."""
+    from .knowledge import TOPOLOGY
+
+    return TOPOLOGY
+
+
+@mcp.tool()
+def architecture() -> dict:
+    """System architecture — alias for topology(). Shows every service, database, and connection."""
+    from .knowledge import TOPOLOGY
+
+    return TOPOLOGY
 
 
 @mcp.tool()

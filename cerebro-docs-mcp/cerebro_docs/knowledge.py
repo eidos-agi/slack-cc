@@ -532,6 +532,146 @@ WORKFLOWS = {
     },
 }
 
+# ── System topology ──────────────────────────────────────────
+
+TOPOLOGY = {
+    "databases": {
+        "production": {
+            "id": "wwmcgtyngnziepeynccz",
+            "host": "db.wwmcgtyngnziepeynccz.supabase.co",
+            "provider": "Supabase",
+            "note": "Production warehouse — all gold views, RLS-protected",
+        },
+        "staging": {
+            "id": "izmuckuepryqneebwwol",
+            "host": "db.izmuckuepryqneebwwol.supabase.co",
+            "provider": "Supabase",
+            "note": "Staging/develop warehouse — mirrors production schema",
+        },
+    },
+    "railway_environments": {
+        "develop": {"purpose": "Staging deploys", "account": "develop"},
+        "production": {"purpose": "Production deploys", "account": "production"},
+    },
+    "services": {
+        "data-daemon": {
+            "repo": "greenmark-waste-solutions/data-daemon",
+            "runtime": "Python/Docker on Railway",
+            "deploy_pipeline": {
+                "trigger": "push to develop branch",
+                "action": "GitHub Actions runs `railway up` to PRODUCTION Railway",
+                "note": "BROKEN: develop branch deploys to production env. ADR-004 will fix to develop->develop, main->production.",
+            },
+            "connections": {
+                "production": {"database": "production", "env_var": "DATABASE_URL"},
+                "develop": {"database": "staging", "env_var": "DATABASE_URL"},
+            },
+            "credentials": ["DATABASE_URL", "SAGE_SENDER_ID", "SAGE_SENDER_PASSWORD", "SAGE_COMPANY_ID", "FLEETIO_API_KEY", "FLEETIO_ACCOUNT_TOKEN"],
+        },
+        "cerebro": {
+            "repo": "greenmark-waste-solutions/cerebro",
+            "runtime": "Next.js on Railway",
+            "deploy_pipeline": {
+                "develop": "develop branch -> staging Railway (auto-deploy)",
+                "production": "main branch -> production Railway (auto-deploy)",
+            },
+            "connections": {
+                "production": {"database": "production", "env_var": "DATABASE_URL"},
+                "staging": {"database": "staging", "env_var": "DATABASE_URL"},
+            },
+            "credentials": ["DATABASE_URL", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"],
+        },
+        "cerebro-telemetry": {
+            "repo": "greenmark-waste-solutions/cerebro-telemetry",
+            "runtime": "Node/Hono + SQLite on Railway volume",
+            "deploy_pipeline": {
+                "develop": "develop branch -> staging Railway",
+                "production": "main branch -> production Railway",
+            },
+            "connections": {
+                "note": "Uses local SQLite on Railway volume, not Supabase",
+            },
+            "credentials": ["TELEMETRY_AUTH_TOKEN"],
+        },
+        "cerebro-qa": {
+            "repo": "greenmark-waste-solutions/cerebro-qa",
+            "runtime": "Node on Railway",
+            "deploy_pipeline": {
+                "develop": "develop branch -> staging Railway",
+                "production": "main branch -> production Railway",
+            },
+            "connections": {
+                "production": {"database": "production", "env_var": "DATABASE_URL"},
+                "staging": {"database": "staging", "env_var": "DATABASE_URL"},
+            },
+            "credentials": ["DATABASE_URL"],
+        },
+        "cerebro-mcp": {
+            "repo": "greenmark-waste-solutions/cerebro-mcp",
+            "runtime": "Cloudflare Worker",
+            "deploy_pipeline": {
+                "production": "main branch -> wrangler deploy (Cloudflare)",
+            },
+            "connections": {
+                "production": {"database": "production", "via": "PostgREST / Supabase JS client"},
+            },
+            "credentials": ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
+        },
+        "cerebro-ai-services": {
+            "repo": "greenmark-waste-solutions/cerebro-ai-services",
+            "runtime": "Railway",
+            "deploy_pipeline": {
+                "develop": "develop branch -> staging Railway",
+                "production": "main branch -> production Railway",
+            },
+            "connections": {
+                "production": {"database": "production", "env_var": "DATABASE_URL"},
+            },
+            "credentials": ["DATABASE_URL", "OPENAI_API_KEY"],
+        },
+        "cerebro-bot-farm": {
+            "repo": "greenmark-waste-solutions/cerebro-bot-farm",
+            "runtime": "Railway",
+            "deploy_pipeline": {
+                "develop": "develop branch -> staging Railway",
+                "production": "main branch -> production Railway",
+            },
+            "connections": {},
+            "credentials": ["DISCORD_BOT_TOKEN"],
+        },
+        "cerebro-warp-speed": {
+            "repo": "greenmark-waste-solutions/cerebro-warp-speed",
+            "runtime": "Railway",
+            "deploy_pipeline": {
+                "develop": "develop branch -> staging Railway",
+                "production": "main branch -> production Railway",
+            },
+            "connections": {
+                "production": {"database": "production", "env_var": "DATABASE_URL"},
+            },
+            "credentials": ["DATABASE_URL"],
+        },
+        "vault-simple": {
+            "repo": "greenmark-waste-solutions/cerebro-vault",
+            "runtime": "Railway (production only)",
+            "deploy_pipeline": {
+                "production": "main branch -> production Railway",
+            },
+            "connections": {
+                "note": "Holds all shared credentials. Accessed via Project-Access-Token header with project-scoped Railway token.",
+            },
+            "credentials": ["RAILWAY_PROJECT_TOKEN"],
+        },
+    },
+    "rules": {
+        "GR-ENV-001": "Develop services MUST use staging DB. Production services MUST use production DB. NEVER cross-wire.",
+        "deploy_data_daemon": "develop branch triggers GitHub Actions which deploys to PRODUCTION Railway (broken, ADR-004 pending).",
+        "vault_access": "cerebro-vault MCP connects to vault-simple on production Railway via project-scoped Railway token with Project-Access-Token header.",
+        "migration_authority": "All DDL lives in cerebro-migrations repo. Neither cerebro nor data-daemon owns the schema.",
+    },
+}
+
+
 # ── Routing table ─────────────────────────────────────────────
 
 ROUTING_TABLE = {
