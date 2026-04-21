@@ -1,0 +1,18 @@
+{
+  "name": "cc-channel-slack-eidos",
+  "version": "0.1.0",
+  "description": "Two-way Slack channel for Claude Code — Socket Mode + MCP stdio",
+  "scripts": {
+    "start": "tsx server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.0",
+    "@slack/socket-mode": "^2.0.0",
+    "@slack/web-api": "^7.15.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.0"
+  }
+}

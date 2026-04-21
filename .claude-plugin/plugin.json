@@ -1,0 +1,16 @@
+{
+  "name": "slack-channel",
+  "version": "0.1.0",
+  "description": "Two-way Slack channel for Claude Code — Socket Mode + MCP stdio",
+  "author": {
+    "name": "Eidos AGI",
+    "url": "https://eidosagi.com"
+  },
+  "license": "MIT",
+  "keywords": ["slack", "channel", "mcp", "socket-mode", "claude-code"],
+  "channels": [
+    {
+      "server": "slack"
+    }
+  ]
+}
