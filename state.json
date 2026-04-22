@@ -16,13 +16,13 @@
   },
   "watermarks": {
     "last_takeoff": "2026-04-19T17:37:07Z",
-    "last_land": "2026-04-22T14:30:00Z",
+    "last_land": "2026-04-22T18:00:00Z",
     "last_status_check": "2026-04-10T06:30:00Z"
   },
   "counters": {
     "sessions": 24,
     "takeoffs": 24,
-    "landings": 30
+    "landings": 31
   },
   "custom": {
     "last_weekly_update": "2026-04-04",
