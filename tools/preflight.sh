@@ -14,7 +14,7 @@
 # Usage: ./tools/preflight.sh
 # Exit code: 0 = all pass, 1 = failures found
 
-set -euo pipefail
+set -uo pipefail
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
