@@ -43,10 +43,16 @@ All runtime state lives in `~/.claude/channels/slack/`:
 
 ## How It Connects
 
-The workspace (greenmark-cockpit) `.mcp.json` has a `slack` server entry pointing to `server.ts`. The `start-with-slack.sh` script launches Claude Code with:
-- `--plugin-dir` — loads skills (access, configure)
-- `--dangerously-load-development-channels server:slack` — registers channel listener
-- `--allowedTools` — pre-approves reply/react/edit/fetch for frictionless Slack replies
+Installed from the Eidos marketplace (`claude plugin install slack-cc@eidos-agi`). Launched with:
+```bash
+claude --dangerously-load-development-channels plugin:slack-cc@eidos-agi
+```
+
+**Critical:** The `--dangerously-load-development-channels` flag is REQUIRED. The `--channels` flag (without "dangerously") only works for Anthropic-approved plugins. Without this flag, the MCP server loads (tools work, bot reacts with 👀) but the channel listener is never registered — `deliver.ok` fires but notifications are silently dropped.
+
+Optional: `--allowedTools "mcp__plugin_slack-cc_slack-cc__reply,..."` pre-approves outbound tools.
+
+The tool prefix for this plugin is `mcp__plugin_slack-cc_slack-cc__` (Claude Code generates this from `plugin:<pluginName>:<serverName>`).
 
 ## Rules
 

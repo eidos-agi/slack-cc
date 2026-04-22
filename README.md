@@ -36,14 +36,36 @@ No servers to deploy. No URLs to expose. Works behind firewalls, NAT, anywhere.
 
 **Install** to your workspace → copy the Bot Token (`xoxb-...`).
 
-### 2. Start Claude Code with the plugin
+### 2. Install the plugin
 
 ```bash
-claude --plugin-dir ~/repos/slack-cc \
-       --dangerously-load-development-channels server:slack
+# Add the Eidos marketplace (one time)
+claude plugin marketplace add eidos-agi/claude-plugins
+
+# Install slack-cc
+claude plugin install slack-cc@eidos-agi
 ```
 
-### 3. Configure tokens
+### 3. Launch with the channel flag
+
+```bash
+claude --dangerously-load-development-channels plugin:slack-cc@eidos-agi
+```
+
+> **Why "dangerously"?** The `--channels` flag (without "dangerously") only works for plugins on Anthropic's curated allowlist. Private marketplace plugins — including this one — require `--dangerously-load-development-channels`. This is a Claude Code security gate, not a reflection of the plugin's safety. The flag will go away if/when the plugin is accepted into the official marketplace.
+
+**Tip:** Create a launch script so you don't have to type this every time:
+```bash
+#!/usr/bin/env bash
+exec claude \
+  --dangerously-load-development-channels plugin:slack-cc@eidos-agi \
+  --allowedTools "mcp__plugin_slack-cc_slack-cc__reply,mcp__plugin_slack-cc_slack-cc__react" \
+  "$@"
+```
+
+The `--allowedTools` flag pre-approves outbound Slack replies so they don't prompt for terminal confirmation.
+
+### 4. Configure tokens (first time only)
 
 In the Claude Code session:
 ```
@@ -52,7 +74,7 @@ In the Claude Code session:
 
 Tokens are saved to `~/.claude/channels/slack/.env` with `0600` permissions. Never logged, never echoed.
 
-### 4. Connect
+### 5. Connect
 
 **DM the bot** in Slack. First-time users get a pairing code. Run `/slack-cc:access pair <code>` in the terminal to approve.
 
@@ -99,15 +121,19 @@ When Claude wants to run a tool that needs approval, the prompt shows up in Slac
 ## FAQ
 
 **The bot reacts with 👀 but messages don't appear in my session.**
-Two known causes:
 
-1. You started Claude Code without `--dangerously-load-development-channels server:slack`. The MCP server loads fine (tools work, bot reacts), but Claude Code never registered a channel listener — notifications fire into the void. Always include the flag when launching from the shell, including with `--resume`.
+This is the #1 issue. The MCP server is running (tools work, bot reacts), but Claude Code didn't register a **channel listener** — notifications fire into the void.
 
-2. *(Tentatively confirmed — needs more testing)* You used `/resume` inside a running session to switch to a past conversation. This may drop the channel listener even though the MCP server keeps running. The bot still reacts, tools still work, but inbound delivery stops. If this happens, exit and start a fresh session with the full flags.
+**Cause:** You launched without the `--dangerously-load-development-channels` flag. This flag is **required** for all private marketplace plugins. Without it, Claude Code loads the tools but silently skips channel event registration.
 
+**Fix:** Always launch with the flag:
 ```bash
-claude --plugin-dir ~/repos/slack-cc --dangerously-load-development-channels server:slack
+claude --dangerously-load-development-channels plugin:slack-cc@eidos-agi
 ```
+
+> The `--channels` flag (without "dangerously") only works for plugins on Anthropic's official allowlist. Until slack-cc is accepted there, you must use `--dangerously-load-development-channels`. This applies to **all** private marketplace plugins, not just this one.
+
+**Other cause:** Using `/resume` inside a running session may drop the channel listener. If messages stop after a resume, exit and restart with the full flags.
 
 **I @mentioned the bot but nothing happened.**
 You're not on the allowlist yet. DM the bot first to get a pairing code, then run `/slack-cc:access pair <code>` in the terminal.
