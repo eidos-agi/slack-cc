@@ -1144,6 +1144,169 @@ describe('Access resilience', () => {
   })
 })
 
+describe('Pairing integration (full lifecycle)', () => {
+  test('unknown DM → pair → approve → deliver', () => {
+    setupStateDir({ dmPolicy: 'pairing', allowFrom: [], channels: {}, pending: [] })
+
+    // Step 1: Unknown user DMs — gate returns pair action
+    const access1 = loadAccess(TEST_DIR)
+    const result = gate(
+      { user: 'U_NEW', channel: 'D789', channel_type: 'im', text: 'hello' },
+      access1,
+    )
+    assert.equal(result.action, 'pair')
+    const pair = result as { action: 'pair'; code: string; chatId: string; senderId: string }
+
+    // Step 2: Server persists pending entry (mirrors handleEvent logic)
+    const access2 = loadAccess(TEST_DIR)
+    access2.pending = access2.pending.filter((p) => p.expiresAt > Date.now())
+    access2.pending.push({
+      code: pair.code,
+      senderId: pair.senderId,
+      chatId: pair.chatId,
+      expiresAt: Date.now() + 3600_000,
+    })
+    saveAccess(TEST_DIR, access2)
+
+    // Verify persistence
+    const access3 = loadAccess(TEST_DIR)
+    assert.equal(access3.pending.length, 1)
+    assert.equal(access3.pending[0].code, pair.code)
+
+    // Step 3: Approve pairing (mirrors /slack-channel:access pair <code>)
+    const match = access3.pending.find(
+      (p) => p.code.toLowerCase() === pair.code.toLowerCase(),
+    )
+    assert.ok(match)
+    access3.allowFrom.push(match!.senderId)
+    access3.pending = access3.pending.filter((p) => p.code !== pair.code)
+    saveAccess(TEST_DIR, access3)
+
+    // Step 4: User is now allowlisted — subsequent DM delivers
+    const access4 = loadAccess(TEST_DIR)
+    assert.ok(access4.allowFrom.includes('U_NEW'))
+    assert.equal(access4.pending.length, 0)
+
+    const result2 = gate(
+      { user: 'U_NEW', channel: 'D789', channel_type: 'im', text: 'I am paired now' },
+      access4,
+    )
+    assert.equal(result2.action, 'deliver')
+  })
+
+  test('pairing code approval is case-insensitive', () => {
+    const code = 'ABC123'
+    setupStateDir({
+      dmPolicy: 'pairing',
+      allowFrom: [],
+      channels: {},
+      pending: [{ code, senderId: 'U_NEW', chatId: 'D789', expiresAt: Date.now() + 3600_000 }],
+    })
+
+    const access = loadAccess(TEST_DIR)
+    const match = access.pending.find(
+      (p) => p.code.toLowerCase() === 'abc123',
+    )
+    assert.ok(match, 'case-insensitive lookup should find the entry')
+    assert.equal(match!.senderId, 'U_NEW')
+  })
+
+  test('concurrent pairings for multiple users', () => {
+    setupStateDir({ dmPolicy: 'pairing', allowFrom: [], channels: {}, pending: [] })
+
+    // Two users DM at the same time
+    const access = loadAccess(TEST_DIR)
+    access.pending.push(
+      { code: 'CODE_A', senderId: 'U_ALICE', chatId: 'D_A', expiresAt: Date.now() + 3600_000 },
+      { code: 'CODE_B', senderId: 'U_BOB', chatId: 'D_B', expiresAt: Date.now() + 3600_000 },
+    )
+    saveAccess(TEST_DIR, access)
+
+    // Approve Alice only
+    const access2 = loadAccess(TEST_DIR)
+    const alice = access2.pending.find((p) => p.code === 'CODE_A')
+    assert.ok(alice)
+    access2.allowFrom.push(alice!.senderId)
+    access2.pending = access2.pending.filter((p) => p.code !== 'CODE_A')
+    saveAccess(TEST_DIR, access2)
+
+    const access3 = loadAccess(TEST_DIR)
+    assert.ok(access3.allowFrom.includes('U_ALICE'))
+    assert.ok(!access3.allowFrom.includes('U_BOB'))
+    assert.equal(access3.pending.length, 1)
+    assert.equal(access3.pending[0].senderId, 'U_BOB')
+  })
+
+  test('same user DMs twice — gets fresh code each time', () => {
+    setupStateDir({ dmPolicy: 'pairing', allowFrom: [], channels: {}, pending: [] })
+    const access = loadAccess(TEST_DIR)
+
+    // First DM
+    const result1 = gate(
+      { user: 'U_REPEAT', channel: 'D_R', channel_type: 'im', text: 'hello' },
+      access,
+    )
+    assert.equal(result1.action, 'pair')
+    const code1 = (result1 as any).code
+
+    // Second DM — different code
+    const result2 = gate(
+      { user: 'U_REPEAT', channel: 'D_R', channel_type: 'im', text: 'hello again' },
+      access,
+    )
+    assert.equal(result2.action, 'pair')
+    // Codes should be different (probabilistically — 6 chars from 31-char alphabet)
+    // Run 10 times to be confident
+    let allSame = true
+    for (let i = 0; i < 10; i++) {
+      const r = gate(
+        { user: 'U_REPEAT', channel: 'D_R', channel_type: 'im', text: 'try' },
+        access,
+      )
+      if ((r as any).code !== code1) { allSame = false; break }
+    }
+    assert.ok(!allSame, 'codes should not all be identical')
+  })
+
+  test('expired code cannot be approved', () => {
+    setupStateDir({
+      dmPolicy: 'pairing',
+      allowFrom: [],
+      channels: {},
+      pending: [{ code: 'OLDCODE', senderId: 'U_OLD', chatId: 'D_O', expiresAt: Date.now() - 1000 }],
+    })
+
+    const access = loadAccess(TEST_DIR)
+    // Prune expired (mirrors server logic)
+    access.pending = access.pending.filter((p) => p.expiresAt > Date.now())
+    const match = access.pending.find((p) => p.code === 'OLDCODE')
+    assert.ok(!match, 'expired code should not be found after pruning')
+    assert.equal(access.pending.length, 0)
+  })
+
+  test('saveAccess preserves extra fields (ackReaction, textChunkLimit)', () => {
+    setupStateDir()
+    writeFileSync(join(TEST_DIR, 'access.json'), JSON.stringify({
+      dmPolicy: 'pairing',
+      allowFrom: [],
+      channels: {},
+      pending: [],
+      ackReaction: 'eyes',
+      textChunkLimit: 3000,
+    }), { mode: 0o600 })
+
+    // Load, modify, save — extra fields should survive
+    const access = loadAccess(TEST_DIR)
+    access.pending.push({ code: 'TEST', senderId: 'U_X', chatId: 'D_X', expiresAt: Date.now() + 3600_000 })
+    saveAccess(TEST_DIR, access)
+
+    const raw = JSON.parse(readFileSync(join(TEST_DIR, 'access.json'), 'utf-8'))
+    assert.equal(raw.ackReaction, 'eyes')
+    assert.equal(raw.textChunkLimit, 3000)
+    assert.equal(raw.pending.length, 1)
+  })
+})
+
 // Cleanup
 afterEach(() => {
   rmSync(TEST_DIR, { recursive: true, force: true })
