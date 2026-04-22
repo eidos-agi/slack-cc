@@ -1,4 +1,4 @@
-# cc-channel-slack-eidos
+# slack-eidos-cc
 
 Two-way Slack channel plugin for Claude Code. Socket Mode + MCP stdio.
 

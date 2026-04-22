@@ -20,8 +20,8 @@ The official Telegram channel plugin sends outbound messages through a native ch
 - Claude calls `mcp__telegram__reply(chat_id, text)` — standard MCP tool invocation
 - Instructions say: *"Anything you want them to see must go through the reply tool"*
 
-#### Slack Bridge (cc-channel-slack-eidos)
-- Source: `/home/dev/repos/cc-channel-slack-eidos/server.ts`
+#### Slack Bridge (slack-eidos-cc)
+- Source: `/home/dev/repos/slack-eidos-cc/server.ts`
 - Exposes `reply`, `react`, `edit_message`, `fetch_messages`, `status` as MCP tools
 - Claude calls `mcp__slack__reply(chat_id, text)` — same pattern
 - Instructions say: *"Anything you want them to see must go through the reply tool"*

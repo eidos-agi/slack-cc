@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * cc-channel-slack-eidos — server tests
+ * slack-eidos-cc — server tests
  *
  * Mocks Slack Socket Mode + Web API, verifies:
  * - Inbound delivery fires notifications/claude/channel

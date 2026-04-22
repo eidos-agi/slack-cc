@@ -55,7 +55,7 @@ Configure the Slack channel with your bot token and app-level token.
    Slack channel configured.
 
    Start Claude with the Slack channel:
-     claude --plugin-dir ~/repos/cc-channel-slack-eidos --dangerously-load-development-channels server:slack
+     claude --plugin-dir ~/repos/slack-eidos-cc --dangerously-load-development-channels server:slack
    ```
 
 ## Security

@@ -1,5 +1,5 @@
 /**
- * cc-channel-slack-eidos — shared pure logic
+ * slack-eidos-cc — shared pure logic
  *
  * Extracted so server.ts and tests import the same code.
  * No side effects, no Slack SDK imports, no MCP imports.

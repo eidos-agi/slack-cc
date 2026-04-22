@@ -35,7 +35,7 @@ const STATE_DIR = process.env.SLACK_STATE_DIR || join(homedir(), '.claude', 'cha
 const ENV_PATH = join(STATE_DIR, '.env')
 const ACCESS_PATH = join(STATE_DIR, 'access.json')
 const DEBUG_DIR = join(homedir(), '.claude', 'debug')
-const PLUGIN_ROOT = dirname(__dirname) // cc-channel-slack-eidos repo root
+const PLUGIN_ROOT = dirname(__dirname) // slack-eidos-cc repo root
 const MAIN_SERVER = join(PLUGIN_ROOT, 'server.ts')
 
 // Derive workspace path: env var > sibling dir with .mcp.json > fallback
@@ -250,7 +250,7 @@ const mcp = new Server(
   {
     capabilities: { tools: {} },
     instructions: [
-      'Full-stack diagnostic MCP for the cc-channel-slack-eidos Slack bridge.',
+      'Full-stack diagnostic MCP for the slack-eidos-cc Slack bridge.',
       'Read-only — reports what is broken across all layers. Fix issues with Edit/Bash.',
       '',
       'Key files (for fixes):',

@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * cc-channel-slack-eidos — Two-way Slack ↔ Claude Code bridge
+ * slack-eidos-cc — Two-way Slack ↔ Claude Code bridge
  *
  * Socket Mode + MCP stdio. Clean implementation that focuses on
  * reliable inbound delivery and outbound tools.
@@ -630,7 +630,7 @@ async function handleSlackEvent(event: Record<string, any>) {
   if (/^(help|\/help)$/i.test(stripped)) {
     log('info', 'command.help', { channel, user })
     const helpText = [
-      `*cc-channel-slack-eidos* — Slack ↔ Claude Code bridge`,
+      `*slack-eidos-cc* — Slack ↔ Claude Code bridge`,
       ``,
       `*In Slack:*`,
       `• @mention me in any channel to connect it to the active session`,
@@ -677,7 +677,7 @@ async function handleSlackEvent(event: Record<string, any>) {
     }
 
     const diag = [
-      `*Diagnostics for cc-channel-slack-eidos v0.1.0*`,
+      `*Diagnostics for slack-eidos-cc v0.1.0*`,
       ``,
       `*MCP Transport:* ${listenerStatus}`,
       `*Bot User ID:* ${botUserId || 'unknown (self-echo filter disabled)'}`,

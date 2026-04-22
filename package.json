@@ -1,5 +1,5 @@
 {
-  "name": "cc-channel-slack-eidos",
+  "name": "slack-eidos-cc",
   "version": "0.1.0",
   "description": "Two-way Slack channel for Claude Code — Socket Mode + MCP stdio",
   "scripts": {

@@ -1,6 +1,6 @@
 # Diagnostics Guide
 
-cc-channel-slack-eidos writes structured JSON logs to stderr. Claude Code captures these in `~/.claude/debug/<session-id>.txt`. Every log entry includes a timestamp, uptime, transport status, and session channel count.
+slack-eidos-cc writes structured JSON logs to stderr. Claude Code captures these in `~/.claude/debug/<session-id>.txt`. Every log entry includes a timestamp, uptime, transport status, and session channel count.
 
 ## Reading the logs
 
@@ -51,7 +51,7 @@ The notification fired successfully over stdio but Claude Code isn't surfacing i
 
 **Fix:** Exit and start fresh:
 ```bash
-claude --plugin-dir ~/repos/cc-channel-slack-eidos --dangerously-load-development-channels server:slack
+claude --plugin-dir ~/repos/slack-eidos-cc --dangerously-load-development-channels server:slack
 ```
 
 **Also suspected:** Using `/resume` inside a running session may drop the channel listener even if the original session had it. If messages stop after a `/resume`, exit and restart.
@@ -71,8 +71,8 @@ User isn't on the allowlist and DM policy is `allowlist`. Either:
 ### No logs at all
 
 The MCP server isn't running. Check:
-1. Did you pass `--plugin-dir ~/repos/cc-channel-slack-eidos`?
-2. Are deps installed? `cd ~/repos/cc-channel-slack-eidos && npm install`
+1. Did you pass `--plugin-dir ~/repos/slack-eidos-cc`?
+2. Are deps installed? `cd ~/repos/slack-eidos-cc && npm install`
 3. Does the server start? `timeout 5 ./node_modules/.bin/tsx server.ts 2>&1`
 
 ### "deliver.fail" with transport error

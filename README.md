@@ -1,4 +1,4 @@
-# cc-channel-slack-eidos
+# slack-eidos-cc
 
 Two-way Slack channel for Claude Code. Talk to your session from Slack. Approve tool calls from your phone.
 
@@ -39,7 +39,7 @@ No servers to deploy. No URLs to expose. Works behind firewalls, NAT, anywhere.
 ### 2. Start Claude Code with the plugin
 
 ```bash
-claude --plugin-dir ~/repos/cc-channel-slack-eidos \
+claude --plugin-dir ~/repos/slack-eidos-cc \
        --dangerously-load-development-channels server:slack
 ```
 
@@ -106,7 +106,7 @@ Two known causes:
 2. *(Tentatively confirmed — needs more testing)* You used `/resume` inside a running session to switch to a past conversation. This may drop the channel listener even though the MCP server keeps running. The bot still reacts, tools still work, but inbound delivery stops. If this happens, exit and start a fresh session with the full flags.
 
 ```bash
-claude --plugin-dir ~/repos/cc-channel-slack-eidos --dangerously-load-development-channels server:slack
+claude --plugin-dir ~/repos/slack-eidos-cc --dangerously-load-development-channels server:slack
 ```
 
 **I @mentioned the bot but nothing happened.**
