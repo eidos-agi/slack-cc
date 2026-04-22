@@ -12,9 +12,25 @@
  */
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, chmodSync } from 'node:fs'
+import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
+
+// Import real logic from lib.ts — no more shadow copies
+import {
+  type Access,
+  type ChannelPolicy,
+  chunkText,
+  defaultAccess,
+  gate,
+  generatePairingCode,
+  loadAccess,
+  loadEnv,
+  makeDedup,
+  PERMISSION_RE,
+  sanitizeDisplayName,
+  saveAccess,
+} from './lib.js'
 
 // ---------------------------------------------------------------------------
 // Test state dir
@@ -41,145 +57,7 @@ function loadTestAccess(): any {
 }
 
 // ---------------------------------------------------------------------------
-// Import the gate, access, and helper functions by re-implementing them
-// (server.ts is a self-contained script, so we extract the logic here)
-// ---------------------------------------------------------------------------
-
-// Replicate the core logic for unit testing
-interface ChannelPolicy {
-  requireMention: boolean
-  allowFrom: string[]
-}
-
-interface Access {
-  dmPolicy: 'pairing' | 'allowlist' | 'disabled'
-  allowFrom: string[]
-  channels: Record<string, ChannelPolicy>
-  pending: Array<{ code: string; senderId: string; chatId: string; expiresAt: number }>
-}
-
-function defaultAccess(): Access {
-  return { dmPolicy: 'pairing', allowFrom: [], channels: {}, pending: [] }
-}
-
-function loadAccess(stateDir: string): Access {
-  const p = join(stateDir, 'access.json')
-  if (!existsSync(p)) return defaultAccess()
-  try {
-    return { ...defaultAccess(), ...JSON.parse(readFileSync(p, 'utf-8')) }
-  } catch {
-    return defaultAccess()
-  }
-}
-
-function saveAccess(stateDir: string, access: Access): void {
-  const p = join(stateDir, 'access.json')
-  const tmp = `${p}.tmp.${process.pid}`
-  writeFileSync(tmp, JSON.stringify(access, null, 2) + '\n', { mode: 0o600 })
-  chmodSync(tmp, 0o600)
-  const { renameSync } = require('node:fs')
-  renameSync(tmp, p)
-}
-
-function generatePairingCode(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-  let code = ''
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)]
-  }
-  return code
-}
-
-type GateResult =
-  | { action: 'deliver' }
-  | { action: 'drop'; reason: string }
-  | { action: 'pair'; code: string; chatId: string; senderId: string }
-  | { action: 'auto-opt-in'; channel: string; userId: string }
-
-function gate(event: Record<string, any>, access: Access, botUserId?: string): GateResult {
-  const { bot_id, bot_profile, user, channel, channel_type, text } = event
-
-  if (bot_id) {
-    if (bot_profile?.app_id && botUserId && user === botUserId) {
-      return { action: 'drop', reason: 'self-echo' }
-    }
-    return { action: 'drop', reason: 'bot-message' }
-  }
-
-  if (event.subtype && event.subtype !== 'file_share') {
-    return { action: 'drop', reason: `subtype:${event.subtype}` }
-  }
-
-  if (!user) {
-    return { action: 'drop', reason: 'no-user' }
-  }
-
-  if (channel_type === 'im') {
-    if (access.dmPolicy === 'disabled') {
-      return { action: 'drop', reason: 'dm-disabled' }
-    }
-    if (access.allowFrom.includes(user)) {
-      return { action: 'deliver' }
-    }
-    if (access.dmPolicy === 'allowlist') {
-      return { action: 'drop', reason: 'dm-not-allowlisted' }
-    }
-    const code = generatePairingCode()
-    return { action: 'pair', code, chatId: channel, senderId: user }
-  }
-
-  const channelPolicy = access.channels[channel]
-  if (!channelPolicy) {
-    // Auto-opt-in: allowlisted user @mentions bot in a new channel
-    if (access.allowFrom.includes(user) && botUserId && text?.includes(`<@${botUserId}>`)) {
-      return { action: 'auto-opt-in', channel, userId: user }
-    }
-    return { action: 'drop', reason: 'channel-not-opted-in' }
-  }
-  if (channelPolicy.allowFrom.length > 0 && !channelPolicy.allowFrom.includes(user)) {
-    return { action: 'drop', reason: 'channel-user-not-allowed' }
-  }
-  if (channelPolicy.requireMention && botUserId && !text?.includes(`<@${botUserId}>`)) {
-    return { action: 'drop', reason: 'mention-required' }
-  }
-
-  return { action: 'deliver' }
-}
-
-// Dedup
-function makeDedup() {
-  const seen = new Map<string, number>()
-  return {
-    isDuplicate(channel: string, ts: string): boolean {
-      const key = `${channel}:${ts}`
-      if (seen.has(key)) return true
-      seen.set(key, Date.now())
-      return false
-    },
-    clear() { seen.clear() },
-  }
-}
-
-// Text chunking
-function chunkText(text: string, maxLen: number): string[] {
-  if (text.length <= maxLen) return [text]
-  const chunks: string[] = []
-  let remaining = text
-  while (remaining.length > 0) {
-    if (remaining.length <= maxLen) { chunks.push(remaining); break }
-    let breakAt = remaining.lastIndexOf('\n', maxLen)
-    if (breakAt < maxLen * 0.5) breakAt = maxLen
-    chunks.push(remaining.slice(0, breakAt))
-    remaining = remaining.slice(breakAt)
-  }
-  return chunks
-}
-
-// Permission regex
-const PERMISSION_RE = /^\s*(y|yes|n|no)\s+([a-z0-9]{5})\s*$/i
-
-// ---------------------------------------------------------------------------
-// Tests
+// Tests — now testing the REAL lib.ts code, not shadow copies
 // ---------------------------------------------------------------------------
 
 describe('Gate', () => {
@@ -197,7 +75,7 @@ describe('Gate', () => {
   test('delivers DM from allowlisted user', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'D123', channel_type: 'im', text: 'hello' },
-      baseAccess,
+      { access: baseAccess },
     )
     assert.deepEqual(result, { action: 'deliver' })
   })
@@ -205,7 +83,7 @@ describe('Gate', () => {
   test('drops DM from non-allowlisted user', () => {
     const result = gate(
       { user: 'U_STRANGER', channel: 'D456', channel_type: 'im', text: 'hello' },
-      baseAccess,
+      { access: baseAccess },
     )
     assert.equal(result.action, 'drop')
   })
@@ -213,7 +91,7 @@ describe('Gate', () => {
   test('delivers channel message from allowed user', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_DEV', text: 'hey' },
-      baseAccess,
+      { access: baseAccess },
     )
     assert.deepEqual(result, { action: 'deliver' })
   })
@@ -221,7 +99,7 @@ describe('Gate', () => {
   test('drops channel message from unauthorized user', () => {
     const result = gate(
       { user: 'U_STRANGER', channel: 'C_DEV', text: 'hey' },
-      baseAccess,
+      { access: baseAccess },
     )
     assert.equal(result.action, 'drop')
     assert.equal((result as any).reason, 'channel-user-not-allowed')
@@ -230,7 +108,7 @@ describe('Gate', () => {
   test('delivers to open channel (empty allowFrom)', () => {
     const result = gate(
       { user: 'U_ANYONE', channel: 'C_OPEN', text: 'hey' },
-      baseAccess,
+      { access: baseAccess },
     )
     assert.deepEqual(result, { action: 'deliver' })
   })
@@ -238,7 +116,7 @@ describe('Gate', () => {
   test('drops message to non-opted-in channel', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_UNKNOWN', text: 'hey' },
-      baseAccess,
+      { access: baseAccess },
     )
     assert.equal(result.action, 'drop')
     assert.equal((result as any).reason, 'channel-not-opted-in')
@@ -247,7 +125,7 @@ describe('Gate', () => {
   test('drops bot messages', () => {
     const result = gate(
       { user: 'U_BOT', channel: 'C_OPEN', bot_id: 'B123', text: 'beep' },
-      baseAccess,
+      { access: baseAccess },
     )
     assert.equal(result.action, 'drop')
     assert.equal((result as any).reason, 'bot-message')
@@ -256,8 +134,7 @@ describe('Gate', () => {
   test('drops self-echo', () => {
     const result = gate(
       { user: 'U_ME', channel: 'C_OPEN', bot_id: 'B123', bot_profile: { app_id: 'A1' }, text: 'echo' },
-      baseAccess,
-      'U_ME',
+      { access: baseAccess, botUserId: 'U_ME' },
     )
     assert.equal(result.action, 'drop')
     assert.equal((result as any).reason, 'self-echo')
@@ -266,7 +143,7 @@ describe('Gate', () => {
   test('drops message_changed subtype', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_OPEN', subtype: 'message_changed', text: 'edited' },
-      baseAccess,
+      { access: baseAccess },
     )
     assert.equal(result.action, 'drop')
   })
@@ -274,7 +151,7 @@ describe('Gate', () => {
   test('delivers file_share subtype', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_DEV', subtype: 'file_share', text: 'file', files: [{}] },
-      baseAccess,
+      { access: baseAccess },
     )
     assert.deepEqual(result, { action: 'deliver' })
   })
@@ -282,7 +159,7 @@ describe('Gate', () => {
   test('drops when no user', () => {
     const result = gate(
       { channel: 'C_OPEN', text: 'ghost' },
-      baseAccess,
+      { access: baseAccess },
     )
     assert.equal(result.action, 'drop')
     assert.equal((result as any).reason, 'no-user')
@@ -291,8 +168,7 @@ describe('Gate', () => {
   test('requireMention blocks without mention', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_MENTION', text: 'just talking' },
-      baseAccess,
-      'U_BOT',
+      { access: baseAccess, botUserId: 'U_BOT' },
     )
     assert.equal(result.action, 'drop')
     assert.equal((result as any).reason, 'mention-required')
@@ -301,8 +177,7 @@ describe('Gate', () => {
   test('requireMention passes with mention', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_MENTION', text: 'hey <@U_BOT> help' },
-      baseAccess,
-      'U_BOT',
+      { access: baseAccess, botUserId: 'U_BOT' },
     )
     assert.deepEqual(result, { action: 'deliver' })
   })
@@ -311,7 +186,7 @@ describe('Gate', () => {
     const access: Access = { ...baseAccess, dmPolicy: 'disabled' }
     const result = gate(
       { user: 'U_DANIEL', channel: 'D123', channel_type: 'im', text: 'hello' },
-      access,
+      { access: access },
     )
     assert.equal(result.action, 'drop')
     assert.equal((result as any).reason, 'dm-disabled')
@@ -329,8 +204,7 @@ describe('Auto-opt-in', () => {
   test('allowlisted user @mentioning bot in new channel triggers auto-opt-in', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_NEW', text: 'hey <@U_BOT> connect here' },
-      access,
-      'U_BOT',
+      { access: access, botUserId: 'U_BOT' },
     )
     assert.equal(result.action, 'auto-opt-in')
     const opt = result as { action: 'auto-opt-in'; channel: string; userId: string }
@@ -341,8 +215,7 @@ describe('Auto-opt-in', () => {
   test('non-allowlisted user @mentioning bot in new channel is dropped', () => {
     const result = gate(
       { user: 'U_STRANGER', channel: 'C_NEW', text: 'hey <@U_BOT> connect here' },
-      access,
-      'U_BOT',
+      { access: access, botUserId: 'U_BOT' },
     )
     assert.equal(result.action, 'drop')
     assert.equal((result as any).reason, 'channel-not-opted-in')
@@ -351,8 +224,7 @@ describe('Auto-opt-in', () => {
   test('allowlisted user without @mention in new channel is dropped', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_NEW', text: 'just chatting' },
-      access,
-      'U_BOT',
+      { access: access, botUserId: 'U_BOT' },
     )
     assert.equal(result.action, 'drop')
     assert.equal((result as any).reason, 'channel-not-opted-in')
@@ -362,8 +234,7 @@ describe('Auto-opt-in', () => {
     // If we don't know our own bot user ID, we can't verify the mention
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_NEW', text: 'hey <@U_BOT> connect here' },
-      access,
-      undefined, // no botUserId
+      { access },
     )
     assert.equal(result.action, 'drop')
     assert.equal((result as any).reason, 'channel-not-opted-in')
@@ -376,8 +247,7 @@ describe('Auto-opt-in', () => {
     }
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_EXISTING', text: 'hey <@U_BOT>' },
-      withChannel,
-      'U_BOT',
+      { access: withChannel, botUserId: 'U_BOT' },
     )
     // Should deliver normally, not auto-opt-in
     assert.equal(result.action, 'deliver')
@@ -546,7 +416,7 @@ describe('Pairing', () => {
     }
     const result = gate(
       { user: 'U_NEW', channel: 'D789', channel_type: 'im', text: 'hello' },
-      access,
+      { access: access },
     )
     assert.equal(result.action, 'pair')
     const pair = result as { action: 'pair'; code: string; chatId: string; senderId: string }
@@ -738,7 +608,7 @@ describe('Notification delivery simulation', () => {
       if (!channel || !ts) return
       if (dedup.isDuplicate(channel, ts)) return
 
-      const result = gate(event, access)
+      const result = gate(event, { access })
       if (result.action !== 'deliver') return
 
       // This is what mcp.notification() would send
@@ -995,7 +865,7 @@ describe('Gate edge cases', () => {
   test('empty text is delivered (not dropped)', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_DEV', text: '' },
-      access,
+      { access: access },
     )
     assert.equal(result.action, 'deliver')
   })
@@ -1003,7 +873,7 @@ describe('Gate edge cases', () => {
   test('undefined text is delivered', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_DEV' },
-      access,
+      { access: access },
     )
     assert.equal(result.action, 'deliver')
   })
@@ -1011,7 +881,7 @@ describe('Gate edge cases', () => {
   test('file_share with no text is delivered', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_DEV', subtype: 'file_share', files: [{ id: 'F1' }] },
-      access,
+      { access: access },
     )
     assert.equal(result.action, 'deliver')
   })
@@ -1019,7 +889,7 @@ describe('Gate edge cases', () => {
   test('message_deleted subtype is dropped', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_DEV', subtype: 'message_deleted' },
-      access,
+      { access: access },
     )
     assert.equal(result.action, 'drop')
   })
@@ -1027,7 +897,7 @@ describe('Gate edge cases', () => {
   test('channel_join subtype is dropped', () => {
     const result = gate(
       { user: 'U_DANIEL', channel: 'C_DEV', subtype: 'channel_join' },
-      access,
+      { access: access },
     )
     assert.equal(result.action, 'drop')
   })
@@ -1035,7 +905,7 @@ describe('Gate edge cases', () => {
   test('bot_message subtype with bot_id is dropped', () => {
     const result = gate(
       { user: 'U_BOT', channel: 'C_DEV', bot_id: 'B1', subtype: 'bot_message' },
-      access,
+      { access: access },
     )
     assert.equal(result.action, 'drop')
   })
@@ -1045,9 +915,9 @@ describe('Gate edge cases', () => {
       ...access,
       channels: { C_TEAM: { requireMention: false, allowFrom: ['U_A', 'U_B'] } },
     }
-    assert.equal(gate({ user: 'U_A', channel: 'C_TEAM', text: 'hi' }, multiAccess).action, 'deliver')
-    assert.equal(gate({ user: 'U_B', channel: 'C_TEAM', text: 'hi' }, multiAccess).action, 'deliver')
-    assert.equal(gate({ user: 'U_C', channel: 'C_TEAM', text: 'hi' }, multiAccess).action, 'drop')
+    assert.equal(gate({ user: 'U_A', channel: 'C_TEAM', text: 'hi' }, { access: multiAccess }).action, 'deliver')
+    assert.equal(gate({ user: 'U_B', channel: 'C_TEAM', text: 'hi' }, { access: multiAccess }).action, 'deliver')
+    assert.equal(gate({ user: 'U_C', channel: 'C_TEAM', text: 'hi' }, { access: multiAccess }).action, 'drop')
   })
 })
 
@@ -1152,7 +1022,7 @@ describe('Pairing integration (full lifecycle)', () => {
     const access1 = loadAccess(TEST_DIR)
     const result = gate(
       { user: 'U_NEW', channel: 'D789', channel_type: 'im', text: 'hello' },
-      access1,
+      { access: access1 },
     )
     assert.equal(result.action, 'pair')
     const pair = result as { action: 'pair'; code: string; chatId: string; senderId: string }
@@ -1189,7 +1059,7 @@ describe('Pairing integration (full lifecycle)', () => {
 
     const result2 = gate(
       { user: 'U_NEW', channel: 'D789', channel_type: 'im', text: 'I am paired now' },
-      access4,
+      { access: access4 },
     )
     assert.equal(result2.action, 'deliver')
   })
@@ -1244,7 +1114,7 @@ describe('Pairing integration (full lifecycle)', () => {
     // First DM
     const result1 = gate(
       { user: 'U_REPEAT', channel: 'D_R', channel_type: 'im', text: 'hello' },
-      access,
+      { access: access },
     )
     assert.equal(result1.action, 'pair')
     const code1 = (result1 as any).code
@@ -1252,7 +1122,7 @@ describe('Pairing integration (full lifecycle)', () => {
     // Second DM — different code
     const result2 = gate(
       { user: 'U_REPEAT', channel: 'D_R', channel_type: 'im', text: 'hello again' },
-      access,
+      { access: access },
     )
     assert.equal(result2.action, 'pair')
     // Codes should be different (probabilistically — 6 chars from 31-char alphabet)
@@ -1260,9 +1130,9 @@ describe('Pairing integration (full lifecycle)', () => {
     let allSame = true
     for (let i = 0; i < 10; i++) {
       const r = gate(
-        { user: 'U_REPEAT', channel: 'D_R', channel_type: 'im', text: 'try' },
-        access,
-      )
+      { user: 'U_REPEAT', channel: 'D_R', channel_type: 'im', text: 'try' },
+      { access: access },
+    )
       if ((r as any).code !== code1) { allSame = false; break }
     }
     assert.ok(!allSame, 'codes should not all be identical')

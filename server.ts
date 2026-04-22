@@ -7,12 +7,28 @@
  *
  * SPDX-License-Identifier: MIT
  */
-import { chmodSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+
+import {
+  type Access,
+  type ChannelPolicy,
+  type GateResult,
+  chunkText,
+  defaultAccess,
+  gate as gateImpl,
+  generatePairingCode,
+  loadAccess as loadAccessFromDir,
+  loadEnv,
+  makeDedup,
+  PERMISSION_RE,
+  sanitizeDisplayName,
+  saveAccess as saveAccessToDir,
+} from './lib.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -35,93 +51,25 @@ mkdirSync(STATE_DIR, { recursive: true, mode: 0o700 })
 // ---------------------------------------------------------------------------
 // Load tokens from .env file
 // ---------------------------------------------------------------------------
-function loadEnv(): { botToken: string; appToken: string } {
-  const envPath = join(STATE_DIR, '.env')
-  if (!existsSync(envPath)) {
-    throw new Error(
-      `No .env found at ${envPath}. Run /slack-channel:configure first.`,
-    )
-  }
-  const lines = readFileSync(envPath, 'utf-8').split('\n')
-  const env: Record<string, string> = {}
-  for (const line of lines) {
-    const match = line.match(/^(\w+)=(.+)$/)
-    if (match) env[match[1]] = match[2].trim()
-  }
-  const botToken = env.SLACK_BOT_TOKEN
-  const appToken = env.SLACK_APP_TOKEN
-  if (!botToken?.startsWith('xoxb-')) throw new Error('Missing or invalid SLACK_BOT_TOKEN')
-  if (!appToken?.startsWith('xapp-')) throw new Error('Missing or invalid SLACK_APP_TOKEN')
-  return { botToken, appToken }
-}
-
-const { botToken, appToken } = loadEnv()
+const { botToken, appToken } = loadEnv(STATE_DIR)
 
 // ---------------------------------------------------------------------------
-// Access control
+// Access control — thin wrappers around lib.ts with STATE_DIR bound
 // ---------------------------------------------------------------------------
-interface ChannelPolicy {
-  requireMention: boolean
-  allowFrom: string[]
-}
-
-interface Access {
-  dmPolicy: 'pairing' | 'allowlist' | 'disabled'
-  allowFrom: string[]
-  channels: Record<string, ChannelPolicy>
-  pending: Array<{
-    code: string
-    senderId: string
-    chatId: string
-    expiresAt: number
-  }>
-}
-
-function defaultAccess(): Access {
-  return {
-    dmPolicy: 'pairing',
-    allowFrom: [],
-    channels: {},
-    pending: [],
-  }
-}
-
 function loadAccess(): Access {
-  const p = join(STATE_DIR, 'access.json')
-  if (!existsSync(p)) return defaultAccess()
-  try {
-    return { ...defaultAccess(), ...JSON.parse(readFileSync(p, 'utf-8')) }
-  } catch {
-    return defaultAccess()
-  }
+  return loadAccessFromDir(STATE_DIR)
 }
 
 function saveAccess(access: Access): void {
-  const p = join(STATE_DIR, 'access.json')
-  const tmp = `${p}.tmp.${process.pid}`
-  writeFileSync(tmp, JSON.stringify(access, null, 2) + '\n', { mode: 0o600 })
-  chmodSync(tmp, 0o600)
-  renameSync(tmp, p)
+  saveAccessToDir(STATE_DIR, access)
 }
 
 // ---------------------------------------------------------------------------
-// Dedup
+// Dedup — using lib.ts factory
 // ---------------------------------------------------------------------------
-const seenEvents = new Map<string, number>()
-const DEDUP_TTL = 60_000
-
+const dedup = makeDedup()
 function isDuplicate(channel: string, ts: string): boolean {
-  const key = `${channel}:${ts}`
-  const now = Date.now()
-  if (seenEvents.has(key)) return true
-  seenEvents.set(key, now)
-  // Prune old entries every 100 inserts
-  if (seenEvents.size % 100 === 0) {
-    for (const [k, v] of seenEvents) {
-      if (now - v > DEDUP_TTL) seenEvents.delete(k)
-    }
-  }
-  return false
+  return dedup.isDuplicate(channel, ts)
 }
 
 // ---------------------------------------------------------------------------
@@ -152,84 +100,12 @@ function assertOutbound(channel: string, threadTs?: string): void {
 }
 
 // ---------------------------------------------------------------------------
-// Gate — decide whether an inbound Slack event should reach Claude
+// Gate — thin wrapper binding runtime state to lib.gate()
 // ---------------------------------------------------------------------------
-type GateResult =
-  | { action: 'deliver' }
-  | { action: 'drop'; reason: string }
-  | { action: 'pair'; code: string; chatId: string; senderId: string }
-  | { action: 'auto-opt-in'; channel: string; userId: string }
-
 let botUserId: string | undefined
 
 function gate(event: Record<string, any>): GateResult {
-  const { bot_id, bot_profile, user, channel, channel_type, text } = event
-
-  // Block 1: Bot messages (always drop self-echoes)
-  if (bot_id) {
-    if (bot_profile?.app_id && botUserId && user === botUserId) {
-      return { action: 'drop', reason: 'self-echo' }
-    }
-    return { action: 'drop', reason: 'bot-message' }
-  }
-
-  // Block 2: Non-message subtypes (edits, deletes, etc.)
-  if (event.subtype && event.subtype !== 'file_share') {
-    return { action: 'drop', reason: `subtype:${event.subtype}` }
-  }
-
-  // Block 3: No user
-  if (!user) {
-    return { action: 'drop', reason: 'no-user' }
-  }
-
-  const access = loadAccess()
-
-  // Block 4: DMs
-  if (channel_type === 'im') {
-    if (access.dmPolicy === 'disabled') {
-      return { action: 'drop', reason: 'dm-disabled' }
-    }
-    if (access.allowFrom.includes(user)) {
-      return { action: 'deliver' }
-    }
-    if (access.dmPolicy === 'allowlist') {
-      return { action: 'drop', reason: 'dm-not-allowlisted' }
-    }
-    // Pairing mode
-    const code = generatePairingCode()
-    return { action: 'pair', code, chatId: channel, senderId: user }
-  }
-
-  // Block 5: Channels — check permanent AND session-scoped opt-ins
-  const channelPolicy = access.channels[channel] || sessionChannels.get(channel)
-  if (!channelPolicy) {
-    // Auto-opt-in: if an allowlisted user @mentions the bot in a new channel,
-    // treat it as "please connect this channel to my session" (session-scoped only)
-    if (access.allowFrom.includes(user) && botUserId && text?.includes(`<@${botUserId}>`)) {
-      return { action: 'auto-opt-in', channel, userId: user }
-    }
-    return { action: 'drop', reason: 'channel-not-opted-in' }
-  }
-  // Check per-channel allowFrom
-  if (channelPolicy.allowFrom.length > 0 && !channelPolicy.allowFrom.includes(user)) {
-    return { action: 'drop', reason: 'channel-user-not-allowed' }
-  }
-  // Check requireMention
-  if (channelPolicy.requireMention && botUserId && !text?.includes(`<@${botUserId}>`)) {
-    return { action: 'drop', reason: 'mention-required' }
-  }
-
-  return { action: 'deliver' }
-}
-
-function generatePairingCode(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // No 0/O/1/I
-  let code = ''
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)]
-  }
-  return code
+  return gateImpl(event, { access: loadAccess(), botUserId, sessionChannels })
 }
 
 // ---------------------------------------------------------------------------
@@ -242,8 +118,7 @@ async function resolveDisplayName(web: WebClient, userId: string): Promise<strin
   try {
     const res = await web.users.info({ user: userId })
     const name = (res.user as any)?.real_name || (res.user as any)?.name || userId
-    // Sanitize: strip control chars, collapse whitespace, cap at 64 chars
-    const clean = name.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 64)
+    const clean = sanitizeDisplayName(name)
     nameCache.set(userId, clean)
     return clean
   } catch {
@@ -438,7 +313,7 @@ mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
       allowFrom: access.allowFrom,
       pendingPairings: access.pending.length,
       deliveredThreads: [...deliveredThreads],
-      dedupCacheSize: seenEvents.size,
+      dedupCacheSize: dedup.size,
       pendingPermissions: pendingPermissions.size,
       recentLogs: logRing.slice(-20),
     }
@@ -503,8 +378,7 @@ mcp.setNotificationHandler(
   },
 )
 
-// Check if a message is a permission reply
-const PERMISSION_RE = /^\s*(y|yes|n|no)\s+([a-z0-9]{5})\s*$/i
+// Check if a message is a permission reply (regex from lib.ts)
 
 function handlePermissionReply(text: string, userId: string): boolean {
   const match = text.match(PERMISSION_RE)
@@ -527,26 +401,7 @@ function handlePermissionReply(text: string, userId: string): boolean {
   return true
 }
 
-// ---------------------------------------------------------------------------
-// Text chunking
-// ---------------------------------------------------------------------------
-function chunkText(text: string, maxLen: number): string[] {
-  if (text.length <= maxLen) return [text]
-  const chunks: string[] = []
-  let remaining = text
-  while (remaining.length > 0) {
-    if (remaining.length <= maxLen) {
-      chunks.push(remaining)
-      break
-    }
-    // Try to break at newline
-    let breakAt = remaining.lastIndexOf('\n', maxLen)
-    if (breakAt < maxLen * 0.5) breakAt = maxLen
-    chunks.push(remaining.slice(0, breakAt))
-    remaining = remaining.slice(breakAt)
-  }
-  return chunks
-}
+// Text chunking — imported from lib.ts
 
 // ---------------------------------------------------------------------------
 // Main — connect everything
@@ -800,7 +655,7 @@ async function handleSlackEvent(event: Record<string, any>) {
       `*Recent Delivered Threads* (last 10):`,
       deliveredList.length ? deliveredList.map(t => `  ${t}`).join('\n') : '  (none)',
       ``,
-      `*Dedup Cache Size:* ${seenEvents.size}`,
+      `*Dedup Cache Size:* ${dedup.size}`,
       `*Pending Permissions:* ${pendingPermissions.size}`,
       ``,
       `_If transport is connected but messages don't appear in your session, you probably used /resume after starting — the channel listener drops. Exit and start fresh with --dangerously-load-development-channels._`,
