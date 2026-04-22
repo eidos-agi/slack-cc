@@ -1,17 +1,28 @@
-# /slack-channel:access
+---
+name: access
+description: Manage Slack channel access — approve pairings, edit allowlists, set DM/channel policy. Use when the user asks to pair, approve someone, check who's allowed, or change policy for the Slack channel.
+user-invocable: true
+allowed-tools:
+  - Read
+  - Write
+  - Bash(ls *)
+  - Bash(mkdir *)
+---
+
+# /slack-eidos:access
 
 Manage who can reach your Claude Code session through Slack.
 
 ## Usage
 
 ```
-/slack-channel:access pair <code>                          # Approve a pending pairing
-/slack-channel:access policy <pairing|allowlist|disabled>   # Set DM policy
-/slack-channel:access add <slack_user_id>                   # Add user to allowlist
-/slack-channel:access remove <slack_user_id>                # Remove from allowlist
-/slack-channel:access channel <channel_id> [--mention] [--allow <user_id,...>]  # Opt in a channel
-/slack-channel:access channel remove <channel_id>           # Remove channel opt-in
-/slack-channel:access status                                # Show current config
+/slack-eidos:access pair <code>                          # Approve a pending pairing
+/slack-eidos:access policy <pairing|allowlist|disabled>   # Set DM policy
+/slack-eidos:access add <slack_user_id>                   # Add user to allowlist
+/slack-eidos:access remove <slack_user_id>                # Remove from allowlist
+/slack-eidos:access channel <channel_id> [--mention] [--allow <user_id,...>]  # Opt in a channel
+/slack-eidos:access channel remove <channel_id>           # Remove channel opt-in
+/slack-eidos:access status                                # Show current config
 ```
 
 ## State File

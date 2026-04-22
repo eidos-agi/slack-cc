@@ -62,7 +62,7 @@ const DEFAULT_WORKSPACE = findWorkspace()
 function loadEnvTokens(): { botToken?: string; appToken?: string; errors: string[] } {
   const errors: string[] = []
   if (!existsSync(ENV_PATH)) {
-    errors.push(`MISSING: ${ENV_PATH} — run /slack-channel:configure to create it`)
+    errors.push(`MISSING: ${ENV_PATH} — run /slack-eidos:configure to create it`)
     return { errors }
   }
 

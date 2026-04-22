@@ -1,0 +1,62 @@
+{
+  "id": "4fe8079d-ce2b-48c6-899d-7d4c0e7dec6b",
+  "version": "0.1.0",
+  "projectName": "Marketplace Publishing Strategy",
+  "created": "2026-04-21",
+  "phase": "decided",
+  "transitions": [
+    {
+      "phase": "research",
+      "date": "2026-04-21"
+    },
+    {
+      "phase": "locked",
+      "date": "2026-04-21",
+      "note": "Criteria weights frozen"
+    },
+    {
+      "phase": "reviewed",
+      "date": "2026-04-21",
+      "note": "Peer review by claude-opus-4-6"
+    },
+    {
+      "phase": "scored",
+      "date": "2026-04-21",
+      "note": "Scored candidate: both"
+    },
+    {
+      "phase": "decided",
+      "date": "2026-04-21",
+      "note": "Adopt BOTH: Create an eidos-agi private marketplace for immediate distribution, and simultaneously s"
+    }
+  ],
+  "criteria": [
+    {
+      "id": "time_to_ship",
+      "weight": 5,
+      "description": "How quickly can users install and use the plugin?"
+    },
+    {
+      "id": "reach",
+      "weight": 3,
+      "description": "How many Claude Code users can discover and access it?"
+    },
+    {
+      "id": "ecosystem_leverage",
+      "weight": 5,
+      "description": "Does it create infrastructure reusable for other Eidos plugins?"
+    },
+    {
+      "id": "implementation_effort",
+      "weight": 4,
+      "description": "How much work to go from current state to shippable?"
+    },
+    {
+      "id": "operational_simplicity",
+      "weight": 4,
+      "description": "Does it reduce the launch complexity (flags, workarounds, dual-start)?"
+    }
+  ],
+  "question": "Should cc-channel-slack-eidos be published to the Claude Code plugin marketplace, and if so, what's the optimal distribution strategy?",
+  "context": "cc-channel-slack-eidos is a two-way Slack channel plugin for Claude Code built by Eidos AGI. Currently works as a development plugin (--plugin-dir). 120 tests, CI, lib.ts extraction complete. The official Telegram/Discord/iMessage channel plugins are bundled in anthropics/claude-plugins-official. Third-party plugins submit via clau.de/plugin-directory-submission. Alternative: private marketplace for team distribution without Anthropic review. Key consideration: there's already a \"slack\" plugin in the marketplace (Slack's official MCP read-only integration) \u2014 our plugin would need a different name. Daniel (Eidos AGI) built this for Greenmark engagement but it's general-purpose enough for any Claude Code user."
+}

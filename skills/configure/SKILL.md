@@ -1,11 +1,22 @@
-# /slack-channel:configure
+---
+name: configure
+description: Set up the Slack channel — save the bot and app tokens. Use when the user pastes Slack tokens, asks to configure Slack, or wants to check channel status.
+user-invocable: true
+allowed-tools:
+  - Read
+  - Write
+  - Bash(ls *)
+  - Bash(mkdir *)
+---
+
+# /slack-eidos:configure
 
 Configure the Slack channel with your bot token and app-level token.
 
 ## Usage
 
 ```
-/slack-channel:configure <xoxb-bot-token> <xapp-app-token>
+/slack-eidos:configure <xoxb-bot-token> <xapp-app-token>
 ```
 
 ## Instructions
@@ -20,7 +31,7 @@ Configure the Slack channel with your bot token and app-level token.
      - Bot token (starts with xoxb-) from OAuth & Permissions
      - App token (starts with xapp-) from Socket Mode settings
 
-   Usage: /slack-channel:configure xoxb-... xapp-...
+   Usage: /slack-eidos:configure xoxb-... xapp-...
    ```
 
 3. Create the state directory if it doesn't exist:

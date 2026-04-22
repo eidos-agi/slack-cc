@@ -60,13 +60,13 @@ claude --plugin-dir ~/repos/cc-channel-slack-eidos --dangerously-load-developmen
 
 The channel isn't connected. Either:
 - @mention the bot (session-scoped, requires being on allowlist)
-- Run `/slack-channel:access channel <id>` in the terminal (permanent)
+- Run `/slack-eidos:access channel <id>` in the terminal (permanent)
 
 ### "gate.drop" with reason "dm-not-allowlisted"
 
 User isn't on the allowlist and DM policy is `allowlist`. Either:
-- Change policy to `pairing`: `/slack-channel:access policy pairing`
-- Add the user: `/slack-channel:access add <user_id>`
+- Change policy to `pairing`: `/slack-eidos:access policy pairing`
+- Add the user: `/slack-eidos:access add <user_id>`
 
 ### No logs at all
 

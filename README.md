@@ -47,14 +47,14 @@ claude --plugin-dir ~/repos/cc-channel-slack-eidos \
 
 In the Claude Code session:
 ```
-/slack-channel:configure xoxb-your-bot-token xapp-your-app-token
+/slack-eidos:configure xoxb-your-bot-token xapp-your-app-token
 ```
 
 Tokens are saved to `~/.claude/channels/slack/.env` with `0600` permissions. Never logged, never echoed.
 
 ### 4. Connect
 
-**DM the bot** in Slack. First-time users get a pairing code. Run `/slack-channel:access pair <code>` in the terminal to approve.
+**DM the bot** in Slack. First-time users get a pairing code. Run `/slack-eidos:access pair <code>` in the terminal to approve.
 
 **Or** — if you're already paired — just **@mention the bot in any channel**. It auto-connects for the current session. No channel IDs to copy-paste.
 
@@ -66,7 +66,7 @@ There are two ways to connect a Slack channel:
 
 **Permanent:** Run in the terminal:
 ```
-/slack-channel:access channel C0AV895UKFS
+/slack-eidos:access channel C0AV895UKFS
 ```
 This persists to `access.json` and survives session restarts.
 
@@ -88,12 +88,12 @@ When Claude wants to run a tool that needs approval, the prompt shows up in Slac
 ## Access control
 
 ```bash
-/slack-channel:access status                    # What's connected
-/slack-channel:access add U12345678             # Add a user
-/slack-channel:access remove U12345678          # Remove a user
-/slack-channel:access policy allowlist          # Only pre-approved users
-/slack-channel:access channel C12345678         # Permanently opt-in a channel
-/slack-channel:access channel remove C12345678  # Remove a channel
+/slack-eidos:access status                    # What's connected
+/slack-eidos:access add U12345678             # Add a user
+/slack-eidos:access remove U12345678          # Remove a user
+/slack-eidos:access policy allowlist          # Only pre-approved users
+/slack-eidos:access channel C12345678         # Permanently opt-in a channel
+/slack-eidos:access channel remove C12345678  # Remove a channel
 ```
 
 ## FAQ
@@ -110,10 +110,10 @@ claude --plugin-dir ~/repos/cc-channel-slack-eidos --dangerously-load-developmen
 ```
 
 **I @mentioned the bot but nothing happened.**
-You're not on the allowlist yet. DM the bot first to get a pairing code, then run `/slack-channel:access pair <code>` in the terminal.
+You're not on the allowlist yet. DM the bot first to get a pairing code, then run `/slack-eidos:access pair <code>` in the terminal.
 
 **The channel connected but messages stopped after I restarted.**
-Session-scoped channels (from @mention auto-opt-in) die when the session ends. @mention the bot again, or make it permanent with `/slack-channel:access channel <id>`.
+Session-scoped channels (from @mention auto-opt-in) die when the session ends. @mention the bot again, or make it permanent with `/slack-eidos:access channel <id>`.
 
 ## Security
 

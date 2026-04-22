@@ -206,7 +206,7 @@ export function makeDedup(ttlMs = 60_000) {
 export function loadEnv(stateDir: string): { botToken: string; appToken: string } {
   const envPath = join(stateDir, '.env')
   if (!existsSync(envPath)) {
-    throw new Error(`No .env found at ${envPath}. Run /slack-channel:configure first.`)
+    throw new Error(`No .env found at ${envPath}. Run /slack-eidos:configure first.`)
   }
   const lines = readFileSync(envPath, 'utf-8').split('\n')
   const env: Record<string, string> = {}
