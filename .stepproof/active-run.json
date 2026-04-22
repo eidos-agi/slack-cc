@@ -1,0 +1,10 @@
+{
+  "allowed_tools": [
+    "Bash",
+    "mcp__cerebro-github__create_work",
+    "mcp__cerebro-github__open_pr"
+  ],
+  "current_step": "s1",
+  "run_id": "17092e19-8f6f-41fc-b0b8-42b0d8e90d11",
+  "template_id": "rb-declared-9890acd2abb5"
+}

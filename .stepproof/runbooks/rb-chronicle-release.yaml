@@ -4,6 +4,16 @@
 #
 # KEY PRINCIPLE: Daniel is the editor-in-chief. No edition goes live
 # without his curation. The AI drafts; the human approves.
+#
+# AUDIENCE GATE: The chronicle is for Greenmark stakeholders (Michael,
+# Alex, Robert). They know "Cerebro" and the tools it provides. They
+# do NOT know "Eidos AGI", "forges", "MCP servers", "StepProof", or
+# any internal tooling names. Reframe everything as Cerebro capabilities:
+#   - "Eidos marketplace" → "new plugin system for Cerebro tools"
+#   - "StepProof runbooks" → "deployment safety checks"
+#   - "nightingale-forge" → "automated quality review system"
+#   - "MCP server" → don't mention
+# If it wouldn't make sense to Michael on first read, rewrite it.
 
 template_id: rb-chronicle-release
 version: 1.0.0
