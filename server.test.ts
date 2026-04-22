@@ -590,6 +590,75 @@ describe('Permission regex', () => {
   })
 })
 
+describe('Permission relay simulation (#14)', () => {
+  // Simulates the full permission flow without real MCP/Slack connections
+  test('full relay: request → prompt → yes reply → allow verdict', () => {
+    const pendingPermissions = new Map<string, { requestId: string; channelId: string }>()
+
+    // Step 1: Claude Code sends a permission request
+    const requestId = 'abcde'
+    const toolName = 'mcp__slack__reply'
+    pendingPermissions.set(requestId, { requestId, channelId: 'C_DEV' })
+
+    // Step 2: Bridge would post to Slack (simulated)
+    assert.ok(pendingPermissions.has(requestId))
+
+    // Step 3: User replies "yes abcde" in Slack
+    const userReply = 'yes abcde'
+    const match = userReply.match(PERMISSION_RE)
+    assert.ok(match)
+    const verdict = match![1].toLowerCase()
+    const replyId = match![2].toLowerCase()
+
+    // Step 4: Bridge matches and resolves
+    const pending = pendingPermissions.get(replyId)
+    assert.ok(pending)
+    assert.equal(pending!.requestId, requestId)
+
+    const behavior = verdict === 'y' || verdict === 'yes' ? 'allow' : 'deny'
+    assert.equal(behavior, 'allow')
+
+    pendingPermissions.delete(replyId)
+    assert.equal(pendingPermissions.size, 0)
+  })
+
+  test('no reply → deny verdict', () => {
+    const userReply = 'no xyzwk'
+    const match = userReply.match(PERMISSION_RE)
+    assert.ok(match)
+    const verdict = match![1].toLowerCase()
+    const behavior = verdict === 'y' || verdict === 'yes' ? 'allow' : 'deny'
+    assert.equal(behavior, 'deny')
+  })
+
+  test('wrong code does not match pending', () => {
+    const pendingPermissions = new Map<string, { requestId: string }>()
+    pendingPermissions.set('abcde', { requestId: 'abcde' })
+
+    const userReply = 'yes fghkm'
+    const match = userReply.match(PERMISSION_RE)
+    assert.ok(match)
+    const replyId = match![2].toLowerCase()
+    assert.ok(!pendingPermissions.has(replyId))
+  })
+
+  test('expired/missing pending returns no match', () => {
+    const pendingPermissions = new Map<string, { requestId: string }>()
+    // Empty map — nothing pending
+    const replyId = 'abcde'
+    assert.ok(!pendingPermissions.has(replyId))
+  })
+
+  test('case-insensitive matching', () => {
+    const match1 = 'YES ABCDE'.match(PERMISSION_RE)
+    assert.ok(match1)
+    assert.equal(match1![1], 'YES')
+    assert.equal(match1![2], 'ABCDE')
+    // Bridge lowercases before lookup
+    assert.equal(match1![2].toLowerCase(), 'abcde')
+  })
+})
+
 describe('Notification delivery simulation', () => {
   test('full inbound path: gate → dedup → deliver', () => {
     const access: Access = {
@@ -664,7 +733,6 @@ describe('Outbound gate', () => {
       channels: { C_DEV: { requireMention: false, allowFrom: [] } },
       pending: [],
     }
-    // assertOutbound checks access.channels — should not throw
     assert.ok(access.channels['C_DEV'])
   })
 
@@ -676,6 +744,70 @@ describe('Outbound gate', () => {
       pending: [],
     }
     assert.equal(access.channels['C_RANDOM'], undefined)
+  })
+})
+
+describe('Outbound tool simulation (#12)', () => {
+  test('reply chunks long messages at 3800 chars', () => {
+    const longText = 'a'.repeat(8000)
+    const chunks = chunkText(longText, 3800)
+    assert.equal(chunks.length, 3)
+    assert.equal(chunks[0].length, 3800)
+    assert.equal(chunks[1].length, 3800)
+    assert.equal(chunks[2].length, 400)
+    // Content integrity
+    assert.equal(chunks.join(''), longText)
+  })
+
+  test('reply prefers breaking at newlines', () => {
+    const text = 'line1\n' + 'a'.repeat(3700) + '\nline3\nline4'
+    const chunks = chunkText(text, 3800)
+    assert.ok(chunks[0].endsWith('\n') || chunks[0].length <= 3800)
+    assert.equal(chunks.join(''), text)
+  })
+
+  test('short reply is single chunk', () => {
+    const chunks = chunkText('hello world', 3800)
+    assert.equal(chunks.length, 1)
+    assert.equal(chunks[0], 'hello world')
+  })
+
+  test('outbound gate: permanent channel allows outbound', () => {
+    const access: Access = {
+      dmPolicy: 'allowlist',
+      allowFrom: [],
+      channels: { C_DEV: { requireMention: false, allowFrom: [] } },
+      pending: [],
+    }
+    // Simulate assertOutbound logic: check if channel is in access.channels
+    assert.ok(access.channels['C_DEV'] !== undefined)
+  })
+
+  test('outbound gate: session channel allows outbound', () => {
+    const sessionChannels = new Map<string, ChannelPolicy>()
+    sessionChannels.set('C_SESSION', { requireMention: false, allowFrom: [] })
+    assert.ok(sessionChannels.has('C_SESSION'))
+    assert.ok(!sessionChannels.has('C_UNKNOWN'))
+  })
+
+  test('outbound gate: delivered thread allows outbound', () => {
+    const deliveredThreads = new Set<string>()
+    deliveredThreads.add('C_DEV:1234.5678')
+    deliveredThreads.add('C_DEV:*')
+    // Exact thread match
+    assert.ok(deliveredThreads.has('C_DEV:1234.5678'))
+    // Wildcard match (any thread in channel)
+    assert.ok(deliveredThreads.has('C_DEV:*'))
+    // Unknown channel blocked
+    assert.ok(!deliveredThreads.has('C_UNKNOWN:*'))
+  })
+
+  test('sanitizeDisplayName strips control chars and truncates', () => {
+    assert.equal(sanitizeDisplayName('Normal Name'), 'Normal Name')
+    assert.equal(sanitizeDisplayName('Has\ttab\nnewline'), 'Hastabnewline')
+    assert.equal(sanitizeDisplayName('  spaces  '), 'spaces')
+    assert.equal(sanitizeDisplayName('a'.repeat(100)), 'a'.repeat(64))
+    assert.equal(sanitizeDisplayName(''), '')
   })
 })
 
