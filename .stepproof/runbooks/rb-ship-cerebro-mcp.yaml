@@ -1,0 +1,61 @@
+# Ship cerebro-mcp — the Cloudflare Worker that serves data to claude.ai.
+# This is what Michael, Alex, and Robert hit when they use Claude on claude.ai.
+# Stakeholder-facing. No Railway — wrangler deploy to Cloudflare.
+#
+# FAILURE MODES (from incident history):
+#   - Mock data shipped to production (#7): stakeholder never validated staging
+#   - Stale RBAC contract checker blocked valid deploy (#8)
+#   - Schema divergence between environments (#12)
+
+template_id: rb-ship-cerebro-mcp
+version: 1.0.0
+name: Ship cerebro-mcp to Cloudflare
+description: Deploy the MCP server that stakeholders use from claude.ai. Tests, PR, CI, wrangler deploy, verify tools work.
+risk_level: high
+allowed_environments: [production]
+
+steps:
+  - step_id: s1
+    description: All tests pass
+    allowed_tools: [Bash]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s2
+    description: PR opened with Closes #N
+    allowed_tools: [mcp__cerebro-github__open_pr, mcp__cerebro-github__create_work]
+    required_evidence: [branch_name, pr_url]
+    verification_method: verify_pr_opened
+    verification_tier: tier1
+    timeout_seconds: 3600
+    on_fail: retry
+
+  - step_id: s3
+    description: CI green
+    allowed_tools: [mcp__cerebro-github__check_ci]
+    required_evidence: [ci_run_id]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 1800
+    on_fail: block
+
+  - step_id: s4
+    description: Merge to main (triggers wrangler deploy)
+    allowed_tools: [mcp__cerebro-github__merge_pr]
+    required_evidence: [pr_url, ci_run_id]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s5
+    description: Verify MCP tools respond on production URL
+    allowed_tools: [Bash]
+    required_evidence: [deploy_id]
+    verification_method: verify_deploy_and_health
+    verification_tier: tier1
+    timeout_seconds: 300
+    on_fail: block
