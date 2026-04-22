@@ -19,7 +19,6 @@ import {
   type ChannelPolicy,
   type GateResult,
   chunkText,
-  defaultAccess,
   gate as gateImpl,
   generatePairingCode,
   loadAccess as loadAccessFromDir,
@@ -397,7 +396,7 @@ mcp.setNotificationHandler(
 
 // Check if a message is a permission reply (regex from lib.ts)
 
-function handlePermissionReply(text: string, userId: string): boolean {
+function handlePermissionReply(text: string): boolean {
   const match = text.match(PERMISSION_RE)
   if (!match) return false
 
@@ -712,7 +711,7 @@ async function handleSlackEvent(event: Record<string, any>) {
   }
 
   // Check for permission reply first
-  if (text && handlePermissionReply(text, user)) {
+  if (text && handlePermissionReply(text)) {
     log('info', 'command.permission-reply', { channel, user, text: text.trim() })
     await web.reactions.add({ channel, timestamp: ts, name: 'white_check_mark' }).catch(() => {})
     return

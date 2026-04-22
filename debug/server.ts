@@ -31,7 +31,7 @@ import { WebClient } from '@slack/web-api'
 // ---------------------------------------------------------------------------
 // Paths
 // ---------------------------------------------------------------------------
-const STATE_DIR = join(homedir(), '.claude', 'channels', 'slack')
+const STATE_DIR = process.env.SLACK_STATE_DIR || join(homedir(), '.claude', 'channels', 'slack')
 const ENV_PATH = join(STATE_DIR, '.env')
 const ACCESS_PATH = join(STATE_DIR, 'access.json')
 const DEBUG_DIR = join(homedir(), '.claude', 'debug')
@@ -130,24 +130,17 @@ function getBridgeBootTime(): number | null {
  * Only returns logs timestamped after the bridge process started.
  */
 function getCurrentSessionSkipLogs(): { logs: string[]; stale: boolean } {
-  if (!existsSync(DEBUG_DIR)) return { logs: [], stale: false }
-
   const bootTime = getBridgeBootTime()
   const allSkipLogs: string[] = []
 
-  try {
-    const files = readdirSync(DEBUG_DIR)
-      .map((n: string) => { try { return { name: n, mtime: statSync(join(DEBUG_DIR, n)).mtimeMs } } catch { return null } })
-      .filter((f: { name: string; mtime: number } | null): f is { name: string; mtime: number } => f !== null)
-      .sort((a: { mtime: number }, b: { mtime: number }) => b.mtime - a.mtime)
-
-    for (const file of files.slice(0, 3)) {
+  for (const file of listByMtime(DEBUG_DIR).slice(0, 3)) {
+    try {
       const content = readFileSync(join(DEBUG_DIR, file.name), 'utf-8')
       const skipLines = content.split('\n').filter((l: string) => l.includes('Channel notifications skipped'))
       allSkipLogs.push(...skipLines)
       if (skipLines.length) break
-    }
-  } catch {}
+    } catch {}
+  }
 
   if (!bootTime || !allSkipLogs.length) return { logs: allSkipLogs.slice(0, 5), stale: false }
 
@@ -222,6 +215,17 @@ function checkAllowedTools(workspacePath: string): {
     result.settingsFile.tools.includes('mcp__slack__reply')
 
   return result
+}
+
+/** List files in a directory sorted by mtime (newest first) */
+function listByMtime(dir: string): Array<{ name: string; mtime: number }> {
+  if (!existsSync(dir)) return []
+  try {
+    return readdirSync(dir)
+      .map((name) => { try { return { name, mtime: statSync(join(dir, name)).mtimeMs } } catch { return null } })
+      .filter((f): f is { name: string; mtime: number } => f !== null)
+      .sort((a, b) => b.mtime - a.mtime)
+  } catch { return [] }
 }
 
 function hintForError(error: string): string | null {
@@ -381,895 +385,879 @@ mcp.setRequestHandler(ListToolsRequestSchema, async () => ({
   ],
 }))
 
-mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params
+// ---------------------------------------------------------------------------
+// Tool implementations — each is a standalone async function
+// ---------------------------------------------------------------------------
+type ToolArgs = Record<string, unknown> | undefined
 
-  // =========================================================================
-  // slack_debug_check — the big one
-  // =========================================================================
-  if (name === 'slack_debug_check') {
-    const issues: string[] = []
-    const report: Record<string, any> = {}
+async function toolCheck(_args: ToolArgs) {
+  const issues: string[] = []
+  const report: Record<string, any> = {}
 
-    // --- Layer 1: Tokens ---
-    const { botToken, appToken, errors: tokenErrors } = loadEnvTokens()
-    report.tokens = {
-      envPath: ENV_PATH,
-      envExists: existsSync(ENV_PATH),
-      botTokenPresent: !!botToken,
-      appTokenPresent: !!appToken,
-      errors: tokenErrors,
+  // --- Layer 1: Tokens ---
+  const { botToken, appToken, errors: tokenErrors } = loadEnvTokens()
+  report.tokens = {
+    envPath: ENV_PATH,
+    envExists: existsSync(ENV_PATH),
+    botTokenPresent: !!botToken,
+    appTokenPresent: !!appToken,
+    errors: tokenErrors,
+  }
+  issues.push(...tokenErrors)
+
+  // --- Layer 2: File permissions ---
+  let envPerms: string | null = null
+  if (existsSync(ENV_PATH)) {
+    try { envPerms = '0' + (statSync(ENV_PATH).mode & 0o777).toString(8) } catch {}
+  }
+  report.permissions = { envPerms, ok: envPerms === '0600' }
+  if (envPerms && envPerms !== '0600') issues.push(`PERMS: .env is ${envPerms}`)
+
+  // --- Layer 3: Access config ---
+  const { access, errors: accessErrors } = loadAccessJson()
+  issues.push(...accessErrors)
+  if (access) {
+    report.access = {
+      dmPolicy: access.dmPolicy || 'unknown',
+      allowFrom: Array.isArray(access.allowFrom) ? access.allowFrom : [],
+      channels: access.channels ? Object.keys(access.channels) : [],
+      pendingPairings: Array.isArray(access.pending) ? access.pending.length : 0,
     }
-    issues.push(...tokenErrors)
+    if (!access.allowFrom?.length) issues.push('ACCESS: allowFrom is empty — no users can pass the gate')
+    if (!access.channels || !Object.keys(access.channels).length) issues.push('ACCESS: no permanent channels — only session-scoped opt-in via @mention')
+  } else {
+    report.access = null
+  }
 
-    // --- Layer 2: File permissions ---
-    let envPerms: string | null = null
-    if (existsSync(ENV_PATH)) {
-      try { envPerms = '0' + (statSync(ENV_PATH).mode & 0o777).toString(8) } catch {}
+  // --- Layer 4: Slack API ---
+  report.slackApi = null
+  if (botToken) {
+    try {
+      const web = new WebClient(botToken)
+      const auth = await web.auth.test()
+      report.slackApi = { ok: true, botUserId: auth.user_id, team: auth.team, teamId: auth.team_id }
+    } catch (err: any) {
+      const msg = err?.data?.error || err?.message || String(err)
+      report.slackApi = { ok: false, error: msg }
+      issues.push(`SLACK: auth.test failed — ${msg}`)
     }
-    report.permissions = { envPerms, ok: envPerms === '0600' }
-    if (envPerms && envPerms !== '0600') issues.push(`PERMS: .env is ${envPerms}`)
+  }
 
-    // --- Layer 3: Access config ---
-    const { access, errors: accessErrors } = loadAccessJson()
-    issues.push(...accessErrors)
-    if (access) {
-      report.access = {
-        dmPolicy: access.dmPolicy || 'unknown',
-        allowFrom: Array.isArray(access.allowFrom) ? access.allowFrom : [],
-        channels: access.channels ? Object.keys(access.channels) : [],
-        pendingPairings: Array.isArray(access.pending) ? access.pending.length : 0,
-      }
-      if (!access.allowFrom?.length) issues.push('ACCESS: allowFrom is empty — no users can pass the gate')
-      if (!access.channels || !Object.keys(access.channels).length) issues.push('ACCESS: no permanent channels — only session-scoped opt-in via @mention')
-    } else {
-      report.access = null
-    }
-
-    // --- Layer 4: Slack API ---
-    report.slackApi = null
-    if (botToken) {
+  // --- Layer 5: Channel visibility ---
+  // conversations.info needs groups:read for private channels, which the bridge
+  // doesn't actually require. Fall back to conversations.history (limit 1) which
+  // only needs groups:history — the scope the bridge actually uses.
+  report.channels = []
+  if (botToken && access?.channels) {
+    const web = new WebClient(botToken)
+    for (const chId of Object.keys(access.channels)) {
       try {
-        const web = new WebClient(botToken)
-        const auth = await web.auth.test()
-        report.slackApi = { ok: true, botUserId: auth.user_id, team: auth.team, teamId: auth.team_id }
+        const info = await web.conversations.info({ channel: chId })
+        const ch = info.channel as any
+        const entry = { id: chId, name: ch?.name, isMember: ch?.is_member ?? null, isPrivate: ch?.is_private ?? null, ok: true }
+        report.channels.push(entry)
+        if (!ch?.is_member) issues.push(`CHANNEL: ${chId} (#${ch?.name}) — bot NOT a member`)
       } catch (err: any) {
         const msg = err?.data?.error || err?.message || String(err)
-        report.slackApi = { ok: false, error: msg }
-        issues.push(`SLACK: auth.test failed — ${msg}`)
-      }
-    }
-
-    // --- Layer 5: Channel visibility ---
-    // conversations.info needs groups:read for private channels, which the bridge
-    // doesn't actually require. Fall back to conversations.history (limit 1) which
-    // only needs groups:history — the scope the bridge actually uses.
-    report.channels = []
-    if (botToken && access?.channels) {
-      const web = new WebClient(botToken)
-      for (const chId of Object.keys(access.channels)) {
-        try {
-          const info = await web.conversations.info({ channel: chId })
-          const ch = info.channel as any
-          const entry = { id: chId, name: ch?.name, isMember: ch?.is_member ?? null, isPrivate: ch?.is_private ?? null, ok: true }
-          report.channels.push(entry)
-          if (!ch?.is_member) issues.push(`CHANNEL: ${chId} (#${ch?.name}) — bot NOT a member`)
-        } catch (err: any) {
-          const msg = err?.data?.error || err?.message || String(err)
-          // conversations.info on private channels needs groups:read, but the bridge
-          // only needs groups:history. Fall back: if we can read history, the channel works.
-          if (msg === 'missing_scope' || msg === 'channel_not_found') {
-            try {
-              const hist = await web.conversations.history({ channel: chId, limit: 1 })
-              if (hist.ok) {
-                report.channels.push({ id: chId, ok: true, isMember: true, isPrivate: true, note: 'private channel (verified via history fallback)' })
-                continue
-              }
-            } catch (histErr: any) {
-              const histMsg = histErr?.data?.error || histErr?.message || String(histErr)
-              report.channels.push({ id: chId, ok: false, error: histMsg, note: 'conversations.info and history both failed' })
-              issues.push(`CHANNEL: ${chId} — ${histMsg}`)
+        // conversations.info on private channels needs groups:read, but the bridge
+        // only needs groups:history. Fall back: if we can read history, the channel works.
+        if (msg === 'missing_scope' || msg === 'channel_not_found') {
+          try {
+            const hist = await web.conversations.history({ channel: chId, limit: 1 })
+            if (hist.ok) {
+              report.channels.push({ id: chId, ok: true, isMember: true, isPrivate: true, note: 'private channel (verified via history fallback)' })
               continue
             }
+          } catch (histErr: any) {
+            const histMsg = histErr?.data?.error || histErr?.message || String(histErr)
+            report.channels.push({ id: chId, ok: false, error: histMsg, note: 'conversations.info and history both failed' })
+            issues.push(`CHANNEL: ${chId} — ${histMsg}`)
+            continue
           }
-          report.channels.push({ id: chId, ok: false, error: msg })
-          issues.push(`CHANNEL: ${chId} — ${msg}`)
         }
+        report.channels.push({ id: chId, ok: false, error: msg })
+        issues.push(`CHANNEL: ${chId} — ${msg}`)
       }
-    }
-
-    // --- Layer 6: Bot process + dual-start detection (#11) ---
-    const bridgeProcs = countBridgeProcesses()
-    if (bridgeProcs.length === 0) {
-      report.botProcess = { running: false }
-      issues.push('PROCESS: no tsx server.ts process found — bridge not running')
-    } else {
-      report.botProcess = { running: true, processCount: bridgeProcs.length, ps: bridgeProcs.map(p => `${p.user} ${p.pid} ${p.command}`).join('\n') }
-      if (bridgeProcs.length > 1) {
-        issues.push(`DUAL-START: ${bridgeProcs.length} bridge processes running (pids: ${bridgeProcs.map(p => p.pid).join(', ')}). Kill stale instances.`)
-      }
-    }
-
-    // --- Layer 6b: Outbound permission friction (#10) ---
-    const allowedTools = checkAllowedTools(DEFAULT_WORKSPACE)
-    report.outboundApproval = allowedTools.replyAutoApproved ? 'auto-approved' : 'terminal-prompt'
-    if (!allowedTools.replyAutoApproved) {
-      issues.push('FRICTION: mcp__slack__reply not auto-approved — outbound replies prompt in terminal')
-    }
-
-    // --- Layer 7: Server integrity ---
-    const serverExists = existsSync(MAIN_SERVER)
-    const nodeModulesExist = existsSync(join(PLUGIN_ROOT, 'node_modules'))
-    const tsxExists = existsSync(join(PLUGIN_ROOT, 'node_modules', '.bin', 'tsx'))
-    report.server = { serverExists, nodeModulesExist, tsxExists, pluginRoot: PLUGIN_ROOT }
-    if (!serverExists) issues.push(`SERVER: ${MAIN_SERVER} not found`)
-    if (!nodeModulesExist) issues.push('SERVER: node_modules missing — run npm install')
-    if (!tsxExists) issues.push('SERVER: tsx binary missing — run npm install')
-
-    report.healthy = issues.length === 0
-    report.issues = issues
-    report.issueCount = issues.length
-
-    return { content: [{ type: 'text', text: JSON.stringify(report, null, 2) }] }
-  }
-
-  // =========================================================================
-  // slack_debug_slack_api
-  // =========================================================================
-  if (name === 'slack_debug_slack_api') {
-    const { botToken, errors } = loadEnvTokens()
-    if (!botToken) return json({ ok: false, error: 'No bot token', tokenErrors: errors })
-
-    const web = new WebClient(botToken)
-    const report: Record<string, any> = {}
-
-    // auth.test
-    try {
-      const auth = await web.auth.test()
-      report.auth = { ok: true, botUserId: auth.user_id, botId: auth.bot_id, team: auth.team, teamId: auth.team_id, url: auth.url }
-    } catch (err: any) {
-      report.auth = { ok: false, error: err?.data?.error || err?.message }
-      return json(report) // Can't test anything else without auth
-    }
-
-    // Token scope introspection — extract the actual scopes baked into the token
-    // by making a deliberate bad call and parsing the 'provided' field from the error,
-    // or by checking auth.test response headers.
-    report.tokenScopes = null
-    try {
-      // conversations.info with a bogus channel returns missing_scope with 'provided' list
-      await web.conversations.info({ channel: 'C000000FAKE' })
-    } catch (err: any) {
-      const provided = err?.data?.response_metadata?.scopes || err?.data?.provided
-      if (provided) {
-        report.tokenScopes = typeof provided === 'string' ? provided.split(',') : provided
-      }
-    }
-
-    // Scope checks — test each by calling a minimal API
-    // Important: test private channel scopes separately from public channel scopes.
-    // The bridge needs groups:history for private channels, not just channels:history.
-    const scopeTests: Array<{ scope: string; test: () => Promise<boolean> }> = [
-      { scope: 'chat:write', test: async () => { /* tested by send_test */ return true } },
-      { scope: 'channels:history', test: async () => {
-        try { await web.conversations.list({ types: 'public_channel', limit: 1 }); return true } catch { return false }
-      }},
-      { scope: 'groups:history', test: async () => {
-        // Test by reading from a known private channel (from access.json), or check tokenScopes
-        const { access } = loadAccessJson()
-        const channelIds = access?.channels ? Object.keys(access.channels) : []
-        for (const chId of channelIds) {
-          try {
-            await web.conversations.history({ channel: chId, limit: 1 })
-            return true
-          } catch { /* try next */ }
-        }
-        // Fallback: check if tokenScopes includes it
-        if (Array.isArray(report.tokenScopes)) return report.tokenScopes.includes('groups:history')
-        return false
-      }},
-      { scope: 'reactions:write', test: async () => true }, // Can't test without a message
-      { scope: 'users:read', test: async () => {
-        try { await web.users.info({ user: report.auth.botUserId }); return true } catch { return false }
-      }},
-      { scope: 'files:read', test: async () => true }, // Can't test without a file
-    ]
-
-    report.scopes = {}
-    for (const { scope, test } of scopeTests) {
-      try { report.scopes[scope] = await test() } catch { report.scopes[scope] = false }
-    }
-
-    // List channels the bot is in
-    // conversations.list with private_channel type needs groups:read — which the bridge
-    // doesn't require. Try it, but don't report failure as an issue.
-    try {
-      const res = await web.conversations.list({ types: 'public_channel,private_channel', limit: 50 })
-      const memberOf = (res.channels || []).filter((c: any) => c.is_member).map((c: any) => ({ id: c.id, name: c.name, isPrivate: c.is_private }))
-      report.memberOf = memberOf
-    } catch (err: any) {
-      // Fall back to public channels only
-      try {
-        const res = await web.conversations.list({ types: 'public_channel', limit: 50 })
-        const memberOf = (res.channels || []).filter((c: any) => c.is_member).map((c: any) => ({ id: c.id, name: c.name }))
-        report.memberOf = memberOf
-        report.memberOfNote = 'private channels not listed (groups:read not in token — this is fine, bridge does not need it)'
-      } catch (err2: any) {
-        report.memberOf = { error: err2?.data?.error || err2?.message }
-      }
-    }
-
-    return json(report)
-  }
-
-  // =========================================================================
-  // slack_debug_bot_process
-  // =========================================================================
-  if (name === 'slack_debug_bot_process') {
-    const report: Record<string, any> = {}
-
-    // Look for the main server.ts process (not this debug server) (#11)
-    const bridgeProcs = countBridgeProcesses()
-    if (bridgeProcs.length > 0) {
-      report.running = true
-      report.processCount = bridgeProcs.length
-      report.processes = bridgeProcs
-      if (bridgeProcs.length > 1) {
-        report.dualStart = true
-        report.dualStartWarning = `${bridgeProcs.length} bridge instances running! They compete for Socket Mode. Kill stale processes: kill ${bridgeProcs.slice(1).map(p => p.pid).join(' ')}`
-      }
-    } else {
-      report.running = false
-      report.hint = 'Bridge not running. Start with: ./start-with-slack.sh'
-    }
-
-    // Check if any node processes are using the slack socket-mode
-    const socketOut = shell('ps aux | grep "[s]lack.*socket" | head -5')
-    report.socketModeProcesses = socketOut || null
-
-    // Check if the start-with-slack.sh exists and is executable
-    const startScript = join(PLUGIN_ROOT, '..', 'greenmark-cockpit', 'start-with-slack.sh')
-    report.startScript = existsSync(startScript) ? { exists: true, path: startScript } : { exists: false }
-
-    return json(report)
-  }
-
-  // =========================================================================
-  // slack_debug_server
-  // =========================================================================
-  if (name === 'slack_debug_server') {
-    const report: Record<string, any> = {}
-
-    report.pluginRoot = PLUGIN_ROOT
-    report.serverTs = { path: MAIN_SERVER, exists: existsSync(MAIN_SERVER) }
-
-    // node_modules
-    const nmPath = join(PLUGIN_ROOT, 'node_modules')
-    report.nodeModules = { exists: existsSync(nmPath) }
-
-    // Key dependencies
-    const deps = ['@modelcontextprotocol/sdk', '@slack/socket-mode', '@slack/web-api', 'zod']
-    report.dependencies = {}
-    for (const dep of deps) {
-      const depPath = join(nmPath, dep)
-      report.dependencies[dep] = existsSync(depPath)
-    }
-
-    // tsx binary
-    const tsxPath = join(nmPath, '.bin', 'tsx')
-    report.tsx = { path: tsxPath, exists: existsSync(tsxPath) }
-
-    // package.json
-    const pkgPath = join(PLUGIN_ROOT, 'package.json')
-    if (existsSync(pkgPath)) {
-      try {
-        const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'))
-        report.package = { name: pkg.name, version: pkg.version, deps: pkg.dependencies, devDeps: pkg.devDependencies }
-      } catch (err: any) {
-        report.package = { error: err.message }
-      }
-    }
-
-    // TypeScript compilation check
-    const tscResult = shell(`cd "${PLUGIN_ROOT}" && ./node_modules/.bin/tsc --noEmit --pretty false 2>&1 | head -20`)
-    report.typeCheck = tscResult ? { errors: tscResult } : { ok: true }
-
-    // .mcp.json in plugin root
-    const mcpJsonPath = join(PLUGIN_ROOT, '.mcp.json')
-    if (existsSync(mcpJsonPath)) {
-      try {
-        report.mcpJson = JSON.parse(readFileSync(mcpJsonPath, 'utf-8'))
-      } catch (err: any) {
-        report.mcpJson = { error: err.message }
-      }
-    } else {
-      report.mcpJson = null
-    }
-
-    // manifest.json (Slack app manifest for reference)
-    const manifestPath = join(PLUGIN_ROOT, 'manifest.json')
-    if (existsSync(manifestPath)) {
-      try {
-        report.slackManifest = JSON.parse(readFileSync(manifestPath, 'utf-8'))
-      } catch { report.slackManifest = null }
-    }
-
-    return json(report)
-  }
-
-  // =========================================================================
-  // slack_debug_mcp_config
-  // =========================================================================
-  if (name === 'slack_debug_mcp_config') {
-    const report: Record<string, any> = { issues: [] }
-
-    // Plugin .mcp.json
-    const pluginMcpPath = join(PLUGIN_ROOT, '.mcp.json')
-    if (existsSync(pluginMcpPath)) {
-      try {
-        const pluginMcp = JSON.parse(readFileSync(pluginMcpPath, 'utf-8'))
-        report.pluginMcpJson = { path: pluginMcpPath, servers: Object.keys(pluginMcp.mcpServers || {}) }
-        if (!pluginMcp.mcpServers?.slack) report.issues.push('Plugin .mcp.json missing "slack" server entry')
-      } catch (err: any) {
-        report.pluginMcpJson = { error: err.message }
-        report.issues.push(`Plugin .mcp.json parse error: ${err.message}`)
-      }
-    } else {
-      report.pluginMcpJson = null
-      report.issues.push(`Plugin .mcp.json missing at ${pluginMcpPath}`)
-    }
-
-    // Workspace .mcp.json
-    const workspacePath = (args?.workspace as string) || DEFAULT_WORKSPACE
-    const wsMcpPath = join(workspacePath, '.mcp.json')
-    if (existsSync(wsMcpPath)) {
-      try {
-        const wsMcp = JSON.parse(readFileSync(wsMcpPath, 'utf-8'))
-        const servers = Object.keys(wsMcp.mcpServers || {})
-        report.workspaceMcpJson = { path: wsMcpPath, servers }
-        if (!wsMcp.mcpServers?.['slack-eidos-debug']) {
-          report.issues.push('Workspace .mcp.json missing "slack-eidos-debug" entry')
-        } else {
-          const entry = wsMcp.mcpServers['slack-eidos-debug']
-          // Verify paths exist
-          if (entry.command && !existsSync(entry.command)) {
-            report.issues.push(`Debug MCP command not found: ${entry.command}`)
-          }
-          if (entry.args?.[0] && !existsSync(entry.args[0])) {
-            report.issues.push(`Debug MCP script not found: ${entry.args[0]}`)
-          }
-          report.debugEntry = entry
-        }
-      } catch (err: any) {
-        report.workspaceMcpJson = { error: err.message }
-        report.issues.push(`Workspace .mcp.json parse error: ${err.message}`)
-      }
-    } else {
-      report.workspaceMcpJson = null
-      report.issues.push(`Workspace .mcp.json missing at ${wsMcpPath}`)
-    }
-
-    // Claude Code plugin dir — check if .claude-plugin exists
-    const claudePluginDir = join(PLUGIN_ROOT, '.claude-plugin')
-    report.claudePlugin = { path: claudePluginDir, exists: existsSync(claudePluginDir) }
-    if (existsSync(claudePluginDir)) {
-      try {
-        const pluginFiles = readdirSync(claudePluginDir)
-        report.claudePlugin.files = pluginFiles
-      } catch {}
-    }
-
-    // Skills
-    const skillsDir = join(PLUGIN_ROOT, 'skills')
-    if (existsSync(skillsDir)) {
-      try {
-        report.skills = readdirSync(skillsDir)
-      } catch { report.skills = [] }
-    }
-
-    return json(report)
-  }
-
-  // =========================================================================
-  // slack_debug_access
-  // =========================================================================
-  if (name === 'slack_debug_access') {
-    const { access, errors } = loadAccessJson()
-    if (!access) return json({ error: 'Could not load access.json', path: ACCESS_PATH, details: errors })
-
-    const redacted = JSON.parse(JSON.stringify(access))
-    if (Array.isArray(redacted.pending)) {
-      for (const p of redacted.pending) { if (p.code) p.code = '***' }
-    }
-
-    // Annotate with analysis
-    const analysis: string[] = []
-    if (!access.allowFrom?.length) analysis.push('allowFrom is empty — no users will pass the DM gate or trigger auto-opt-in')
-    if (access.dmPolicy === 'disabled') analysis.push('DMs are disabled — users cannot pair via DM')
-    if (!access.channels || !Object.keys(access.channels).length) analysis.push('No permanent channels — only ephemeral session-scoped connections via @mention')
-    if (access.pending?.length > 0) analysis.push(`${access.pending.length} pending pairing(s) — someone DMed the bot but hasn't been approved`)
-
-    return json({ path: ACCESS_PATH, access: redacted, analysis, errors })
-  }
-
-  // =========================================================================
-  // slack_debug_logs
-  // =========================================================================
-  if (name === 'slack_debug_logs') {
-    const limit = Math.min(Math.max((args?.limit as number) || 30, 1), 200)
-
-    if (!existsSync(DEBUG_DIR)) return json({ error: `Debug dir not found: ${DEBUG_DIR}` })
-
-    let files: Array<{ name: string; mtime: number }> = []
-    try {
-      files = readdirSync(DEBUG_DIR)
-        .map((name) => { try { return { name, mtime: statSync(join(DEBUG_DIR, name)).mtimeMs } } catch { return null } })
-        .filter((f): f is { name: string; mtime: number } => f !== null)
-        .sort((a, b) => b.mtime - a.mtime)
-    } catch (err: any) {
-      return json({ error: `Failed to read debug dir: ${err.message}` })
-    }
-
-    if (!files.length) return json({ error: 'No debug log files found' })
-
-    const logEntries: string[] = []
-    for (const file of files.slice(0, 5)) {
-      if (logEntries.length >= limit * 2) break // Gather extra, take last N
-      try {
-        for (const line of readFileSync(join(DEBUG_DIR, file.name), 'utf-8').split('\n')) {
-          if (line.includes('"event":') || line.includes('"level":')) logEntries.push(line.trim())
-        }
-      } catch {}
-    }
-
-    const result = logEntries.slice(-limit)
-
-    // Summarize log patterns
-    const summary: Record<string, number> = {}
-    for (const entry of result) {
-      try {
-        const parsed = JSON.parse(entry)
-        const event = parsed.event || parsed.level || 'unknown'
-        summary[event] = (summary[event] || 0) + 1
-      } catch {}
-    }
-
-    return json({ source: files[0].name, filesScanned: Math.min(files.length, 5), total: logEntries.length, returned: result.length, summary, entries: result })
-  }
-
-  // =========================================================================
-  // slack_debug_send_test
-  // =========================================================================
-  if (name === 'slack_debug_send_test') {
-    const channel = args?.channel as string
-    if (!channel) return json({ error: 'channel is required' })
-
-    const { botToken, errors } = loadEnvTokens()
-    if (!botToken) return json({ ok: false, error: 'No valid bot token', tokenErrors: errors })
-
-    const text = (args?.text as string) || `[slack-eidos-debug] outbound test at ${new Date().toISOString()}`
-    try {
-      const web = new WebClient(botToken)
-      const res = await web.chat.postMessage({ channel, text, unfurl_links: false, unfurl_media: false })
-      return json({ ok: true, channel: res.channel, ts: res.ts, text })
-    } catch (err: any) {
-      const msg = err?.data?.error || err?.message || String(err)
-      return json({ ok: false, error: msg, channel, hint: hintForError(msg) })
     }
   }
 
-  // =========================================================================
-  // slack_debug_read_channel
-  // =========================================================================
-  if (name === 'slack_debug_read_channel') {
-    const channel = args?.channel as string
-    if (!channel) return json({ error: 'channel is required' })
-
-    const { botToken, errors } = loadEnvTokens()
-    if (!botToken) return json({ ok: false, error: 'No valid bot token', tokenErrors: errors })
-
-    const limit = Math.min(Math.max((args?.limit as number) || 10, 1), 50)
-    try {
-      const web = new WebClient(botToken)
-      const res = await web.conversations.history({ channel, limit })
-      const messages = (res.messages || []).reverse().map((m: any) => ({
-        ts: m.ts,
-        user: m.user || m.bot_id || 'unknown',
-        text: (m.text || '').slice(0, 300),
-        subtype: m.subtype || null,
-      }))
-      return json({ ok: true, channel, count: messages.length, messages })
-    } catch (err: any) {
-      const msg = err?.data?.error || err?.message || String(err)
-      return json({ ok: false, error: msg, channel, hint: hintForError(msg) })
-    }
-  }
-
-  // =========================================================================
-  // slack_debug_channel_reg — flag vs server name mismatch detection
-  // =========================================================================
-  if (name === 'slack_debug_channel_reg') {
-    const report: Record<string, any> = { issues: [] }
-
-    // 1. Read plugin.json to find declared channel server names
-    const pluginJsonPath = join(PLUGIN_ROOT, '.claude-plugin', 'plugin.json')
-    if (existsSync(pluginJsonPath)) {
-      try {
-        const pluginJson = JSON.parse(readFileSync(pluginJsonPath, 'utf-8'))
-        report.pluginName = pluginJson.name
-        report.declaredChannels = pluginJson.channels || []
-        // The internal MCP name is: plugin:<pluginName>:<serverName>
-        for (const ch of report.declaredChannels) {
-          report.internalServerName = `plugin:${pluginJson.name}:${ch.server}`
-        }
-      } catch (err: any) {
-        report.pluginJson = { error: err.message }
-      }
-    } else {
-      report.pluginJson = null
-    }
-
-    // 2. Check plugin .mcp.json for server entries
-    const pluginMcpPath = join(PLUGIN_ROOT, '.mcp.json')
-    if (existsSync(pluginMcpPath)) {
-      try {
-        const pluginMcp = JSON.parse(readFileSync(pluginMcpPath, 'utf-8'))
-        report.pluginServers = Object.keys(pluginMcp.mcpServers || {})
-      } catch {}
-    }
-
-    // 3. Check workspace .mcp.json for a matching server entry
-    const workspacePath = (args?.workspace as string) || DEFAULT_WORKSPACE
-    const wsMcpPath = join(workspacePath, '.mcp.json')
-    if (existsSync(wsMcpPath)) {
-      try {
-        const wsMcp = JSON.parse(readFileSync(wsMcpPath, 'utf-8'))
-        const servers = Object.keys(wsMcp.mcpServers || {})
-        report.workspaceServers = servers
-        // Check if there's a "slack" server entry (what server:slack looks for)
-        report.hasSlackInWorkspace = servers.includes('slack')
-      } catch {}
-    }
-
-    // 4. Check start-with-slack.sh for the flag value
-    const startScriptPaths = [
-      join(workspacePath, 'start-with-slack.sh'),
-      join(PLUGIN_ROOT, '..', 'greenmark-cockpit', 'start-with-slack.sh'),
-    ]
-    for (const p of startScriptPaths) {
-      if (existsSync(p)) {
-        try {
-          const content = readFileSync(p, 'utf-8')
-          const match = content.match(/--dangerously-load-development-channels\s+(\S+)/)
-          if (match) {
-            report.flagValue = match[1]
-            report.startScript = p
-          }
-        } catch {}
-        break
-      }
-    }
-
-    // 5. Parse Claude Code debug logs — current session only (#8)
-    const { logs: skipLogs, stale } = getCurrentSessionSkipLogs()
-    if (skipLogs.length) {
-      report.channelSkipLogs = skipLogs
-    }
-    if (stale) {
-      report.staleLogsFiltered = true
-      report.staleNote = 'Older skip logs from previous sessions were filtered out. Only showing current session.'
-    }
-
-    // 6. Parse process args for --dangerously-load-development-channels
-    const psOut = shell('ps aux | grep "dangerously-load" | grep -v grep')
-    if (psOut) {
-      const match = psOut.match(/--dangerously-load-development-channels\s+(\S+)/)
-      if (match) report.runningFlagValue = match[1]
-    }
-
-    // 7. Detect dual-start: multiple bridge processes (#11)
-    const bridgeProcs = countBridgeProcesses()
-    report.bridgeProcessCount = bridgeProcs.length
+  // --- Layer 6: Bot process + dual-start detection (#11) ---
+  const bridgeProcs = countBridgeProcesses()
+  if (bridgeProcs.length === 0) {
+    report.botProcess = { running: false }
+    issues.push('PROCESS: no tsx server.ts process found — bridge not running')
+  } else {
+    report.botProcess = { running: true, processCount: bridgeProcs.length, ps: bridgeProcs.map(p => `${p.user} ${p.pid} ${p.command}`).join('\n') }
     if (bridgeProcs.length > 1) {
-      report.bridgeProcesses = bridgeProcs
-      report.issues.push(
-        `DUAL-START: ${bridgeProcs.length} bridge processes running (pids: ${bridgeProcs.map(p => p.pid).join(', ')}). ` +
-        `Multiple instances compete for Socket Mode. Kill stale processes or fix launch config.`
-      )
+      issues.push(`DUAL-START: ${bridgeProcs.length} bridge processes running (pids: ${bridgeProcs.map(p => p.pid).join(', ')}). Kill stale instances.`)
     }
+  }
 
-    // 8. Check --allowedTools for frictionless replies (#10)
-    const allowedTools = checkAllowedTools(workspacePath)
-    report.allowedTools = allowedTools
-    if (!allowedTools.replyAutoApproved) {
-      report.issues.push(
-        'PERMISSION FRICTION: mcp__slack__reply is not auto-approved. Outbound replies will prompt for terminal approval. ' +
-        'Add --allowedTools "mcp__slack__reply" to your launch command or add it to settings.local.json permissions.allow.'
-      )
+  // --- Layer 6b: Outbound permission friction (#10) ---
+  const allowedTools = checkAllowedTools(DEFAULT_WORKSPACE)
+  report.outboundApproval = allowedTools.replyAutoApproved ? 'auto-approved' : 'terminal-prompt'
+  if (!allowedTools.replyAutoApproved) {
+    issues.push('FRICTION: mcp__slack__reply not auto-approved — outbound replies prompt in terminal')
+  }
+
+  // --- Layer 7: Server integrity ---
+  const serverExists = existsSync(MAIN_SERVER)
+  const nodeModulesExist = existsSync(join(PLUGIN_ROOT, 'node_modules'))
+  const tsxExists = existsSync(join(PLUGIN_ROOT, 'node_modules', '.bin', 'tsx'))
+  report.server = { serverExists, nodeModulesExist, tsxExists, pluginRoot: PLUGIN_ROOT }
+  if (!serverExists) issues.push(`SERVER: ${MAIN_SERVER} not found`)
+  if (!nodeModulesExist) issues.push('SERVER: node_modules missing — run npm install')
+  if (!tsxExists) issues.push('SERVER: tsx binary missing — run npm install')
+
+  report.healthy = issues.length === 0
+  report.issues = issues
+  report.issueCount = issues.length
+
+  return { content: [{ type: 'text', text: JSON.stringify(report, null, 2) }] }
+  }
+
+
+async function toolSlackApi(_args: ToolArgs) {
+  const { botToken, errors } = loadEnvTokens()
+  if (!botToken) return json({ ok: false, error: 'No bot token', tokenErrors: errors })
+
+  const web = new WebClient(botToken)
+  const report: Record<string, any> = {}
+
+  // auth.test
+  try {
+    const auth = await web.auth.test()
+    report.auth = { ok: true, botUserId: auth.user_id, botId: auth.bot_id, team: auth.team, teamId: auth.team_id, url: auth.url }
+  } catch (err: any) {
+    report.auth = { ok: false, error: err?.data?.error || err?.message }
+    return json(report) // Can't test anything else without auth
+  }
+
+  // Token scope introspection — extract the actual scopes baked into the token
+  // by making a deliberate bad call and parsing the 'provided' field from the error,
+  // or by checking auth.test response headers.
+  report.tokenScopes = null
+  try {
+    // conversations.info with a bogus channel returns missing_scope with 'provided' list
+    await web.conversations.info({ channel: 'C000000FAKE' })
+  } catch (err: any) {
+    const provided = err?.data?.response_metadata?.scopes || err?.data?.provided
+    if (provided) {
+      report.tokenScopes = typeof provided === 'string' ? provided.split(',') : provided
     }
+  }
 
-    // 9. Diagnose the mismatch
-    // Per Claude Code docs:
-    //   server:<name>  → looks for <name> in .mcp.json
-    //   plugin:<name>@<marketplace> → installed marketplace plugin
-    // Development plugins loaded via --plugin-dir register as plugin:<pluginName>:<serverName>
-    // but this format is NOT accepted by --dangerously-load-development-channels.
-    if (report.flagValue) {
-      if (report.flagValue.startsWith('server:')) {
-        const serverName = report.flagValue.replace('server:', '')
-        if (!report.hasSlackInWorkspace) {
-          report.issues.push(
-            `FLAG MISMATCH: "${report.flagValue}" expects a server named "${serverName}" in workspace .mcp.json, but no such entry exists. ` +
-            `Add "${serverName}" to .mcp.json pointing to server.ts, or use a marketplace plugin format.`
-          )
+  // Scope checks — test each by calling a minimal API
+  // Important: test private channel scopes separately from public channel scopes.
+  // The bridge needs groups:history for private channels, not just channels:history.
+  const scopeTests: Array<{ scope: string; test: () => Promise<boolean> }> = [
+    { scope: 'chat:write', test: async () => { /* tested by send_test */ return true } },
+    { scope: 'channels:history', test: async () => {
+      try { await web.conversations.list({ types: 'public_channel', limit: 1 }); return true } catch { return false }
+    }},
+    { scope: 'groups:history', test: async () => {
+      // Test by reading from a known private channel (from access.json), or check tokenScopes
+      const { access } = loadAccessJson()
+      const channelIds = access?.channels ? Object.keys(access.channels) : []
+      for (const chId of channelIds) {
+        try {
+          await web.conversations.history({ channel: chId, limit: 1 })
+          return true
+        } catch { /* try next */ }
+      }
+      // Fallback: check if tokenScopes includes it
+      if (Array.isArray(report.tokenScopes)) return report.tokenScopes.includes('groups:history')
+      return false
+    }},
+    { scope: 'reactions:write', test: async () => true }, // Can't test without a message
+    { scope: 'users:read', test: async () => {
+      try { await web.users.info({ user: report.auth.botUserId }); return true } catch { return false }
+    }},
+    { scope: 'files:read', test: async () => true }, // Can't test without a file
+  ]
+
+  report.scopes = {}
+  for (const { scope, test } of scopeTests) {
+    try { report.scopes[scope] = await test() } catch { report.scopes[scope] = false }
+  }
+
+  // List channels the bot is in
+  // conversations.list with private_channel type needs groups:read — which the bridge
+  // doesn't require. Try it, but don't report failure as an issue.
+  try {
+    const res = await web.conversations.list({ types: 'public_channel,private_channel', limit: 50 })
+    const memberOf = (res.channels || []).filter((c: any) => c.is_member).map((c: any) => ({ id: c.id, name: c.name, isPrivate: c.is_private }))
+    report.memberOf = memberOf
+  } catch (err: any) {
+    // Fall back to public channels only
+    try {
+      const res = await web.conversations.list({ types: 'public_channel', limit: 50 })
+      const memberOf = (res.channels || []).filter((c: any) => c.is_member).map((c: any) => ({ id: c.id, name: c.name }))
+      report.memberOf = memberOf
+      report.memberOfNote = 'private channels not listed (groups:read not in token — this is fine, bridge does not need it)'
+    } catch (err2: any) {
+      report.memberOf = { error: err2?.data?.error || err2?.message }
+    }
+  }
+
+  return json(report)
+  }
+
+
+async function toolBotProcess(_args: ToolArgs) {
+  const report: Record<string, any> = {}
+
+  // Look for the main server.ts process (not this debug server) (#11)
+  const bridgeProcs = countBridgeProcesses()
+  if (bridgeProcs.length > 0) {
+    report.running = true
+    report.processCount = bridgeProcs.length
+    report.processes = bridgeProcs
+    if (bridgeProcs.length > 1) {
+      report.dualStart = true
+      report.dualStartWarning = `${bridgeProcs.length} bridge instances running! They compete for Socket Mode. Kill stale processes: kill ${bridgeProcs.slice(1).map(p => p.pid).join(' ')}`
+    }
+  } else {
+    report.running = false
+    report.hint = 'Bridge not running. Start with: ./start-with-slack.sh'
+  }
+
+  // Check if any node processes are using the slack socket-mode
+  const socketOut = shell('ps aux | grep "[s]lack.*socket" | head -5')
+  report.socketModeProcesses = socketOut || null
+
+  // Check if the start-with-slack.sh exists and is executable
+  const startScript = join(PLUGIN_ROOT, '..', 'greenmark-cockpit', 'start-with-slack.sh')
+  report.startScript = existsSync(startScript) ? { exists: true, path: startScript } : { exists: false }
+
+  return json(report)
+  }
+
+
+async function toolServer(_args: ToolArgs) {
+  const report: Record<string, any> = {}
+
+  report.pluginRoot = PLUGIN_ROOT
+  report.serverTs = { path: MAIN_SERVER, exists: existsSync(MAIN_SERVER) }
+
+  // node_modules
+  const nmPath = join(PLUGIN_ROOT, 'node_modules')
+  report.nodeModules = { exists: existsSync(nmPath) }
+
+  // Key dependencies
+  const deps = ['@modelcontextprotocol/sdk', '@slack/socket-mode', '@slack/web-api', 'zod']
+  report.dependencies = {}
+  for (const dep of deps) {
+    const depPath = join(nmPath, dep)
+    report.dependencies[dep] = existsSync(depPath)
+  }
+
+  // tsx binary
+  const tsxPath = join(nmPath, '.bin', 'tsx')
+  report.tsx = { path: tsxPath, exists: existsSync(tsxPath) }
+
+  // package.json
+  const pkgPath = join(PLUGIN_ROOT, 'package.json')
+  if (existsSync(pkgPath)) {
+    try {
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'))
+      report.package = { name: pkg.name, version: pkg.version, deps: pkg.dependencies, devDeps: pkg.devDependencies }
+    } catch (err: any) {
+      report.package = { error: err.message }
+    }
+  }
+
+  // TypeScript compilation check
+  const tscResult = shell(`cd "${PLUGIN_ROOT}" && ./node_modules/.bin/tsc --noEmit --pretty false 2>&1 | head -20`)
+  report.typeCheck = tscResult ? { errors: tscResult } : { ok: true }
+
+  // .mcp.json in plugin root
+  const mcpJsonPath = join(PLUGIN_ROOT, '.mcp.json')
+  if (existsSync(mcpJsonPath)) {
+    try {
+      report.mcpJson = JSON.parse(readFileSync(mcpJsonPath, 'utf-8'))
+    } catch (err: any) {
+      report.mcpJson = { error: err.message }
+    }
+  } else {
+    report.mcpJson = null
+  }
+
+  // manifest.json (Slack app manifest for reference)
+  const manifestPath = join(PLUGIN_ROOT, 'manifest.json')
+  if (existsSync(manifestPath)) {
+    try {
+      report.slackManifest = JSON.parse(readFileSync(manifestPath, 'utf-8'))
+    } catch { report.slackManifest = null }
+  }
+
+  return json(report)
+  }
+
+
+async function toolMcpConfig(args: ToolArgs) {
+  const report: Record<string, any> = { issues: [] }
+
+  // Plugin .mcp.json
+  const pluginMcpPath = join(PLUGIN_ROOT, '.mcp.json')
+  if (existsSync(pluginMcpPath)) {
+    try {
+      const pluginMcp = JSON.parse(readFileSync(pluginMcpPath, 'utf-8'))
+      report.pluginMcpJson = { path: pluginMcpPath, servers: Object.keys(pluginMcp.mcpServers || {}) }
+      if (!pluginMcp.mcpServers?.slack) report.issues.push('Plugin .mcp.json missing "slack" server entry')
+    } catch (err: any) {
+      report.pluginMcpJson = { error: err.message }
+      report.issues.push(`Plugin .mcp.json parse error: ${err.message}`)
+    }
+  } else {
+    report.pluginMcpJson = null
+    report.issues.push(`Plugin .mcp.json missing at ${pluginMcpPath}`)
+  }
+
+  // Workspace .mcp.json
+  const workspacePath = (args?.workspace as string) || DEFAULT_WORKSPACE
+  const wsMcpPath = join(workspacePath, '.mcp.json')
+  if (existsSync(wsMcpPath)) {
+    try {
+      const wsMcp = JSON.parse(readFileSync(wsMcpPath, 'utf-8'))
+      const servers = Object.keys(wsMcp.mcpServers || {})
+      report.workspaceMcpJson = { path: wsMcpPath, servers }
+      if (!wsMcp.mcpServers?.['slack-eidos-debug']) {
+        report.issues.push('Workspace .mcp.json missing "slack-eidos-debug" entry')
+      } else {
+        const entry = wsMcp.mcpServers['slack-eidos-debug']
+        // Verify paths exist
+        if (entry.command && !existsSync(entry.command)) {
+          report.issues.push(`Debug MCP command not found: ${entry.command}`)
         }
-      } else if (report.flagValue.startsWith('plugin:') && !report.flagValue.includes('@')) {
+        if (entry.args?.[0] && !existsSync(entry.args[0])) {
+          report.issues.push(`Debug MCP script not found: ${entry.args[0]}`)
+        }
+        report.debugEntry = entry
+      }
+    } catch (err: any) {
+      report.workspaceMcpJson = { error: err.message }
+      report.issues.push(`Workspace .mcp.json parse error: ${err.message}`)
+    }
+  } else {
+    report.workspaceMcpJson = null
+    report.issues.push(`Workspace .mcp.json missing at ${wsMcpPath}`)
+  }
+
+  // Claude Code plugin dir — check if .claude-plugin exists
+  const claudePluginDir = join(PLUGIN_ROOT, '.claude-plugin')
+  report.claudePlugin = { path: claudePluginDir, exists: existsSync(claudePluginDir) }
+  if (existsSync(claudePluginDir)) {
+    try {
+      const pluginFiles = readdirSync(claudePluginDir)
+      report.claudePlugin.files = pluginFiles
+    } catch {}
+  }
+
+  // Skills
+  const skillsDir = join(PLUGIN_ROOT, 'skills')
+  if (existsSync(skillsDir)) {
+    try {
+      report.skills = readdirSync(skillsDir)
+    } catch { report.skills = [] }
+  }
+
+  return json(report)
+  }
+
+
+async function toolAccess(_args: ToolArgs) {
+  const { access, errors } = loadAccessJson()
+  if (!access) return json({ error: 'Could not load access.json', path: ACCESS_PATH, details: errors })
+
+  const redacted = JSON.parse(JSON.stringify(access))
+  if (Array.isArray(redacted.pending)) {
+    for (const p of redacted.pending) { if (p.code) p.code = '***' }
+  }
+
+  // Annotate with analysis
+  const analysis: string[] = []
+  if (!access.allowFrom?.length) analysis.push('allowFrom is empty — no users will pass the DM gate or trigger auto-opt-in')
+  if (access.dmPolicy === 'disabled') analysis.push('DMs are disabled — users cannot pair via DM')
+  if (!access.channels || !Object.keys(access.channels).length) analysis.push('No permanent channels — only ephemeral session-scoped connections via @mention')
+  if (access.pending?.length > 0) analysis.push(`${access.pending.length} pending pairing(s) — someone DMed the bot but hasn't been approved`)
+
+  return json({ path: ACCESS_PATH, access: redacted, analysis, errors })
+  }
+
+
+async function toolLogs(args: ToolArgs) {
+  const limit = Math.min(Math.max((args?.limit as number) || 30, 1), 200)
+
+  const files = listByMtime(DEBUG_DIR)
+  if (!files.length) return json({ error: 'No debug log files found' })
+
+  const logEntries: string[] = []
+  for (const file of files.slice(0, 5)) {
+    if (logEntries.length >= limit * 2) break // Gather extra, take last N
+    try {
+      for (const line of readFileSync(join(DEBUG_DIR, file.name), 'utf-8').split('\n')) {
+        if (line.includes('"event":') || line.includes('"level":')) logEntries.push(line.trim())
+      }
+    } catch {}
+  }
+
+  const result = logEntries.slice(-limit)
+
+  // Summarize log patterns
+  const summary: Record<string, number> = {}
+  for (const entry of result) {
+    try {
+      const parsed = JSON.parse(entry)
+      const event = parsed.event || parsed.level || 'unknown'
+      summary[event] = (summary[event] || 0) + 1
+    } catch {}
+  }
+
+  return json({ source: files[0].name, filesScanned: Math.min(files.length, 5), total: logEntries.length, returned: result.length, summary, entries: result })
+  }
+
+
+async function toolSendTest(args: ToolArgs) {
+  const channel = args?.channel as string
+  if (!channel) return json({ error: 'channel is required' })
+
+  const { botToken, errors } = loadEnvTokens()
+  if (!botToken) return json({ ok: false, error: 'No valid bot token', tokenErrors: errors })
+
+  const text = (args?.text as string) || `[slack-eidos-debug] outbound test at ${new Date().toISOString()}`
+  try {
+    const web = new WebClient(botToken)
+    const res = await web.chat.postMessage({ channel, text, unfurl_links: false, unfurl_media: false })
+    return json({ ok: true, channel: res.channel, ts: res.ts, text })
+  } catch (err: any) {
+    const msg = err?.data?.error || err?.message || String(err)
+    return json({ ok: false, error: msg, channel, hint: hintForError(msg) })
+  }
+  }
+
+
+async function toolReadChannel(args: ToolArgs) {
+  const channel = args?.channel as string
+  if (!channel) return json({ error: 'channel is required' })
+
+  const { botToken, errors } = loadEnvTokens()
+  if (!botToken) return json({ ok: false, error: 'No valid bot token', tokenErrors: errors })
+
+  const limit = Math.min(Math.max((args?.limit as number) || 10, 1), 50)
+  try {
+    const web = new WebClient(botToken)
+    const res = await web.conversations.history({ channel, limit })
+    const messages = (res.messages || []).reverse().map((m: any) => ({
+      ts: m.ts,
+      user: m.user || m.bot_id || 'unknown',
+      text: (m.text || '').slice(0, 300),
+      subtype: m.subtype || null,
+    }))
+    return json({ ok: true, channel, count: messages.length, messages })
+  } catch (err: any) {
+    const msg = err?.data?.error || err?.message || String(err)
+    return json({ ok: false, error: msg, channel, hint: hintForError(msg) })
+  }
+  }
+
+
+async function toolChannelReg(args: ToolArgs) {
+  const report: Record<string, any> = { issues: [] }
+
+  // 1. Read plugin.json to find declared channel server names
+  const pluginJsonPath = join(PLUGIN_ROOT, '.claude-plugin', 'plugin.json')
+  if (existsSync(pluginJsonPath)) {
+    try {
+      const pluginJson = JSON.parse(readFileSync(pluginJsonPath, 'utf-8'))
+      report.pluginName = pluginJson.name
+      report.declaredChannels = pluginJson.channels || []
+      // The internal MCP name is: plugin:<pluginName>:<serverName>
+      for (const ch of report.declaredChannels) {
+        report.internalServerName = `plugin:${pluginJson.name}:${ch.server}`
+      }
+    } catch (err: any) {
+      report.pluginJson = { error: err.message }
+    }
+  } else {
+    report.pluginJson = null
+  }
+
+  // 2. Check plugin .mcp.json for server entries
+  const pluginMcpPath = join(PLUGIN_ROOT, '.mcp.json')
+  if (existsSync(pluginMcpPath)) {
+    try {
+      const pluginMcp = JSON.parse(readFileSync(pluginMcpPath, 'utf-8'))
+      report.pluginServers = Object.keys(pluginMcp.mcpServers || {})
+    } catch {}
+  }
+
+  // 3. Check workspace .mcp.json for a matching server entry
+  const workspacePath = (args?.workspace as string) || DEFAULT_WORKSPACE
+  const wsMcpPath = join(workspacePath, '.mcp.json')
+  if (existsSync(wsMcpPath)) {
+    try {
+      const wsMcp = JSON.parse(readFileSync(wsMcpPath, 'utf-8'))
+      const servers = Object.keys(wsMcp.mcpServers || {})
+      report.workspaceServers = servers
+      // Check if there's a "slack" server entry (what server:slack looks for)
+      report.hasSlackInWorkspace = servers.includes('slack')
+    } catch {}
+  }
+
+  // 4. Check start-with-slack.sh for the flag value
+  const startScriptPaths = [
+    join(workspacePath, 'start-with-slack.sh'),
+    join(PLUGIN_ROOT, '..', 'greenmark-cockpit', 'start-with-slack.sh'),
+  ]
+  for (const p of startScriptPaths) {
+    if (existsSync(p)) {
+      try {
+        const content = readFileSync(p, 'utf-8')
+        const match = content.match(/--dangerously-load-development-channels\s+(\S+)/)
+        if (match) {
+          report.flagValue = match[1]
+          report.startScript = p
+        }
+      } catch {}
+      break
+    }
+  }
+
+  // 5. Parse Claude Code debug logs — current session only (#8)
+  const { logs: skipLogs, stale } = getCurrentSessionSkipLogs()
+  if (skipLogs.length) {
+    report.channelSkipLogs = skipLogs
+  }
+  if (stale) {
+    report.staleLogsFiltered = true
+    report.staleNote = 'Older skip logs from previous sessions were filtered out. Only showing current session.'
+  }
+
+  // 6. Parse process args for --dangerously-load-development-channels
+  const psOut = shell('ps aux | grep "dangerously-load" | grep -v grep')
+  if (psOut) {
+    const match = psOut.match(/--dangerously-load-development-channels\s+(\S+)/)
+    if (match) report.runningFlagValue = match[1]
+  }
+
+  // 7. Detect dual-start: multiple bridge processes (#11)
+  const bridgeProcs = countBridgeProcesses()
+  report.bridgeProcessCount = bridgeProcs.length
+  if (bridgeProcs.length > 1) {
+    report.bridgeProcesses = bridgeProcs
+    report.issues.push(
+      `DUAL-START: ${bridgeProcs.length} bridge processes running (pids: ${bridgeProcs.map(p => p.pid).join(', ')}). ` +
+      `Multiple instances compete for Socket Mode. Kill stale processes or fix launch config.`
+    )
+  }
+
+  // 8. Check --allowedTools for frictionless replies (#10)
+  const allowedTools = checkAllowedTools(workspacePath)
+  report.allowedTools = allowedTools
+  if (!allowedTools.replyAutoApproved) {
+    report.issues.push(
+      'PERMISSION FRICTION: mcp__slack__reply is not auto-approved. Outbound replies will prompt for terminal approval. ' +
+      'Add --allowedTools "mcp__slack__reply" to your launch command or add it to settings.local.json permissions.allow.'
+    )
+  }
+
+  // 9. Diagnose the mismatch
+  // Per Claude Code docs:
+  //   server:<name>  → looks for <name> in .mcp.json
+  //   plugin:<name>@<marketplace> → installed marketplace plugin
+  // Development plugins loaded via --plugin-dir register as plugin:<pluginName>:<serverName>
+  // but this format is NOT accepted by --dangerously-load-development-channels.
+  if (report.flagValue) {
+    if (report.flagValue.startsWith('server:')) {
+      const serverName = report.flagValue.replace('server:', '')
+      if (!report.hasSlackInWorkspace) {
         report.issues.push(
-          `INVALID FORMAT: "${report.flagValue}" — plugin entries need @marketplace suffix. ` +
-          `Format: plugin:<name>@<marketplace>. For development, use server:<name> with the server in .mcp.json instead.`
+          `FLAG MISMATCH: "${report.flagValue}" expects a server named "${serverName}" in workspace .mcp.json, but no such entry exists. ` +
+          `Add "${serverName}" to .mcp.json pointing to server.ts, or use a marketplace plugin format.`
         )
       }
+    } else if (report.flagValue.startsWith('plugin:') && !report.flagValue.includes('@')) {
+      report.issues.push(
+        `INVALID FORMAT: "${report.flagValue}" — plugin entries need @marketplace suffix. ` +
+        `Format: plugin:<name>@<marketplace>. For development, use server:<name> with the server in .mcp.json instead.`
+      )
     }
+  }
 
-    if (skipLogs.length) {
-      report.issues.push('CHANNEL SKIPPED: Claude Code logged "Channel notifications skipped" in the CURRENT session — inbound events are NOT being delivered. Check the flag value and server name.')
+  if (skipLogs.length) {
+    report.issues.push('CHANNEL SKIPPED: Claude Code logged "Channel notifications skipped" in the CURRENT session — inbound events are NOT being delivered. Check the flag value and server name.')
+  }
+
+  report.recommendation = report.issues.length
+    ? 'Check each issue above. Common fixes: add "slack" to workspace .mcp.json, kill duplicate processes, add --allowedTools to start script.'
+    : 'Channel registration looks correct. Replies auto-approved. No duplicate processes.'
+
+  return json(report)
+  }
+
+
+async function toolScopeDiff(_args: ToolArgs) {
+  const { botToken, errors } = loadEnvTokens()
+  if (!botToken) return json({ ok: false, error: 'No bot token', tokenErrors: errors })
+
+  const web = new WebClient(botToken)
+
+  // Required scopes for the bridge to function
+  const required: Record<string, string> = {
+    'app_mentions:read': 'receive @mention events in Socket Mode',
+    'chat:write': 'send messages to channels and DMs',
+    'groups:history': 'read messages in private channels',
+    'channels:history': 'read messages in public channels',
+    'im:history': 'read DM messages',
+    'reactions:write': 'add emoji reactions (ack pattern)',
+    'users:read': 'resolve display names from user IDs',
+    'files:read': 'access shared file metadata',
+  }
+
+  // Nice-to-have but not required
+  const optional: Record<string, string> = {
+    'groups:read': 'list private channels (debug tool only, not needed by bridge)',
+    'channels:read': 'list public channels (debug tool only)',
+    'files:write': 'upload files as bot',
+  }
+
+  // Extract actual scopes from token by triggering an error with the 'provided' field
+  let tokenScopes: string[] = []
+  try {
+    await web.conversations.info({ channel: 'C000000FAKE' })
+  } catch (err: any) {
+    const provided = err?.data?.response_metadata?.scopes || err?.data?.provided
+    if (provided) {
+      tokenScopes = typeof provided === 'string' ? provided.split(',') : provided
     }
+  }
 
-    report.recommendation = report.issues.length
-      ? 'Check each issue above. Common fixes: add "slack" to workspace .mcp.json, kill duplicate processes, add --allowedTools to start script.'
-      : 'Channel registration looks correct. Replies auto-approved. No duplicate processes.'
+  if (!tokenScopes.length) {
+    return json({ ok: false, error: 'Could not extract scopes from token. The token may be invalid or the Slack API response format changed.' })
+  }
 
+  const have = new Set(tokenScopes)
+  const missing: Array<{ scope: string; reason: string }> = []
+  const present: string[] = []
+  for (const [scope, reason] of Object.entries(required)) {
+    if (have.has(scope)) {
+      present.push(scope)
+    } else {
+      missing.push({ scope, reason })
+    }
+  }
+
+  const optionalMissing: Array<{ scope: string; reason: string }> = []
+  const optionalPresent: string[] = []
+  for (const [scope, reason] of Object.entries(optional)) {
+    if (have.has(scope)) {
+      optionalPresent.push(scope)
+    } else {
+      optionalMissing.push({ scope, reason })
+    }
+  }
+
+  const extra = tokenScopes.filter((s: string) => !required[s] && !optional[s])
+
+  return json({
+    ok: missing.length === 0,
+    tokenScopes,
+    required: { present, missing },
+    optional: { present: optionalPresent, missing: optionalMissing },
+    extra,
+    summary: missing.length === 0
+      ? 'All required scopes present. Bridge should work.'
+      : `Missing ${missing.length} required scope(s): ${missing.map((m: { scope: string }) => m.scope).join(', ')}. Add them at api.slack.com/apps → OAuth & Permissions, then reinstall the app.`,
+  })
+  }
+
+
+async function toolSocketMode(_args: ToolArgs) {
+  const { appToken, botToken, errors } = loadEnvTokens()
+  const report: Record<string, any> = {}
+
+  if (!appToken) return json({ ok: false, error: 'No app token', tokenErrors: errors })
+
+  // 1. Test app token by calling apps.connections.open (what Socket Mode uses)
+  try {
+    const web = new WebClient()
+    const res = await web.apiCall('apps.connections.open', { token: appToken })
+    report.socketModeAuth = { ok: true, url: (res as any).url ? 'present' : 'missing' }
+  } catch (err: any) {
+    const msg = err?.data?.error || err?.message || String(err)
+    report.socketModeAuth = { ok: false, error: msg }
+    report.issues = [`Socket Mode auth failed: ${msg}. Check SLACK_APP_TOKEN (xapp-).`]
     return json(report)
   }
 
-  // =========================================================================
-  // slack_debug_scope_diff — token scopes vs bridge requirements
-  // =========================================================================
-  if (name === 'slack_debug_scope_diff') {
-    const { botToken, errors } = loadEnvTokens()
-    if (!botToken) return json({ ok: false, error: 'No bot token', tokenErrors: errors })
+  // 2. Check bridge process and look for boot log
+  const psOut = shell('ps aux | grep "[t]sx.*server.ts" | grep -v debug')
+  report.bridgeRunning = !!psOut
+  if (psOut) {
+    // Extract PID and calculate uptime
+    const parts = psOut.split('\n')[0]?.split(/\s+/)
+    if (parts) {
+      report.bridgePid = parts[1]
+      // Get process start time
+      const startTime = shell(`ps -o lstart= -p ${parts[1]} 2>/dev/null`)
+      if (startTime) report.bridgeStartTime = startTime.trim()
+    }
+  }
 
+  // 3. Scan debug logs for Socket Mode events and boot.complete
+  {
+    const files = listByMtime(DEBUG_DIR)
+    try {
+      for (const file of files.slice(0, 3)) {
+        const content = readFileSync(join(DEBUG_DIR, file.name), 'utf-8')
+        const lines = content.split('\n')
+
+        // Look for Socket Mode connection logs
+        const socketLines = lines.filter((l: string) =>
+          l.includes('socket') || l.includes('Socket') ||
+          l.includes('boot.complete') || l.includes('slack.inbound') ||
+          l.includes('gate.drop') || l.includes('gate.deliver')
+        )
+        if (socketLines.length) {
+          report.recentSocketLogs = socketLines.slice(-10)
+          break
+        }
+      }
+    } catch {}
+  }
+
+  // 4. Check if the Slack app has event subscriptions enabled
+  // We can infer this: if app_mentions:read is in the token scopes, the app
+  // is subscribed to app_mention events. If not, Socket Mode won't fire.
+  if (botToken) {
     const web = new WebClient(botToken)
-
-    // Required scopes for the bridge to function
-    const required: Record<string, string> = {
-      'app_mentions:read': 'receive @mention events in Socket Mode',
-      'chat:write': 'send messages to channels and DMs',
-      'groups:history': 'read messages in private channels',
-      'channels:history': 'read messages in public channels',
-      'im:history': 'read DM messages',
-      'reactions:write': 'add emoji reactions (ack pattern)',
-      'users:read': 'resolve display names from user IDs',
-      'files:read': 'access shared file metadata',
-    }
-
-    // Nice-to-have but not required
-    const optional: Record<string, string> = {
-      'groups:read': 'list private channels (debug tool only, not needed by bridge)',
-      'channels:read': 'list public channels (debug tool only)',
-      'files:write': 'upload files as bot',
-    }
-
-    // Extract actual scopes from token by triggering an error with the 'provided' field
     let tokenScopes: string[] = []
     try {
       await web.conversations.info({ channel: 'C000000FAKE' })
     } catch (err: any) {
       const provided = err?.data?.response_metadata?.scopes || err?.data?.provided
-      if (provided) {
-        tokenScopes = typeof provided === 'string' ? provided.split(',') : provided
-      }
+      if (provided) tokenScopes = typeof provided === 'string' ? provided.split(',') : provided
     }
 
-    if (!tokenScopes.length) {
-      return json({ ok: false, error: 'Could not extract scopes from token. The token may be invalid or the Slack API response format changed.' })
+    report.eventScopes = {
+      app_mentions_read: tokenScopes.includes('app_mentions:read'),
+      channels_history: tokenScopes.includes('channels:history'),
+      groups_history: tokenScopes.includes('groups:history'),
+      im_history: tokenScopes.includes('im:history'),
     }
 
-    const have = new Set(tokenScopes)
-    const missing: Array<{ scope: string; reason: string }> = []
-    const present: string[] = []
-    for (const [scope, reason] of Object.entries(required)) {
-      if (have.has(scope)) {
-        present.push(scope)
-      } else {
-        missing.push({ scope, reason })
-      }
+    if (!tokenScopes.includes('app_mentions:read')) {
+      report.issues = report.issues || []
+      report.issues.push('app_mentions:read not in token — Socket Mode app_mention events will not fire')
     }
+  }
 
-    const optionalMissing: Array<{ scope: string; reason: string }> = []
-    const optionalPresent: string[] = []
-    for (const [scope, reason] of Object.entries(optional)) {
-      if (have.has(scope)) {
-        optionalPresent.push(scope)
-      } else {
-        optionalMissing.push({ scope, reason })
-      }
+  // 5. Check the server.ts for claude/channel capability declaration
+  if (existsSync(MAIN_SERVER)) {
+    const serverContent = readFileSync(MAIN_SERVER, 'utf-8')
+    report.channelCapability = serverContent.includes("'claude/channel'")
+    report.permissionCapability = serverContent.includes("'claude/channel/permission'")
+    if (!report.channelCapability) {
+      report.issues = report.issues || []
+      report.issues.push('server.ts does not declare claude/channel capability — Claude Code will not register the notification listener')
     }
+  }
 
-    const extra = tokenScopes.filter((s: string) => !required[s] && !optional[s])
+  report.ok = !(report.issues?.length)
+  return json(report)
+  }
 
-    return json({
-      ok: missing.length === 0,
-      tokenScopes,
-      required: { present, missing },
-      optional: { present: optionalPresent, missing: optionalMissing },
-      extra,
-      summary: missing.length === 0
-        ? 'All required scopes present. Bridge should work.'
-        : `Missing ${missing.length} required scope(s): ${missing.map((m: { scope: string }) => m.scope).join(', ')}. Add them at api.slack.com/apps → OAuth & Permissions, then reinstall the app.`,
+
+async function toolRoundtrip(args: ToolArgs) {
+  const channel = args?.channel as string
+  if (!channel) return json({ error: 'channel is required' })
+
+  const { botToken, errors } = loadEnvTokens()
+  if (!botToken) return json({ ok: false, error: 'No valid bot token', tokenErrors: errors })
+
+  const web = new WebClient(botToken)
+  const marker = `[roundtrip-test] ${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+
+  // 1. Send
+  let sentTs: string | undefined
+  try {
+    const res = await web.chat.postMessage({
+      channel,
+      text: marker,
+      unfurl_links: false,
+      unfurl_media: false,
     })
+    sentTs = res.ts as string
+  } catch (err: any) {
+    const msg = err?.data?.error || err?.message || String(err)
+    return json({ ok: false, phase: 'send', error: msg, hint: hintForError(msg) })
   }
 
-  // =========================================================================
-  // slack_debug_socket_mode — liveness + event subscriptions
-  // =========================================================================
-  if (name === 'slack_debug_socket_mode') {
-    const { appToken, botToken, errors } = loadEnvTokens()
-    const report: Record<string, any> = {}
+  // 2. Read back (small delay for Slack propagation)
+  await new Promise((r) => setTimeout(r, 500))
 
-    if (!appToken) return json({ ok: false, error: 'No app token', tokenErrors: errors })
+  try {
+    const res = await web.conversations.history({ channel, limit: 5 })
+    const messages = res.messages || []
+    const found = messages.find((m: any) => m.ts === sentTs)
 
-    // 1. Test app token by calling apps.connections.open (what Socket Mode uses)
+    // 3. Clean up test message
     try {
-      const web = new WebClient()
-      const res = await web.apiCall('apps.connections.open', { token: appToken })
-      report.socketModeAuth = { ok: true, url: (res as any).url ? 'present' : 'missing' }
-    } catch (err: any) {
-      const msg = err?.data?.error || err?.message || String(err)
-      report.socketModeAuth = { ok: false, error: msg }
-      report.issues = [`Socket Mode auth failed: ${msg}. Check SLACK_APP_TOKEN (xapp-).`]
-      return json(report)
+      await web.chat.delete({ channel, ts: sentTs! })
+    } catch {
+      // Best-effort cleanup — chat:write doesn't always grant delete
     }
 
-    // 2. Check bridge process and look for boot log
-    const psOut = shell('ps aux | grep "[t]sx.*server.ts" | grep -v debug')
-    report.bridgeRunning = !!psOut
-    if (psOut) {
-      // Extract PID and calculate uptime
-      const parts = psOut.split('\n')[0]?.split(/\s+/)
-      if (parts) {
-        report.bridgePid = parts[1]
-        // Get process start time
-        const startTime = shell(`ps -o lstart= -p ${parts[1]} 2>/dev/null`)
-        if (startTime) report.bridgeStartTime = startTime.trim()
-      }
-    }
-
-    // 3. Scan debug logs for Socket Mode events and boot.complete
-    if (existsSync(DEBUG_DIR)) {
-      try {
-        const files = readdirSync(DEBUG_DIR)
-          .map((n: string) => { try { return { name: n, mtime: statSync(join(DEBUG_DIR, n)).mtimeMs } } catch { return null } })
-          .filter((f: { name: string; mtime: number } | null): f is { name: string; mtime: number } => f !== null)
-          .sort((a: { mtime: number }, b: { mtime: number }) => b.mtime - a.mtime)
-
-        for (const file of files.slice(0, 3)) {
-          const content = readFileSync(join(DEBUG_DIR, file.name), 'utf-8')
-          const lines = content.split('\n')
-
-          // Look for Socket Mode connection logs
-          const socketLines = lines.filter((l: string) =>
-            l.includes('socket') || l.includes('Socket') ||
-            l.includes('boot.complete') || l.includes('slack.inbound') ||
-            l.includes('gate.drop') || l.includes('gate.deliver')
-          )
-          if (socketLines.length) {
-            report.recentSocketLogs = socketLines.slice(-10)
-            break
-          }
-        }
-      } catch {}
-    }
-
-    // 4. Check if the Slack app has event subscriptions enabled
-    // We can infer this: if app_mentions:read is in the token scopes, the app
-    // is subscribed to app_mention events. If not, Socket Mode won't fire.
-    if (botToken) {
-      const web = new WebClient(botToken)
-      let tokenScopes: string[] = []
-      try {
-        await web.conversations.info({ channel: 'C000000FAKE' })
-      } catch (err: any) {
-        const provided = err?.data?.response_metadata?.scopes || err?.data?.provided
-        if (provided) tokenScopes = typeof provided === 'string' ? provided.split(',') : provided
-      }
-
-      report.eventScopes = {
-        app_mentions_read: tokenScopes.includes('app_mentions:read'),
-        channels_history: tokenScopes.includes('channels:history'),
-        groups_history: tokenScopes.includes('groups:history'),
-        im_history: tokenScopes.includes('im:history'),
-      }
-
-      if (!tokenScopes.includes('app_mentions:read')) {
-        report.issues = report.issues || []
-        report.issues.push('app_mentions:read not in token — Socket Mode app_mention events will not fire')
-      }
-    }
-
-    // 5. Check the server.ts for claude/channel capability declaration
-    if (existsSync(MAIN_SERVER)) {
-      const serverContent = readFileSync(MAIN_SERVER, 'utf-8')
-      report.channelCapability = serverContent.includes("'claude/channel'")
-      report.permissionCapability = serverContent.includes("'claude/channel/permission'")
-      if (!report.channelCapability) {
-        report.issues = report.issues || []
-        report.issues.push('server.ts does not declare claude/channel capability — Claude Code will not register the notification listener')
-      }
-    }
-
-    report.ok = !(report.issues?.length)
-    return json(report)
-  }
-
-  // =========================================================================
-  // slack_debug_roundtrip — send + read back
-  // =========================================================================
-  if (name === 'slack_debug_roundtrip') {
-    const channel = args?.channel as string
-    if (!channel) return json({ error: 'channel is required' })
-
-    const { botToken, errors } = loadEnvTokens()
-    if (!botToken) return json({ ok: false, error: 'No valid bot token', tokenErrors: errors })
-
-    const web = new WebClient(botToken)
-    const marker = `[roundtrip-test] ${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-
-    // 1. Send
-    let sentTs: string | undefined
-    try {
-      const res = await web.chat.postMessage({
-        channel,
-        text: marker,
-        unfurl_links: false,
-        unfurl_media: false,
+    if (found) {
+      return json({
+        ok: true,
+        sentTs,
+        readBack: true,
+        latencyMs: Date.now() - parseInt(sentTs!.split('.')[0]) * 1000,
+        summary: 'Roundtrip success: sent message, read it back. Slack API read+write both work for this channel.',
       })
-      sentTs = res.ts as string
-    } catch (err: any) {
-      const msg = err?.data?.error || err?.message || String(err)
-      return json({ ok: false, phase: 'send', error: msg, hint: hintForError(msg) })
+    } else {
+      return json({
+        ok: false,
+        phase: 'readback',
+        sentTs,
+        readBack: false,
+        messagesChecked: messages.length,
+        summary: 'Message was sent but could not be read back. The bot may lack history scope for this channel type.',
+      })
     }
-
-    // 2. Read back (small delay for Slack propagation)
-    await new Promise((r) => setTimeout(r, 500))
-
-    try {
-      const res = await web.conversations.history({ channel, limit: 5 })
-      const messages = res.messages || []
-      const found = messages.find((m: any) => m.ts === sentTs)
-
-      // 3. Clean up test message
-      try {
-        await web.chat.delete({ channel, ts: sentTs! })
-      } catch {
-        // Best-effort cleanup — chat:write doesn't always grant delete
-      }
-
-      if (found) {
-        return json({
-          ok: true,
-          sentTs,
-          readBack: true,
-          latencyMs: Date.now() - parseInt(sentTs!.split('.')[0]) * 1000,
-          summary: 'Roundtrip success: sent message, read it back. Slack API read+write both work for this channel.',
-        })
-      } else {
-        return json({
-          ok: false,
-          phase: 'readback',
-          sentTs,
-          readBack: false,
-          messagesChecked: messages.length,
-          summary: 'Message was sent but could not be read back. The bot may lack history scope for this channel type.',
-        })
-      }
-    } catch (err: any) {
-      const msg = err?.data?.error || err?.message || String(err)
-      return json({ ok: false, phase: 'read', sentTs, error: msg, hint: hintForError(msg) })
-    }
+  } catch (err: any) {
+    const msg = err?.data?.error || err?.message || String(err)
+    return json({ ok: false, phase: 'read', sentTs, error: msg, hint: hintForError(msg) })
+  }
   }
 
-  throw new Error(`Unknown tool: ${name}`)
+
+// ---
+// Dispatch table — maps tool names to handler functions
+// ---------------------------------------------------------------------------
+const tools: Record<string, (args: ToolArgs) => Promise<any>> = {
+  slack_debug_check: toolCheck,
+  slack_debug_slack_api: toolSlackApi,
+  slack_debug_bot_process: toolBotProcess,
+  slack_debug_server: toolServer,
+  slack_debug_mcp_config: toolMcpConfig,
+  slack_debug_access: toolAccess,
+  slack_debug_logs: toolLogs,
+  slack_debug_send_test: toolSendTest,
+  slack_debug_read_channel: toolReadChannel,
+  slack_debug_channel_reg: toolChannelReg,
+  slack_debug_scope_diff: toolScopeDiff,
+  slack_debug_socket_mode: toolSocketMode,
+  slack_debug_roundtrip: toolRoundtrip,
+}
+
+mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
+  const { name, arguments: args } = request.params
+  const handler = tools[name]
+  if (!handler) throw new Error(`Unknown tool: ${name}`)
+  return handler(args as ToolArgs)
 })
 
 // ---------------------------------------------------------------------------
