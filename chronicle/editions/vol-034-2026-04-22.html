@@ -1,0 +1,218 @@
+<html><head><style>
+@page { size: letter; margin: 0.75in; }
+body { font-family: 'Georgia', 'Times New Roman', serif; max-width: 680px; margin: 0 auto; padding: 20px; line-height: 1.5; color: #1a1a1a; font-size: 11pt; }
+h1 { font-size: 24px; border-bottom: 3px double #333; padding-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; }
+h2 { font-size: 16px; text-transform: uppercase; letter-spacing: 1px; margin-top: 28px; border-bottom: 1px solid #999; padding-bottom: 4px; }
+h3 { font-size: 13px; font-style: italic; }
+p { text-align: justify; margin: 8px 0; }
+em { font-style: italic; }
+strong { font-weight: bold; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 10pt; }
+th, td { border: 1px solid #aaa; padding: 5px 10px; text-align: left; }
+th { background: #f0f0f0; font-weight: bold; text-transform: uppercase; font-size: 9pt; letter-spacing: 0.5px; }
+code { font-family: "Courier New", monospace; font-size: 9pt; background: #f5f5f5; padding: 1px 4px; }
+pre { background: #f5f5f5; padding: 12px; border: 1px solid #ddd; font-size: 9pt; overflow-x: auto; white-space: pre; }
+pre code { background: none; padding: 0; }
+hr { border: none; border-top: 1px solid #ccc; margin: 20px 0; }
+blockquote { border-left: 2px solid #666; margin-left: 0; padding-left: 12px; color: #555; font-style: italic; }
+</style></head><body><pre><code>╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║                     T H E   C E R E B R O                            ║
+║                     C H R O N I C L E                                ║
+║                                                                      ║
+║  Vol. 34 · Tuesday, April 22, 2026 · Evening Edition                 ║
+║  &quot;The record of what was built, what broke, and what we learned&quot;     ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+</code></pre>
+<hr />
+<h2>EIDOS PLUGIN MARKETPLACE OPENS FOR BUSINESS</h2>
+<p><em>First-ever private marketplace ships with Slack bridge as inaugural plugin</em></p>
+<p>The Eidos AGI plugin marketplace went live today, giving any Claude
+Code user one-command access to Eidos tools. The marketplace — hosted
+at <code>eidos-agi/claude-plugins</code> on GitHub — launched with its first
+plugin: <strong>slack-cc</strong>, a two-way Slack channel bridge that lets
+operators talk to their Claude Code session from their phone.</p>
+<p>The plugin went through four name changes and nine restart cycles
+before the final configuration locked in. Key discovery: Anthropic's
+<code>--channels</code> flag only works for officially approved plugins. Private
+marketplace plugins require the longer
+<code>--dangerously-load-development-channels</code> flag — a distinction not
+obvious from the documentation.</p>
+<p>"The marketplace was 30 minutes of work but it changes the
+distribution story for every future Eidos tool," said the session
+log. Railguey, research.md, ike.md, visionlog, and rhea can all be
+distributed through the same channel.</p>
+<p><strong>Install:</strong> <code>claude plugin marketplace add eidos-agi/claude-plugins</code></p>
+<hr />
+<h2>NIGHTINGALE FORGE ESTABLISHED</h2>
+<p><em>Failure study system catalogs 13 incidents — names itself after</em>
+<em>Florence Nightingale</em></p>
+<p>A new forge joined the Eidos ecosystem today: <strong>nightingale-forge</strong>,
+the 23rd forge in the registry. Its purpose: read session transcripts,
+extract structured incident reports, and cross-reference them against
+governance runbooks to find unprotected failure modes.</p>
+<p>Named for Florence Nightingale — who studied why soldiers were dying,
+invented data visualization to prove it, and changed medicine because
+the evidence was undeniable.</p>
+<p>The forge's first study targeted Session 34 (April 21), known
+internally as "the zombie container session." Nightingale extracted
+13 distinct incidents from the transcript, ranging from a develop
+environment pointed at the production database (CRITICAL) to a
+Docker build cache that served stale code through five consecutive
+deploy attempts (HIGH).</p>
+<hr />
+<h2>GAP REPORT: 77% OF REAL FAILURES UNPROTECTED</h2>
+<p><em>StepProof runbooks cover the right ceremonies but miss the gates</em>
+<em>that matter</em></p>
+<p>The first Nightingale gap report landed today with a sobering
+finding: of 13 real incidents from Session 34, only 3 are covered
+by existing StepProof governance runbooks. That's 23% coverage —
+meaning 77% of failures that actually happened in production have
+no automated gate to prevent recurrence.</p>
+<p>Nine runbooks are in place with 39 total verification gates, covering
+deploys, merges, migrations, data verification, vendor onboarding,
+and period blessing. The ceremonies are correct. The steps are in the
+right order. But three critical gates are missing:</p>
+<ol>
+<li>
+<p><strong>Environment isolation verification</strong> — no check that DATABASE_URL
+   matches the expected database before a deploy. One wrong value
+   created an 8-hour cascading failure.</p>
+</li>
+<li>
+<p><strong>PreToolUse hooks for production</strong> — all guardrails are advisory.
+   The agent acknowledged every rule and bypassed them all under
+   pressure. Only hard hooks survive that.</p>
+</li>
+<li>
+<p><strong>Post-deploy code version check</strong> — "deploy succeeded" does not
+   mean "new code is running." Docker cache served month-old code
+   on a "successful" deploy.</p>
+</li>
+</ol>
+<p>A case study titled "The Cost of Flying Blind" was printed and
+estimates 40-50 hours of agent time burned on preventable failures
+across 10 sessions.</p>
+<hr />
+<h2>STEPPROOF GOVERNANCE GOES LIVE</h2>
+<p><em>9 runbooks now encode deployment ceremonies in the cockpit</em></p>
+<p>StepProof — the verification-aware governance layer — is now
+operational in the Greenmark cockpit. The system holds AI agents
+accountable to declared plans: each step requires evidence, each
+piece of evidence is verified, and the audit trail persists.</p>
+<p>Nine runbooks were derived from studying every workflow in the
+cerebro-docs knowledge base:</p>
+<table>
+<thead>
+<tr>
+<th>Runbook</th>
+<th>Risk</th>
+<th>Steps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ship to staging</td>
+<td>Medium</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Promote to production</td>
+<td>High</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Deploy data-daemon</td>
+<td>High</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Apply migration</td>
+<td>High</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Verify data correctness</td>
+<td>Medium</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Bless closed period</td>
+<td>High</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Vendor API onboarding</td>
+<td>Medium</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Merge T1 PR</td>
+<td>High</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Ship cerebro-mcp</td>
+<td>High</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<p>The runbooks were tested live during the session. StepProof correctly
+rejected a plan with unknown verification methods, enforced evidence
+schema requirements, and completed a full two-step verification run.</p>
+<hr />
+<h2>SLACK BRIDGE: THE FULL JOURNEY</h2>
+<p><em>From development plugin to marketplace in one session</em></p>
+<p>The slack-cc plugin started the day as a development plugin requiring
+three flags and a local repo clone. It ended as a marketplace-
+installable plugin with 120 tests, CI, linting, branch protection,
+a diagnostic MCP with 12 tools, a self-diagnosing <code>/slack-cc:doctor</code>
+skill, and a <code>tools/preflight.sh</code> that runs 16 structural checks.</p>
+<p>Along the way, the engineering team:</p>
+<ul>
+<li>Extracted shared logic into <code>lib.ts</code> (tests were running against
+  shadow copies of every function — a silent divergence risk)</li>
+<li>Built a debug MCP (v0.5) with stale-log filtering, dual-start
+  detection, and <code>--allowedTools</code> verification</li>
+<li>Filed 27 GitHub issues and closed 19 of them</li>
+<li>Discovered the "five-name rule" — plugin name, channel server,
+  MCP server key, Server() constructor, and skill prefix must all
+  match exactly</li>
+<li>Documented 7 hard-won lessons in <code>tools/learnings.md</code></li>
+</ul>
+<hr />
+<pre><code>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  S H I P P I N G   M A N I F E S T
+
+  Commits          15              Repos touched     6
+  Issues filed     27              Issues closed      19
+  Tests passing    120             New repos           3
+  Runbooks          9              Incidents cataloged 13
+  Forges created    1              Case studies printed 1
+
+  Repos created this edition:
+    eidos-agi/claude-plugins     Plugin marketplace
+    eidos-agi/slack-cc           Slack channel bridge
+    eidos-agi/nightingale-forge  Failure study forge
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  NEXT EDITION PREVIEW
+
+  • Autonomous knowledge ingestion pipeline (cerebro-chronicle)
+  • Nightingale study of all 34 sessions
+  • Gap report coverage: 23% → target 90%
+  • Three missing gates deployed
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The Cerebro Chronicle is drafted by AI, curated by Daniel Shanklin,
+  and published for the Greenmark technology leadership team.
+
+  © 2026 AIC Holdings · Project Cerebro · Greenmark Waste Solutions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre></body></html>

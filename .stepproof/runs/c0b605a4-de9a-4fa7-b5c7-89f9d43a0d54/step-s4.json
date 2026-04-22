@@ -1,0 +1,22 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-22T16:41:07.695507+00:00",
+  "evidence": {
+    "ci_run_id": "cerebro-pr95-all-green-2026-04-22"
+  },
+  "run_id": "c0b605a4-de9a-4fa7-b5c7-89f9d43a0d54",
+  "started_at": "2026-04-22T16:41:07.672781+00:00",
+  "status": "verified",
+  "step_id": "s4",
+  "verification_result": {
+    "artifacts": {
+      "ci_run_id": "cerebro-pr95-all-green-2026-04-22"
+    },
+    "confidence": 1.0,
+    "latency_ms": 0,
+    "reason": "CI run cerebro-pr95-all-green-2026-04-22 SUCCESS.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_ci_green"
+  }
+}

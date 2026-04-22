@@ -1,0 +1,20 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-22T16:48:40.270764+00:00",
+  "evidence": {
+    "deploy_id": "3435ec0d-c599-4df2-833c-c242e0fedfa3"
+  },
+  "run_id": "d401e727-d2e7-438e-843c-8fa5990f5fcd",
+  "started_at": "2026-04-22T16:48:40.268711+00:00",
+  "status": "verified",
+  "step_id": "s2",
+  "verification_result": {
+    "artifacts": {},
+    "confidence": 1.0,
+    "latency_ms": 0,
+    "reason": "Deploy 3435ec0d-c599-4df2-833c-c242e0fedfa3 SUCCESS; health endpoints OK.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_deploy_and_health"
+  }
+}

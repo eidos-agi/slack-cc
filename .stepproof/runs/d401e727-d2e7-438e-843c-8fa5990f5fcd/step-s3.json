@@ -1,0 +1,20 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-22T16:50:28.309209+00:00",
+  "evidence": {
+    "smoke_run_id": "cwb-smoke-chronicle-1pass-0fail-staging"
+  },
+  "run_id": "d401e727-d2e7-438e-843c-8fa5990f5fcd",
+  "started_at": "2026-04-22T16:50:28.306695+00:00",
+  "status": "verified",
+  "step_id": "s3",
+  "verification_result": {
+    "artifacts": {},
+    "confidence": 1.0,
+    "latency_ms": 0,
+    "reason": "Smoke run cwb-smoke-chronicle-1pass-0fail-staging green.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_smoke_logs"
+  }
+}

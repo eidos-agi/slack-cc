@@ -1,0 +1,15 @@
+{
+  "id": "7ac18602-e859-4e72-b0a8-c972416c44c0",
+  "version": "0.1.0",
+  "projectName": "chronicle",
+  "created": "2026-04-22",
+  "phase": "research",
+  "transitions": [
+    {
+      "phase": "research",
+      "date": "2026-04-22"
+    }
+  ],
+  "question": "What is the right format and process for the Cerebro Chronicle \u2014 a newspaper-style record of engineering activity that Daniel curates and stakeholders consume via cerebro-mcp?",
+  "context": "Session 33 produced massive output: Slack marketplace plugin, StepProof governance, nightingale-forge, 13 incidents cataloged, case study printed. None of this is legible to stakeholders. Michael and Alex don't read git logs. The Chronicle is a newspaper-style publication: AI-drafted, Daniel-curated, stakeholder-consumed via cerebro-mcp. First edition prints today. Format should look like an old broadsheet \u2014 headlines, datelines, shipping manifests. No code needed \u2014 Claude Code drafts it, Daniel approves it, it gets printed and ingested into cerebro-mcp."
+}

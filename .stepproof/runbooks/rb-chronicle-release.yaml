@@ -1,0 +1,68 @@
+# Publish a new edition of The Cerebro Chronicle.
+# The chronicle is AI-drafted, Daniel-curated, stakeholder-consumed.
+# This runbook governs the full lifecycle from draft to publication.
+#
+# KEY PRINCIPLE: Daniel is the editor-in-chief. No edition goes live
+# without his curation. The AI drafts; the human approves.
+
+template_id: rb-chronicle-release
+version: 1.0.0
+name: Chronicle edition release
+description: Draft, curate, publish a new edition of The Cerebro Chronicle to /dashboard/chronicle.
+risk_level: medium
+allowed_environments: [staging, production]
+
+steps:
+  - step_id: s1
+    description: Draft the edition — read session transcripts, git logs, incidents, and compose articles
+    allowed_tools: [Read, Write, Bash, Grep, Glob, mcp__claude-resume__read_session, mcp__claude-resume__recent_sessions]
+    required_evidence: [file_path]
+    verification_method: verify_file_exists
+    verification_tier: tier1
+    timeout_seconds: 3600
+    on_fail: retry
+
+  - step_id: s2
+    description: Daniel curates — editor-in-chief reviews, edits, approves the edition
+    allowed_tools: [Read, Edit]
+    required_evidence: [pr_url, approval_count]
+    verification_method: verify_pr_approved
+    verification_tier: tier1
+    timeout_seconds: 86400
+    on_fail: block
+
+  - step_id: s3
+    description: Add edition to chronicle page in cerebro
+    allowed_tools: [Edit, Write, Bash]
+    required_evidence: [file_path]
+    verification_method: verify_file_exists
+    verification_tier: tier1
+    timeout_seconds: 1800
+    on_fail: retry
+
+  - step_id: s4
+    description: Tests pass
+    allowed_tools: [Bash]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s5
+    description: Ship to staging, smoke test the /chronicle page
+    allowed_tools: [mcp__cerebro-github__open_pr, mcp__cerebro-github__check_ci, mcp__cerebro-github__merge_pr, mcp__cerebro-web-builder__smoke_test]
+    required_evidence: [smoke_run_id]
+    verification_method: verify_smoke_logs
+    verification_tier: tier1
+    timeout_seconds: 1800
+    on_fail: block
+
+  - step_id: s6
+    description: Print the front page edition for Daniel's desk
+    allowed_tools: [Bash]
+    required_evidence: [file_path]
+    verification_method: verify_file_exists
+    verification_tier: tier1
+    timeout_seconds: 300
+    on_fail: retry

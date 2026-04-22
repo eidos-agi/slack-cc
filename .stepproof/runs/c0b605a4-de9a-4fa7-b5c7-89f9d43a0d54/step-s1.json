@@ -1,0 +1,24 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-22T16:36:31.672062+00:00",
+  "evidence": {
+    "file_path": "/home/dev/repos/cerebro/app/dashboard/chronicle/page.tsx",
+    "path": "/home/dev/repos/cerebro/app/dashboard/chronicle/page.tsx"
+  },
+  "run_id": "c0b605a4-de9a-4fa7-b5c7-89f9d43a0d54",
+  "started_at": "2026-04-22T16:36:31.658464+00:00",
+  "status": "verified",
+  "step_id": "s1",
+  "verification_result": {
+    "artifacts": {
+      "lines": 153,
+      "path": "/home/dev/repos/cerebro/app/dashboard/chronicle/page.tsx"
+    },
+    "confidence": 1.0,
+    "latency_ms": 1,
+    "reason": "/home/dev/repos/cerebro/app/dashboard/chronicle/page.tsx exists with 153 non-empty lines.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_file_exists"
+  }
+}
