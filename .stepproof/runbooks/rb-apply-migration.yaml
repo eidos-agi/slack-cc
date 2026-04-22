@@ -1,0 +1,39 @@
+# Apply a database migration to Supabase.
+# Source: cerebro-docs workflow('apply_migration')
+# CRITICAL: All DDL lives in cerebro-migrations repo (ADR-2026-38).
+# NEVER use raw psql to apply DDL — it bypasses migration tracking.
+
+template_id: rb-apply-migration
+version: 1.0.0
+name: Apply migration
+description: Write migration SQL, PR to cerebro-migrations, apply via Supabase CLI. Never raw psql.
+risk_level: high
+allowed_environments: [staging, production]
+
+steps:
+  - step_id: s1
+    description: Write migration SQL file (supabase/migrations/YYYYMMDDHHMMSS_description.sql)
+    allowed_tools: [Write, Edit]
+    required_evidence: [file_path]
+    verification_method: verify_file_exists
+    verification_tier: tier1
+    timeout_seconds: 3600
+    on_fail: retry
+
+  - step_id: s2
+    description: PR to cerebro-migrations, CI green, merge
+    allowed_tools: [mcp__cerebro-github__open_pr, mcp__cerebro-github__check_ci, mcp__cerebro-github__merge_pr]
+    required_evidence: [pr_url, ci_run_id]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 3600
+    on_fail: block
+
+  - step_id: s3
+    description: Apply migration via Supabase CLI (npm run migrate)
+    allowed_tools: [Bash]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block

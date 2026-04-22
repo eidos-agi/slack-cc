@@ -1,0 +1,38 @@
+# Verify dashboard data correctness against warehouse ground truth.
+# Source: cerebro-docs workflow('verify_data_correctness')
+# Run after any extraction, gold view change, or stakeholder report.
+
+template_id: rb-verify-data
+version: 1.0.0
+name: Verify data correctness
+description: Check freshness, verify KPIs against ground truth SQL, save proof screenshot.
+risk_level: medium
+allowed_environments: [staging, production]
+
+steps:
+  - step_id: s1
+    description: Check data freshness — no stale tables
+    allowed_tools: [mcp__cerebro-data-engineer__freshness]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 300
+    on_fail: block
+
+  - step_id: s2
+    description: Verify page KPIs against ground truth SQL
+    allowed_tools: [mcp__cerebro-verifier__verify_page, mcp__cerebro-verifier__query_ground_truth]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s3
+    description: Save proof screenshot
+    allowed_tools: [mcp__cerebro-verifier__take_evidence]
+    required_evidence: [file_path]
+    verification_method: verify_file_exists
+    verification_tier: tier1
+    timeout_seconds: 300
+    on_fail: retry

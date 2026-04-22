@@ -1,0 +1,65 @@
+# Onboard a new vendor API — probe, vault, prototype, pipeline, dashboard.
+# Source: cerebro-docs workflow('vendor_api_onboarding')
+# The full 2+2+2 integration arc for a single vendor.
+
+template_id: rb-vendor-onboard
+version: 1.0.0
+name: Vendor API onboarding
+description: Probe endpoints, vault credentials, prototype in warp-speed, build connector, land in dashboard.
+risk_level: medium
+allowed_environments: [staging, production]
+
+steps:
+  - step_id: s1
+    description: Probe API with curl — hit every endpoint, capture schemas
+    allowed_tools: [Bash]
+    required_evidence: [file_path]
+    verification_method: verify_file_exists
+    verification_tier: tier1
+    timeout_seconds: 3600
+    on_fail: retry
+
+  - step_id: s2
+    description: Vault credentials via cerebro-vault
+    allowed_tools: [mcp__cerebro-vault__secret_set]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s3
+    description: Write connection-forge spec
+    allowed_tools: [Write, Edit]
+    required_evidence: [file_path]
+    verification_method: verify_file_exists
+    verification_tier: tier1
+    timeout_seconds: 1800
+    on_fail: retry
+
+  - step_id: s4
+    description: Prototype in warp-speed — SQLite populated, Excel generated
+    allowed_tools: [Bash]
+    required_evidence: [file_path]
+    verification_method: verify_file_exists
+    verification_tier: tier1
+    timeout_seconds: 3600
+    on_fail: retry
+
+  - step_id: s5
+    description: Build data-daemon connector, PR open
+    allowed_tools: [Edit, Write, Bash, mcp__cerebro-github__open_pr]
+    required_evidence: [branch_name, pr_url]
+    verification_method: verify_pr_opened
+    verification_tier: tier1
+    timeout_seconds: 7200
+    on_fail: retry
+
+  - step_id: s6
+    description: CI green on connector PR
+    allowed_tools: [mcp__cerebro-github__check_ci]
+    required_evidence: [ci_run_id]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 1800
+    on_fail: block

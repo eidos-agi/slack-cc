@@ -1,11 +1,18 @@
 # Deploy data-daemon — the extraction pipeline.
-# Encodes cerebro-docs workflow('deploy_data_daemon').
-# Critical: this touches live vendor API connections.
+# Source: cerebro-docs workflow('deploy_data_daemon')
+# FAILURE MODES (from workflow docs):
+#   - DOCKER CACHE TRAP: env var changes trigger redeploy but run OLD CODE.
+#     Fix: change a file that busts cache (requirements.txt).
+#   - GR-ENV-001: develop MUST use staging DB, production MUST use prod DB.
+#     Cross-wiring causes workers to grab jobs from wrong queue.
+#   - railguey tokens lack deploy permissions. Use GH Actions, not railguey.
+#   - Workers load connector registry at import time. Deploy mid-extraction
+#     causes stale workers with old code.
 
 template_id: rb-data-daemon-deploy
-version: 1.0.0
+version: 2.0.0
 name: Deploy data-daemon
-description: Deploy the data extraction pipeline. Tests, staging, verify extractions still work, then production.
+description: Full pipeline deploy — tests, staging, verify extraction, production.
 risk_level: high
 allowed_environments: [staging, production]
 
@@ -20,17 +27,17 @@ steps:
     on_fail: block
 
   - step_id: s2
-    description: PR opened and CI green
-    allowed_tools: [Edit, Write, Bash, mcp__cerebro-github__open_pr, mcp__cerebro-github__check_ci]
-    required_evidence: [branch_name, pr_url, ci_run_id]
+    description: PR to develop, CI green, merge
+    allowed_tools: [mcp__cerebro-github__open_pr, mcp__cerebro-github__check_ci, mcp__cerebro-github__merge_pr]
+    required_evidence: [pr_url, ci_run_id]
     verification_method: verify_ci_green
     verification_tier: tier1
     timeout_seconds: 3600
     on_fail: block
 
   - step_id: s3
-    description: Deploy to staging
-    allowed_tools: [mcp__railguey__railguey_deploy]
+    description: GitHub Actions deploys to staging — verify health endpoint
+    allowed_tools: [Bash]
     required_evidence: [deploy_id]
     verification_method: verify_deploy_and_health
     verification_tier: tier1
@@ -38,10 +45,28 @@ steps:
     on_fail: block
 
   - step_id: s4
-    description: Verify row counts match after staging extraction
-    allowed_tools: [mcp__cerebro-data-engineer__row_counts, mcp__cerebro-data-engineer__parity_check]
+    description: Trigger staging extraction and verify data landed
+    allowed_tools: [Bash, mcp__cerebro-data-engineer__row_counts, mcp__cerebro-data-engineer__freshness]
     required_evidence: [row_count_source, row_count_target]
     verification_method: verify_row_counts_match
     verification_tier: tier1
     timeout_seconds: 1800
+    on_fail: block
+
+  - step_id: s5
+    description: PR develop→main, CI green, merge to production
+    allowed_tools: [mcp__cerebro-github__open_pr, mcp__cerebro-github__check_ci, mcp__cerebro-github__merge_pr]
+    required_evidence: [pr_url, ci_run_id]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 3600
+    on_fail: block
+
+  - step_id: s6
+    description: Verify production health endpoint
+    allowed_tools: [Bash]
+    required_evidence: [deploy_id]
+    verification_method: verify_deploy_and_health
+    verification_tier: tier1
+    timeout_seconds: 600
     on_fail: block

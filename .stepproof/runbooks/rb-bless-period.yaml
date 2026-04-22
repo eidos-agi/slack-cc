@@ -1,0 +1,38 @@
+# Bless a closed accounting period as golden fixture.
+# Source: cerebro-docs workflow('bless_closed_period')
+# Once blessed, drift against this fixture is an alert.
+
+template_id: rb-bless-period
+version: 1.0.0
+name: Bless closed period
+description: Parity check against Alex's spreadsheet, snapshot as golden fixture, verify zero drift.
+risk_level: high
+allowed_environments: [production]
+
+steps:
+  - step_id: s1
+    description: Parity check — numbers match Alex's reference spreadsheet exactly
+    allowed_tools: [mcp__cerebro-data-engineer__parity_check]
+    required_evidence: [row_count_source, row_count_target]
+    verification_method: verify_row_counts_match
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s2
+    description: Snapshot as golden fixture
+    allowed_tools: [mcp__cerebro-verifier__bless_fixture]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s3
+    description: Compare fixture against live — zero drift
+    allowed_tools: [mcp__cerebro-verifier__compare_fixture]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
