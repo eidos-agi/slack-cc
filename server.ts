@@ -231,6 +231,16 @@ let socketState: 'disconnected' | 'connecting' | 'connected' = 'disconnected'
 let lastDisconnect: number | null = null
 let reconnectCount = 0
 
+// Telemetry counters (#18)
+const stats = {
+  inbound: 0,       // Slack events received
+  delivered: 0,     // Events passed to Claude
+  dropped: 0,       // Events rejected by gate
+  paired: 0,        // Pairing codes issued
+  outbound: 0,      // Messages sent to Slack
+  dropReasons: {} as Record<string, number>,
+}
+
 mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
 
@@ -253,6 +263,7 @@ mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
       })
       if (res.ts) timestamps.push(res.ts)
     }
+    stats.outbound += chunks.length
     return {
       content: [{ type: 'text', text: `Sent ${chunks.length} message(s) to ${chatId} [ts: ${timestamps.join(', ')}]` }],
     }
@@ -311,6 +322,7 @@ mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
       transport: mcp.transport ? 'connected' : 'none',
       socketMode: socketState,
       reconnectCount,
+      stats,
       botUserId: botUserId || 'unknown',
       sessionChannels: Object.fromEntries(sessionChannels),
       permanentChannels: access.channels,
@@ -523,13 +535,17 @@ async function handleSlackEvent(event: Record<string, any>) {
     return
   }
 
+  stats.inbound++
   log('info', 'slack.inbound', { channel, user, ts, text: (text || '').slice(0, 80) })
 
   // Gate check
   const result = gate(event)
 
   if (result.action === 'drop') {
-    log('info', 'gate.drop', { channel, user, reason: (result as any).reason })
+    stats.dropped++
+    const reason = (result as any).reason
+    stats.dropReasons[reason] = (stats.dropReasons[reason] || 0) + 1
+    log('info', 'gate.drop', { channel, user, reason })
     return
   }
 
@@ -584,6 +600,7 @@ async function handleSlackEvent(event: Record<string, any>) {
   }
 
   if (result.action === 'pair') {
+    stats.paired++
     log('info', 'gate.pair', { channel, senderId: result.senderId, code: result.code })
     const access = loadAccess()
     // Prune expired
@@ -735,6 +752,7 @@ async function handleSlackEvent(event: Record<string, any>) {
         meta,
       },
     })
+    stats.delivered++
     log('info', 'deliver.ok', { channel, user, ts, method: 'notifications/claude/channel' })
   } catch (err: any) {
     log('error', 'deliver.fail', { channel, user, ts, error: err?.message || String(err) })
