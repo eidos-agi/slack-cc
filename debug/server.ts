@@ -38,6 +38,24 @@ const DEBUG_DIR = join(homedir(), '.claude', 'debug')
 const PLUGIN_ROOT = dirname(__dirname) // cc-channel-slack-eidos repo root
 const MAIN_SERVER = join(PLUGIN_ROOT, 'server.ts')
 
+// Derive workspace path: env var > sibling dir with .mcp.json > fallback
+function findWorkspace(): string {
+  if (process.env.WORKSPACE_PATH) return process.env.WORKSPACE_PATH
+  // Check sibling directories for .mcp.json (common layout: repos/plugin, repos/workspace)
+  const parent = dirname(PLUGIN_ROOT)
+  try {
+    const siblings = readdirSync(parent)
+    for (const name of siblings) {
+      const candidate = join(parent, name)
+      if (candidate !== PLUGIN_ROOT && existsSync(join(candidate, '.mcp.json'))) {
+        return candidate
+      }
+    }
+  } catch {}
+  return PLUGIN_ROOT // last resort
+}
+const DEFAULT_WORKSPACE = findWorkspace()
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -473,7 +491,7 @@ mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     // --- Layer 6b: Outbound permission friction (#10) ---
-    const allowedTools = checkAllowedTools('/home/dev/repos/greenmark-cockpit')
+    const allowedTools = checkAllowedTools(DEFAULT_WORKSPACE)
     report.outboundApproval = allowedTools.replyAutoApproved ? 'auto-approved' : 'terminal-prompt'
     if (!allowedTools.replyAutoApproved) {
       issues.push('FRICTION: mcp__slack__reply not auto-approved — outbound replies prompt in terminal')
@@ -702,7 +720,7 @@ mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     // Workspace .mcp.json
-    const workspacePath = (args?.workspace as string) || '/home/dev/repos/greenmark-cockpit'
+    const workspacePath = (args?.workspace as string) || DEFAULT_WORKSPACE
     const wsMcpPath = join(workspacePath, '.mcp.json')
     if (existsSync(wsMcpPath)) {
       try {
@@ -901,7 +919,7 @@ mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     // 3. Check workspace .mcp.json for a matching server entry
-    const workspacePath = (args?.workspace as string) || '/home/dev/repos/greenmark-cockpit'
+    const workspacePath = (args?.workspace as string) || DEFAULT_WORKSPACE
     const wsMcpPath = join(workspacePath, '.mcp.json')
     if (existsSync(wsMcpPath)) {
       try {
