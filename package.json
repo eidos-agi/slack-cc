@@ -4,7 +4,7 @@
   "description": "Two-way Slack channel for Claude Code — Socket Mode + MCP stdio",
   "scripts": {
     "start": "tsx server.ts",
-    "test": "tsx --test server.test.ts",
+    "test": "tsx --test server.test.ts debug/server.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
