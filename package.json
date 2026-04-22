@@ -5,7 +5,8 @@
   "scripts": {
     "start": "tsx server.ts",
     "test": "tsx --test server.test.ts debug/server.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.0",
@@ -14,6 +15,9 @@
     "zod": "^3.25.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.59.0",
+    "@typescript-eslint/parser": "^8.59.0",
+    "eslint": "^10.2.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.0"
   }
