@@ -1,6 +1,6 @@
 {
   "name": "slack-cc",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Two-way Slack channel for Claude Code — bidirectional messaging with access control, pairing, and diagnostics.",
   "author": {
     "name": "Eidos AGI",
