@@ -51,22 +51,45 @@ Same schema as `/land` bookmark but with:
 }
 ```
 
-### 4. Update State
+### 4. Sync Outward
+
+Flush progress to external systems. This is where task management stays current instead of drifting:
+
+- **ike.md** — Mark completed tasks done. Update in-progress tasks with notes. Create new tasks discovered during work.
+- **GitHub issues** — Close issues that were fixed. Update issue comments with progress. Check for new CI failures on other repos.
+- **Wrike** — If Greenmark Wrike tasks were touched, comment with progress (never create new tasks — GUARD from reference_wrike_structure.md).
+- **StepProof** — If a run is active, verify current step status is accurate.
+
+Only sync what changed since the last checkpoint. Don't audit everything — just flush what's in your head.
+
+### 5. Scan Inbound
+
+Quick glance at the instruments — are there signals you've been ignoring?
+
+- **Slack** — Unread messages in connected channels (use `fetch_messages` if available)
+- **GitHub** — PR reviews waiting, CI failures, dependabot PRs piling up
+- **Wrike** — New comments from Michael/Alex/Robert
+
+Don't act on these — just note them. Report anything urgent in the confirm output. The pilot decides whether to address them or keep flying.
+
+### 6. Update State
 
 - Set `watermarks.last_touch_and_go` to current ISO timestamp
 - Increment `counters.touch_and_gos` by 1 (create if missing)
 
-### 5. Confirm
+### 7. Confirm
 
 Short output — pilot is still working, don't interrupt flow:
 
 ```
   TOUCH AND GO — <branch> — <N> files committed, pushed
   <one-line summary of what was saved>
+  Synced: <N> tasks updated, <N> issues closed
+  Inbound: <anything urgent, or "clear">
   Continuing...
 ```
 
-That's it. Three lines max. Get back to work.
+Five lines max. Get back to work.
 
 ## Context Compaction
 
