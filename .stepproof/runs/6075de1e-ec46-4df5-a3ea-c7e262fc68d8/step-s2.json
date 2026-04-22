@@ -1,0 +1,24 @@
+{
+  "attempts": 2,
+  "ended_at": "2026-04-22T14:07:43.884996+00:00",
+  "evidence": {
+    "file_path": "/home/dev/.claude/plugins/cache/eidos-agi/slack-cc/0.2.1/server.ts",
+    "path": "/home/dev/.claude/plugins/cache/eidos-agi/slack-cc/0.2.1/server.ts"
+  },
+  "run_id": "6075de1e-ec46-4df5-a3ea-c7e262fc68d8",
+  "started_at": "2026-04-22T14:07:36.793224+00:00",
+  "status": "verified",
+  "step_id": "s2",
+  "verification_result": {
+    "artifacts": {
+      "lines": 690,
+      "path": "/home/dev/.claude/plugins/cache/eidos-agi/slack-cc/0.2.1/server.ts"
+    },
+    "confidence": 1.0,
+    "latency_ms": 3,
+    "reason": "/home/dev/.claude/plugins/cache/eidos-agi/slack-cc/0.2.1/server.ts exists with 690 non-empty lines.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_file_exists"
+  }
+}

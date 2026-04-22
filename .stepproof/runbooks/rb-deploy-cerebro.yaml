@@ -1,0 +1,55 @@
+# Deploy Cerebro dashboard to staging or production.
+# Encodes the ceremony from cerebro-docs workflow('ship_to_staging').
+
+template_id: rb-deploy-cerebro
+version: 1.0.0
+name: Deploy Cerebro
+description: Ship Cerebro dashboard — tests, staging deploy, smoke test, optional promote to production.
+risk_level: high
+allowed_environments: [staging, production]
+
+steps:
+  - step_id: s1
+    description: All tests pass locally
+    allowed_tools: [Bash]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s2
+    description: PR opened with CI green
+    allowed_tools: [Edit, Write, Bash, mcp__cerebro-github__open_pr]
+    required_evidence: [branch_name, pr_url]
+    verification_method: verify_pr_opened
+    verification_tier: tier1
+    timeout_seconds: 3600
+    on_fail: retry
+
+  - step_id: s3
+    description: CI passes on PR
+    allowed_tools: [mcp__cerebro-github__check_ci]
+    required_evidence: [ci_run_id]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 1800
+    on_fail: block
+
+  - step_id: s4
+    description: Deploy to staging and verify health
+    allowed_tools: [mcp__cerebro-web-builder__ship_to_staging]
+    required_evidence: [deploy_id]
+    verification_method: verify_deploy_and_health
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s5
+    description: Smoke test staging
+    allowed_tools: [mcp__cerebro-web-builder__smoke_test, mcp__cerebro-verifier__smoke_test]
+    required_evidence: [smoke_run_id]
+    verification_method: verify_smoke_logs
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block

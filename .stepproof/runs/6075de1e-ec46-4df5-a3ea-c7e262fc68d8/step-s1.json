@@ -1,0 +1,22 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-22T14:05:54.872025+00:00",
+  "evidence": {
+    "test_run_id": "slack-cc-120pass-0fail-2026-04-22"
+  },
+  "run_id": "6075de1e-ec46-4df5-a3ea-c7e262fc68d8",
+  "started_at": "2026-04-22T14:05:54.865538+00:00",
+  "status": "verified",
+  "step_id": "s1",
+  "verification_result": {
+    "artifacts": {
+      "test_run_id": "slack-cc-120pass-0fail-2026-04-22"
+    },
+    "confidence": 1.0,
+    "latency_ms": 0,
+    "reason": "Test run slack-cc-120pass-0fail-2026-04-22 reported all tests green.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_tests_green"
+  }
+}

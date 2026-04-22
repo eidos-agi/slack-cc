@@ -1,0 +1,38 @@
+# Merge a PR to a Tier 1 (production) repo.
+# T1 repos: cerebro, data-daemon, cerebro-mcp, cerebro-telemetry.
+# Higher ceremony than T2/T3 — requires CI green + PR approval.
+
+template_id: rb-merge-t1
+version: 1.0.0
+name: Merge T1 PR
+description: Merge a pull request on a Tier 1 production repo. Requires tests, CI, and approval.
+risk_level: high
+allowed_environments: [staging, production]
+
+steps:
+  - step_id: s1
+    description: CI tests green on the PR
+    allowed_tools: [mcp__cerebro-github__check_ci]
+    required_evidence: [ci_run_id]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 1800
+    on_fail: block
+
+  - step_id: s2
+    description: PR has at least one approval
+    allowed_tools: [mcp__cerebro-github__merge_pr]
+    required_evidence: [pr_url, approval_count]
+    verification_method: verify_pr_approved
+    verification_tier: tier1
+    timeout_seconds: 86400
+    on_fail: block
+
+  - step_id: s3
+    description: Merge the PR
+    allowed_tools: [mcp__cerebro-github__merge_pr]
+    required_evidence: [pr_url, ci_run_id]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block

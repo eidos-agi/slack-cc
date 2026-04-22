@@ -1,0 +1,26 @@
+{
+  "attempts": 2,
+  "ended_at": "2026-04-22T13:44:33.003106+00:00",
+  "evidence": {
+    "command": "npm test",
+    "fail": 0,
+    "pass": 120,
+    "project": "slack-cc",
+    "suites": 25,
+    "test_output_hash": "120_pass_0_fail_25_suites",
+    "tests": 120
+  },
+  "run_id": "0ba04275-ecf4-4849-b698-f1d7c75d1016",
+  "started_at": "2026-04-22T13:44:16.985269+00:00",
+  "status": "failed",
+  "step_id": "s1",
+  "verification_result": {
+    "artifacts": {},
+    "confidence": 1.0,
+    "latency_ms": 0,
+    "reason": "Test run missing or failing: None",
+    "status": "fail",
+    "tier_used": "tier1",
+    "verifier_id": "verify_tests_green"
+  }
+}

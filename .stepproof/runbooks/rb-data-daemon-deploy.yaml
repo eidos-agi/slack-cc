@@ -1,0 +1,47 @@
+# Deploy data-daemon — the extraction pipeline.
+# Encodes cerebro-docs workflow('deploy_data_daemon').
+# Critical: this touches live vendor API connections.
+
+template_id: rb-data-daemon-deploy
+version: 1.0.0
+name: Deploy data-daemon
+description: Deploy the data extraction pipeline. Tests, staging, verify extractions still work, then production.
+risk_level: high
+allowed_environments: [staging, production]
+
+steps:
+  - step_id: s1
+    description: pytest passes (82+ tests)
+    allowed_tools: [Bash]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s2
+    description: PR opened and CI green
+    allowed_tools: [Edit, Write, Bash, mcp__cerebro-github__open_pr, mcp__cerebro-github__check_ci]
+    required_evidence: [branch_name, pr_url, ci_run_id]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 3600
+    on_fail: block
+
+  - step_id: s3
+    description: Deploy to staging
+    allowed_tools: [mcp__railguey__railguey_deploy]
+    required_evidence: [deploy_id]
+    verification_method: verify_deploy_and_health
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block
+
+  - step_id: s4
+    description: Verify row counts match after staging extraction
+    allowed_tools: [mcp__cerebro-data-engineer__row_counts, mcp__cerebro-data-engineer__parity_check]
+    required_evidence: [row_count_source, row_count_target]
+    verification_method: verify_row_counts_match
+    verification_tier: tier1
+    timeout_seconds: 1800
+    on_fail: block

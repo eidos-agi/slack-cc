@@ -11,6 +11,6 @@
 
 cd "$(dirname "$0")"
 exec claude \
-  --channels plugin:slack-cc@eidos-agi \
-  --allowedTools "mcp__slack-cc__reply,mcp__slack-cc__react,mcp__slack-cc__edit_message,mcp__slack-cc__fetch_messages" \
+  --dangerously-load-development-channels plugin:slack-cc@eidos-agi \
+  --allowedTools "mcp__plugin_slack-cc_slack-cc__reply,mcp__plugin_slack-cc_slack-cc__react,mcp__plugin_slack-cc_slack-cc__edit_message,mcp__plugin_slack-cc_slack-cc__fetch_messages" \
   "$@"
