@@ -204,14 +204,18 @@ To see them live:
 
 Full diagnostics guide: [DIAGNOSTICS.md](DIAGNOSTICS.md)
 
+### Self-diagnosis
+
+Run `/slack-cc:doctor` in any session to diagnose and fix issues automatically. The doctor reads past learnings, runs all diagnostics, fixes what it can, and records new lessons for next time.
+
+Or run the preflight script directly:
+```bash
+cd /path/to/slack-cc && ./tools/preflight.sh
+```
+
 ### Common gotcha
 
-If you see `deliver.ok` in the logs but no `<channel>` tag appears in your session, the channel listener isn't registered. This happens when you start or resume without the `--dangerously-load-development-channels` flag. Use the startup script:
-
-```bash
-# From greenmark-cockpit root:
-./start-with-slack.sh
-```
+If you see `deliver.ok` in the logs but no `<channel>` tag appears in your session, the channel listener isn't registered. This is always caused by launching without `--dangerously-load-development-channels`. See the FAQ section above for the full explanation.
 
 ## Development
 
@@ -219,14 +223,20 @@ If you see `deliver.ok` in the logs but no `<channel>` tag appears in your sessi
 # Install deps
 npm install
 
-# Run tests (108 tests across 23 suites)
+# Run tests (120 tests across 25 suites)
 npm test
 
-# Dev mode (skip plugin allowlist)
-claude --plugin-dir . --dangerously-load-development-channels server:slack
+# Type check
+npm run typecheck
 
-# With debug logs
-claude --debug --plugin-dir . --dangerously-load-development-channels server:slack
+# Lint
+npm run lint
+
+# Preflight validation (names, tokens, marketplace, server boot)
+./tools/preflight.sh
+
+# Dev mode (from local repo instead of marketplace)
+claude --plugin-dir . --dangerously-load-development-channels server:slack-cc
 ```
 
 ## License
