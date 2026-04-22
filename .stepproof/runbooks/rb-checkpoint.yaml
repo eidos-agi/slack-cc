@@ -1,0 +1,50 @@
+# Checkpoint ceremony — shared by /land and /touch-and-go.
+# The agent can't skip syncing tasks or scanning inbound because
+# StepProof holds it accountable to each step.
+#
+# /touch-and-go calls this with environment=staging (keep flying).
+# /land calls this with environment=production (park the plane).
+
+template_id: rb-checkpoint
+version: 1.0.0
+name: Session checkpoint
+description: Save, sync, scan, bookmark. Used by both /land and /touch-and-go.
+risk_level: low
+allowed_environments: [staging, production]
+
+steps:
+  - step_id: s1
+    description: Commit and push all dirty files
+    allowed_tools: [Bash, Edit]
+    required_evidence: [git_commit]
+    verification_method: verify_git_commit
+    verification_tier: tier1
+    timeout_seconds: 300
+    on_fail: retry
+
+  - step_id: s2
+    description: Sync outward — update ike tasks, close issues, comment Wrike
+    allowed_tools: [mcp__ike-md__task_edit, mcp__ike-md__task_complete, mcp__cerebro-github__close_work, mcp__wrike__pm_add_comment, Bash]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: retry
+
+  - step_id: s3
+    description: Scan inbound — check Slack, GitHub PRs/CI, Wrike for signals
+    allowed_tools: [mcp__slack__fetch_messages, mcp__cerebro-github__dashboard, mcp__wrike__pm_list_tasks, Bash]
+    required_evidence: [test_run_id]
+    verification_method: verify_tests_green
+    verification_tier: tier1
+    timeout_seconds: 300
+    on_fail: retry
+
+  - step_id: s4
+    description: Write bookmark with session summary
+    allowed_tools: [Write, Read]
+    required_evidence: [file_path]
+    verification_method: verify_file_exists
+    verification_tier: tier1
+    timeout_seconds: 300
+    on_fail: retry
