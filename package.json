@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "description": "Two-way Slack channel for Claude Code — Socket Mode + MCP stdio",
   "scripts": {
-    "start": "tsx server.ts"
+    "start": "tsx server.ts",
+    "test": "tsx --test server.test.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.0",
