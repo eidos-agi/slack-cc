@@ -7,10 +7,5 @@
     "url": "https://eidosagi.com"
   },
   "license": "MIT",
-  "keywords": ["slack", "channel", "mcp", "socket-mode", "claude-code"],
-  "channels": [
-    {
-      "server": "slack"
-    }
-  ]
+  "keywords": ["slack", "channel", "mcp", "socket-mode", "claude-code"]
 }
