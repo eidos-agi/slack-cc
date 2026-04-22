@@ -188,7 +188,10 @@ def merge_pr(repo: str, pr_number: int, gate_token: str = "", rhea_decision: str
             return gate.build_merge_gate(repo, pr_number, base)
 
         # Second call — validate token and decision
-        # Rebuild context to validate hash
+        # Rebuild context with the ORIGINAL timestamp from the token
+        # (otherwise the hash changes between the two calls)
+        # Extract the original timestamp from the gate token so the hash matches
+        token_timestamp = float(gate_token.split("-")[-1]) if gate_token.count("-") == 2 else 0.0
         gate_context = gate.GateContext(
             action="merge_to_production",
             repo=repo,
@@ -199,6 +202,7 @@ def merge_pr(repo: str, pr_number: int, gate_token: str = "", rhea_decision: str
             deploy_target=SERVICES.get(repo, Service(name=repo, repo=repo)).domains.get("production", ""),
             rollback_path=f"git revert on {base}, or Railway rollback via railguey",
             upstream_dependencies=DEPLOY_ORDER[:DEPLOY_ORDER.index(repo)] if repo in DEPLOY_ORDER else [],
+            timestamp=token_timestamp,
         )
 
         # Validate gate token (checks hash + expiry)

@@ -1,0 +1,12 @@
+{
+  "agent_id": "claude-code-worker",
+  "current_step": null,
+  "ended_at": "2026-04-22T22:24:06.424929+00:00",
+  "environment": "staging",
+  "owner_id": "daniel",
+  "run_id": "d4b11e66-10a0-421d-a3b0-a7d6c4abf97d",
+  "started_at": "2026-04-22T22:05:18.718823+00:00",
+  "status": "completed",
+  "template_id": "rb-declared-03e375877549",
+  "template_version": "1.0.0"
+}

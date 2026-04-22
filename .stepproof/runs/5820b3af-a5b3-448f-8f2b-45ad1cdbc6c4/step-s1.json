@@ -1,0 +1,24 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-22T22:47:46.419583+00:00",
+  "evidence": {
+    "branch_name": "fix/sidebar-preview",
+    "pr_url": "https://github.com/greenmark-waste-solutions/cerebro/pull/113"
+  },
+  "run_id": "5820b3af-a5b3-448f-8f2b-45ad1cdbc6c4",
+  "started_at": "2026-04-22T22:47:46.395283+00:00",
+  "status": "verified",
+  "step_id": "s1",
+  "verification_result": {
+    "artifacts": {
+      "branch": "fix/sidebar-preview",
+      "pr_url": "https://github.com/greenmark-waste-solutions/cerebro/pull/113"
+    },
+    "confidence": 1.0,
+    "latency_ms": 7,
+    "reason": "PR https://github.com/greenmark-waste-solutions/cerebro/pull/113 opened on branch fix/sidebar-preview.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_pr_opened"
+  }
+}

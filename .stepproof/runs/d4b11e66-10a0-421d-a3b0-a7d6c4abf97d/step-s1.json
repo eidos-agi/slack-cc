@@ -1,0 +1,24 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-22T22:17:56.571413+00:00",
+  "evidence": {
+    "file_path": "/home/dev/repos/cerebro/app/api/chronicle/route.ts",
+    "path": "/home/dev/repos/cerebro/app/api/chronicle/route.ts"
+  },
+  "run_id": "d4b11e66-10a0-421d-a3b0-a7d6c4abf97d",
+  "started_at": "2026-04-22T22:17:56.514843+00:00",
+  "status": "verified",
+  "step_id": "s1",
+  "verification_result": {
+    "artifacts": {
+      "lines": 48,
+      "path": "/home/dev/repos/cerebro/app/api/chronicle/route.ts"
+    },
+    "confidence": 1.0,
+    "latency_ms": 6,
+    "reason": "/home/dev/repos/cerebro/app/api/chronicle/route.ts exists with 48 non-empty lines.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_file_exists"
+  }
+}

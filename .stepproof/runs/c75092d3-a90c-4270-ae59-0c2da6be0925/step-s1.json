@@ -1,0 +1,24 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-22T20:36:18.503723+00:00",
+  "evidence": {
+    "branch_name": "feat/chronicle-v2",
+    "pr_url": "https://github.com/greenmark-waste-solutions/cerebro/pull/100"
+  },
+  "run_id": "c75092d3-a90c-4270-ae59-0c2da6be0925",
+  "started_at": "2026-04-22T20:36:18.502265+00:00",
+  "status": "verified",
+  "step_id": "s1",
+  "verification_result": {
+    "artifacts": {
+      "branch": "feat/chronicle-v2",
+      "pr_url": "https://github.com/greenmark-waste-solutions/cerebro/pull/100"
+    },
+    "confidence": 1.0,
+    "latency_ms": 0,
+    "reason": "PR https://github.com/greenmark-waste-solutions/cerebro/pull/100 opened on branch feat/chronicle-v2.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_pr_opened"
+  }
+}

@@ -63,8 +63,14 @@ class GateContext:
 
 
 def _hash_context(context: GateContext) -> str:
-    """Deterministic hash of the gate context — ties the token to the snapshot."""
-    payload = json.dumps(asdict(context), sort_keys=True)
+    """Deterministic hash of the gate context — ties the token to the snapshot.
+
+    Uses int(timestamp) so the hash matches when reconstructed from the token
+    (which only stores the integer timestamp).
+    """
+    d = asdict(context)
+    d["timestamp"] = int(d["timestamp"])
+    payload = json.dumps(d, sort_keys=True)
     return hashlib.sha256(payload.encode()).hexdigest()[:16]
 
 

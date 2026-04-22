@@ -1,0 +1,22 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-22T22:53:22.912299+00:00",
+  "evidence": {
+    "ci_run_id": "cerebro-pr113-merged-bulk-all-green"
+  },
+  "run_id": "5820b3af-a5b3-448f-8f2b-45ad1cdbc6c4",
+  "started_at": "2026-04-22T22:53:22.895055+00:00",
+  "status": "verified",
+  "step_id": "s2",
+  "verification_result": {
+    "artifacts": {
+      "ci_run_id": "cerebro-pr113-merged-bulk-all-green"
+    },
+    "confidence": 1.0,
+    "latency_ms": 1,
+    "reason": "CI run cerebro-pr113-merged-bulk-all-green SUCCESS.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_ci_green"
+  }
+}
