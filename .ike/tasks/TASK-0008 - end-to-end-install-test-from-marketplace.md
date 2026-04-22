@@ -8,8 +8,8 @@ milestone: MS-0002
 dependencies:
   - TASK-0007
 definition-of-done:
-  - claude plugin install slack-eidos@eidos-agi succeeds
-  - claude --channels plugin:slack-eidos@eidos-agi launches with channel listener
+  - claude plugin install slack-cc@eidos-agi succeeds
+  - claude --channels plugin:slack-cc@eidos-agi launches with channel listener
   - Inbound and outbound Slack messages work
 ---
 

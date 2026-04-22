@@ -1,6 +1,6 @@
 # slack-eidos-debug
 
-Full-stack diagnostic MCP for the slack-eidos-cc Slack bridge. Installed into a workspace (e.g., greenmark-cockpit) so the agent can diagnose Slack bridge issues from any session — even when the bridge plugin itself isn't loaded.
+Full-stack diagnostic MCP for the slack-cc Slack bridge. Installed into a workspace (e.g., greenmark-cockpit) so the agent can diagnose Slack bridge issues from any session — even when the bridge plugin itself isn't loaded.
 
 **Philosophy:** Diagnose, don't fix. The MCP tells the agent what's broken across all 7 layers. The agent fixes it with Edit/Bash/normal tools. No mutations, no side effects beyond read + test message.
 
@@ -63,8 +63,8 @@ The debug MCP is installed in the **workspace** (not as a plugin). This is inten
   "mcpServers": {
     "slack-eidos-debug": {
       "type": "stdio",
-      "command": "/home/dev/repos/slack-eidos-cc/node_modules/.bin/tsx",
-      "args": ["/home/dev/repos/slack-eidos-cc/debug/server.ts"]
+      "command": "/home/dev/repos/slack-cc/node_modules/.bin/tsx",
+      "args": ["/home/dev/repos/slack-cc/debug/server.ts"]
     }
   }
 }
@@ -75,7 +75,7 @@ The debug MCP is installed in the **workspace** (not as a plugin). This is inten
 Uses the same deps as the main server (installed at plugin root):
 
 ```bash
-cd ~/repos/slack-eidos-cc
+cd ~/repos/slack-cc
 npm install
 ```
 
@@ -98,9 +98,9 @@ The agent reads the diagnostic output and fixes issues itself using Edit (to fix
 |------|---------|----------|
 | `.env` | Bot + app tokens | `~/.claude/channels/slack/.env` |
 | `access.json` | Gate config (users, channels, policy) | `~/.claude/channels/slack/access.json` |
-| `server.ts` | Main bridge server | `~/repos/slack-eidos-cc/server.ts` |
-| `debug/server.ts` | This diagnostic MCP | `~/repos/slack-eidos-cc/debug/server.ts` |
-| `.mcp.json` | Plugin MCP registration | `~/repos/slack-eidos-cc/.mcp.json` |
+| `server.ts` | Main bridge server | `~/repos/slack-cc/server.ts` |
+| `debug/server.ts` | This diagnostic MCP | `~/repos/slack-cc/debug/server.ts` |
+| `.mcp.json` | Plugin MCP registration | `~/repos/slack-cc/.mcp.json` |
 | `start-with-slack.sh` | Launch script | `~/repos/greenmark-cockpit/start-with-slack.sh` |
 
 ## Common Failure Patterns
@@ -130,7 +130,7 @@ The agent reads the diagnostic output and fixes issues itself using Edit (to fix
 
 ### Server won't start
 **Layer 5 failure.** Check: node_modules present? tsx binary exists? TypeScript compiles?
-- **Fix:** `cd ~/repos/slack-eidos-cc && npm install`
+- **Fix:** `cd ~/repos/slack-cc && npm install`
 
 ## Architecture
 
@@ -179,8 +179,8 @@ This MCP diagnoses the [Claude Code channels system](https://docs.anthropic.com/
 - [Slack channel plugin](https://github.com/anthropics/claude-code-plugins/tree/main/slack-channel) — Anthropic's reference implementation
 
 ### Prior art
-- [claude-code-plugins/slack-channel](https://github.com/anthropics/claude-code-plugins/tree/main/slack-channel) — Anthropic's official Slack channel plugin (marketplace). Our slack-eidos-cc is a clean-room rewrite with Socket Mode, access control, and permission relay.
-- [claude-code-slack-channel](https://github.com/anthropics/claude-code-slack-channel) — Earlier reference. Was the upstream before slack-eidos-cc replaced it.
+- [claude-code-plugins/slack-channel](https://github.com/anthropics/claude-code-plugins/tree/main/slack-channel) — Anthropic's official Slack channel plugin (marketplace). Our slack-cc is a clean-room rewrite with Socket Mode, access control, and permission relay.
+- [claude-code-slack-channel](https://github.com/anthropics/claude-code-slack-channel) — Earlier reference. Was the upstream before slack-cc replaced it.
 - [slack-mcp-server](https://github.com/slackapi/slack-mcp-server) — Slack's official MCP server (different purpose: gives Claude Slack tools, not a channel bridge)
 - [bolt-js-starter-agent](https://github.com/slack-samples/bolt-js-starter-agent) — Slack's starter for Claude Agent SDK bots (what cerebro-slack-bot is based on — a standalone bot, not a Claude Code channel)
 

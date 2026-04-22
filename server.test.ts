@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * slack-eidos-cc — server tests
+ * slack-cc — server tests
  *
  * Mocks Slack Socket Mode + Web API, verifies:
  * - Inbound delivery fires notifications/claude/channel
@@ -1175,7 +1175,7 @@ describe('Pairing integration (full lifecycle)', () => {
     assert.equal(access3.pending.length, 1)
     assert.equal(access3.pending[0].code, pair.code)
 
-    // Step 3: Approve pairing (mirrors /slack-eidos:access pair <code>)
+    // Step 3: Approve pairing (mirrors /slack-cc:access pair <code>)
     const match = access3.pending.find(
       (p) => p.code.toLowerCase() === pair.code.toLowerCase(),
     )

@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "slack-eidos": {
+    "slack-cc": {
       "command": "npx",
       "args": ["--yes", "tsx", "--cwd", "${CLAUDE_PLUGIN_ROOT}", "server.ts"]
     }

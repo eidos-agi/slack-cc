@@ -1,5 +1,5 @@
 repository:
-  name: slack-eidos-cc
+  name: slack-cc
   private: true
   has_issues: true
   has_wiki: false

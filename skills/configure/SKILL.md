@@ -9,14 +9,14 @@ allowed-tools:
   - Bash(mkdir *)
 ---
 
-# /slack-eidos:configure
+# /slack-cc:configure
 
 Configure the Slack channel with your bot token and app-level token.
 
 ## Usage
 
 ```
-/slack-eidos:configure <xoxb-bot-token> <xapp-app-token>
+/slack-cc:configure <xoxb-bot-token> <xapp-app-token>
 ```
 
 ## Instructions
@@ -31,7 +31,7 @@ Configure the Slack channel with your bot token and app-level token.
      - Bot token (starts with xoxb-) from OAuth & Permissions
      - App token (starts with xapp-) from Socket Mode settings
 
-   Usage: /slack-eidos:configure xoxb-... xapp-...
+   Usage: /slack-cc:configure xoxb-... xapp-...
    ```
 
 3. Create the state directory if it doesn't exist:
@@ -55,7 +55,7 @@ Configure the Slack channel with your bot token and app-level token.
    Slack channel configured.
 
    Start Claude with the Slack channel:
-     claude --plugin-dir ~/repos/slack-eidos-cc --dangerously-load-development-channels server:slack
+     claude --plugin-dir ~/repos/slack-cc --dangerously-load-development-channels server:slack
    ```
 
 ## Security

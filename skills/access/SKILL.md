@@ -9,20 +9,20 @@ allowed-tools:
   - Bash(mkdir *)
 ---
 
-# /slack-eidos:access
+# /slack-cc:access
 
 Manage who can reach your Claude Code session through Slack.
 
 ## Usage
 
 ```
-/slack-eidos:access pair <code>                          # Approve a pending pairing
-/slack-eidos:access policy <pairing|allowlist|disabled>   # Set DM policy
-/slack-eidos:access add <slack_user_id>                   # Add user to allowlist
-/slack-eidos:access remove <slack_user_id>                # Remove from allowlist
-/slack-eidos:access channel <channel_id> [--mention] [--allow <user_id,...>]  # Opt in a channel
-/slack-eidos:access channel remove <channel_id>           # Remove channel opt-in
-/slack-eidos:access status                                # Show current config
+/slack-cc:access pair <code>                          # Approve a pending pairing
+/slack-cc:access policy <pairing|allowlist|disabled>   # Set DM policy
+/slack-cc:access add <slack_user_id>                   # Add user to allowlist
+/slack-cc:access remove <slack_user_id>                # Remove from allowlist
+/slack-cc:access channel <channel_id> [--mention] [--allow <user_id,...>]  # Opt in a channel
+/slack-cc:access channel remove <channel_id>           # Remove channel opt-in
+/slack-cc:access status                                # Show current config
 ```
 
 ## State File

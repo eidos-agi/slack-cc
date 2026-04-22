@@ -1,6 +1,6 @@
 # Diagnostics Guide
 
-slack-eidos-cc writes structured JSON logs to stderr. Claude Code captures these in `~/.claude/debug/<session-id>.txt`. Every log entry includes a timestamp, uptime, transport status, and session channel count.
+slack-cc writes structured JSON logs to stderr. Claude Code captures these in `~/.claude/debug/<session-id>.txt`. Every log entry includes a timestamp, uptime, transport status, and session channel count.
 
 ## Reading the logs
 
@@ -51,7 +51,7 @@ The notification fired successfully over stdio but Claude Code isn't surfacing i
 
 **Fix:** Exit and start fresh:
 ```bash
-claude --plugin-dir ~/repos/slack-eidos-cc --dangerously-load-development-channels server:slack
+claude --plugin-dir ~/repos/slack-cc --dangerously-load-development-channels server:slack
 ```
 
 **Also suspected:** Using `/resume` inside a running session may drop the channel listener even if the original session had it. If messages stop after a `/resume`, exit and restart.
@@ -60,19 +60,19 @@ claude --plugin-dir ~/repos/slack-eidos-cc --dangerously-load-development-channe
 
 The channel isn't connected. Either:
 - @mention the bot (session-scoped, requires being on allowlist)
-- Run `/slack-eidos:access channel <id>` in the terminal (permanent)
+- Run `/slack-cc:access channel <id>` in the terminal (permanent)
 
 ### "gate.drop" with reason "dm-not-allowlisted"
 
 User isn't on the allowlist and DM policy is `allowlist`. Either:
-- Change policy to `pairing`: `/slack-eidos:access policy pairing`
-- Add the user: `/slack-eidos:access add <user_id>`
+- Change policy to `pairing`: `/slack-cc:access policy pairing`
+- Add the user: `/slack-cc:access add <user_id>`
 
 ### No logs at all
 
 The MCP server isn't running. Check:
-1. Did you pass `--plugin-dir ~/repos/slack-eidos-cc`?
-2. Are deps installed? `cd ~/repos/slack-eidos-cc && npm install`
+1. Did you pass `--plugin-dir ~/repos/slack-cc`?
+2. Are deps installed? `cd ~/repos/slack-cc && npm install`
 3. Does the server start? `timeout 5 ./node_modules/.bin/tsx server.ts 2>&1`
 
 ### "deliver.fail" with transport error

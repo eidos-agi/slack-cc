@@ -9,17 +9,17 @@ source_research_id: "4fe8079d-ce2b-48c6-899d-7d4c0e7dec6b"
 
 ## Context
 
-slack-eidos-cc is a two-way Slack channel plugin for Claude Code. Currently runs as a development plugin requiring `--plugin-dir` and `--dangerously-load-development-channels`. This creates friction (dual-start bugs, permission prompts, no portability).
+slack-cc is a two-way Slack channel plugin for Claude Code. Currently runs as a development plugin requiring `--plugin-dir` and `--dangerously-load-development-channels`. This creates friction (dual-start bugs, permission prompts, no portability).
 
 ## Decision
 
 Dual-track distribution:
 
-**Phase 1 (immediate):** Create an `eidos-agi/claude-plugins` marketplace repo. Publish slack-eidos-cc as the first plugin. Any Claude Code user can then:
+**Phase 1 (immediate):** Create an `eidos-agi/claude-plugins` marketplace repo. Publish slack-cc as the first plugin. Any Claude Code user can then:
 ```bash
 claude plugin marketplace add eidos-agi/claude-plugins
-claude plugin install slack-eidos@eidos-agi
-claude --channels plugin:slack-eidos@eidos-agi
+claude plugin install slack-cc@eidos-agi
+claude --channels plugin:slack-cc@eidos-agi
 ```
 
 **Phase 2 (async):** Submit to anthropics/claude-plugins-official via clau.de/plugin-directory-submission. If accepted, the plugin becomes discoverable to all Claude Code users without adding a custom marketplace.

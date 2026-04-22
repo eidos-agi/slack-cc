@@ -1,4 +1,4 @@
-# slack-eidos-cc
+# slack-cc
 
 Two-way Slack channel for Claude Code. Talk to your session from Slack. Approve tool calls from your phone.
 
@@ -39,7 +39,7 @@ No servers to deploy. No URLs to expose. Works behind firewalls, NAT, anywhere.
 ### 2. Start Claude Code with the plugin
 
 ```bash
-claude --plugin-dir ~/repos/slack-eidos-cc \
+claude --plugin-dir ~/repos/slack-cc \
        --dangerously-load-development-channels server:slack
 ```
 
@@ -47,14 +47,14 @@ claude --plugin-dir ~/repos/slack-eidos-cc \
 
 In the Claude Code session:
 ```
-/slack-eidos:configure xoxb-your-bot-token xapp-your-app-token
+/slack-cc:configure xoxb-your-bot-token xapp-your-app-token
 ```
 
 Tokens are saved to `~/.claude/channels/slack/.env` with `0600` permissions. Never logged, never echoed.
 
 ### 4. Connect
 
-**DM the bot** in Slack. First-time users get a pairing code. Run `/slack-eidos:access pair <code>` in the terminal to approve.
+**DM the bot** in Slack. First-time users get a pairing code. Run `/slack-cc:access pair <code>` in the terminal to approve.
 
 **Or** — if you're already paired — just **@mention the bot in any channel**. It auto-connects for the current session. No channel IDs to copy-paste.
 
@@ -66,7 +66,7 @@ There are two ways to connect a Slack channel:
 
 **Permanent:** Run in the terminal:
 ```
-/slack-eidos:access channel C0AV895UKFS
+/slack-cc:access channel C0AV895UKFS
 ```
 This persists to `access.json` and survives session restarts.
 
@@ -88,12 +88,12 @@ When Claude wants to run a tool that needs approval, the prompt shows up in Slac
 ## Access control
 
 ```bash
-/slack-eidos:access status                    # What's connected
-/slack-eidos:access add U12345678             # Add a user
-/slack-eidos:access remove U12345678          # Remove a user
-/slack-eidos:access policy allowlist          # Only pre-approved users
-/slack-eidos:access channel C12345678         # Permanently opt-in a channel
-/slack-eidos:access channel remove C12345678  # Remove a channel
+/slack-cc:access status                    # What's connected
+/slack-cc:access add U12345678             # Add a user
+/slack-cc:access remove U12345678          # Remove a user
+/slack-cc:access policy allowlist          # Only pre-approved users
+/slack-cc:access channel C12345678         # Permanently opt-in a channel
+/slack-cc:access channel remove C12345678  # Remove a channel
 ```
 
 ## FAQ
@@ -106,14 +106,14 @@ Two known causes:
 2. *(Tentatively confirmed — needs more testing)* You used `/resume` inside a running session to switch to a past conversation. This may drop the channel listener even though the MCP server keeps running. The bot still reacts, tools still work, but inbound delivery stops. If this happens, exit and start a fresh session with the full flags.
 
 ```bash
-claude --plugin-dir ~/repos/slack-eidos-cc --dangerously-load-development-channels server:slack
+claude --plugin-dir ~/repos/slack-cc --dangerously-load-development-channels server:slack
 ```
 
 **I @mentioned the bot but nothing happened.**
-You're not on the allowlist yet. DM the bot first to get a pairing code, then run `/slack-eidos:access pair <code>` in the terminal.
+You're not on the allowlist yet. DM the bot first to get a pairing code, then run `/slack-cc:access pair <code>` in the terminal.
 
 **The channel connected but messages stopped after I restarted.**
-Session-scoped channels (from @mention auto-opt-in) die when the session ends. @mention the bot again, or make it permanent with `/slack-eidos:access channel <id>`.
+Session-scoped channels (from @mention auto-opt-in) die when the session ends. @mention the bot again, or make it permanent with `/slack-cc:access channel <id>`.
 
 ## Security
 

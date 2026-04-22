@@ -9,7 +9,7 @@ created: '2026-04-21'
 
 ## Claim
 
-Eidos AGI already has multiple Claude Code tools: slack-eidos-cc, railguey MCP, research.md, ike.md, visionlog, rhea, claude-resume. A private eidos-agi marketplace would be the distribution channel for the entire ecosystem — not just this one plugin. First plugin published sets the pattern for all future ones.
+Eidos AGI already has multiple Claude Code tools: slack-cc, railguey MCP, research.md, ike.md, visionlog, rhea, claude-resume. A private eidos-agi marketplace would be the distribution channel for the entire ecosystem — not just this one plugin. First plugin published sets the pattern for all future ones.
 
 ## Supporting Evidence
 

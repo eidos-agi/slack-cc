@@ -3,7 +3,7 @@
 ## 1. `/resume` drops the channel listener
 
 **Status:** Known limitation of Claude Code's channel plugin protocol
-**Issue:** [#6](https://github.com/aic-holdings/slack-eidos-cc/issues/6)
+**Issue:** [#6](https://github.com/aic-holdings/slack-cc/issues/6)
 
 When you use `/resume` inside a running session to switch to a previous conversation, Claude Code may not re-register the channel listener. The MCP server stays running — tools work, the bot reacts with 👀 — but inbound `notifications/claude/channel` deliveries are silently dropped.
 
@@ -19,7 +19,7 @@ When you use `/resume` inside a running session to switch to a previous conversa
 ## 2. Missing `channels:read` Slack scope
 
 **Status:** Requires Slack app reconfiguration
-**Issue:** [#4](https://github.com/aic-holdings/slack-eidos-cc/issues/4)
+**Issue:** [#4](https://github.com/aic-holdings/slack-cc/issues/4)
 
 The bot token is missing `channels:read`. The bot can read channel history (`channels:history`) but cannot list public channels. Diagnostics use a history-probe fallback to verify channel membership.
 
@@ -36,6 +36,6 @@ The server handles this with a PID file (`~/.claude/channels/slack/bot.pid`) —
 ## 4. Two-instance risk with `--plugin-dir`
 
 **Status:** Fixed in v0.1.1
-**Issue:** [#5](https://github.com/aic-holdings/slack-eidos-cc/issues/5) (closed)
+**Issue:** [#5](https://github.com/aic-holdings/slack-cc/issues/5) (closed)
 
 Previously, `--plugin-dir` started a second server instance (`plugin:slack-channel:slack`) alongside the workspace `.mcp.json` entry (`slack`). Both competed for Socket Mode. Fixed by removing the `channels` declaration from `plugin.json` — `--plugin-dir` now only loads skills.
