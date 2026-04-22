@@ -227,6 +227,9 @@ mcp.setRequestHandler(ListToolsRequestSchema, async () => ({
 // Slack clients (initialized in main)
 let web: WebClient
 let socket: SocketModeClient
+let socketState: 'disconnected' | 'connecting' | 'connected' = 'disconnected'
+let lastDisconnect: number | null = null
+let reconnectCount = 0
 
 mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
@@ -303,9 +306,11 @@ mcp.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (name === 'status') {
     const access = loadAccess()
     const status = {
-      version: '0.1.0',
+      version: '0.1.1',
       uptime: Math.floor((Date.now() - bootTime) / 1000),
       transport: mcp.transport ? 'connected' : 'none',
+      socketMode: socketState,
+      reconnectCount,
       botUserId: botUserId || 'unknown',
       sessionChannels: Object.fromEntries(sessionChannels),
       permanentChannels: access.channels,
@@ -435,9 +440,29 @@ async function main() {
   })
 
   // 5. Handle interactive payloads (Block Kit buttons) — future
-  socket.on('interactive', async ({ body, ack }) => {
+  socket.on('interactive', async ({ body, ack }: { body: any; ack: () => Promise<void> }) => {
     await ack()
     // TODO: Block Kit button handling for permission relay
+  })
+
+  // 5b. Socket Mode connection lifecycle logging (#17)
+  socket.on('connected', () => {
+    if (socketState === 'connecting') reconnectCount++
+    socketState = 'connected'
+    const downtime = lastDisconnect ? Date.now() - lastDisconnect : null
+    log('info', 'socket.connected', { reconnectCount, downtimeMs: downtime })
+  })
+  socket.on('connecting', () => {
+    socketState = 'connecting'
+    log('info', 'socket.connecting', { note: 'reconnecting to Slack' })
+  })
+  socket.on('disconnected', () => {
+    socketState = 'disconnected'
+    lastDisconnect = Date.now()
+    log('warn', 'socket.disconnected', { note: 'WebSocket dropped, auto-reconnect will fire' })
+  })
+  socket.on('error', (err: Error) => {
+    log('error', 'socket.error', { error: err?.message || String(err) })
   })
 
   // 6. Connect to Slack
