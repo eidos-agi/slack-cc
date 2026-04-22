@@ -135,6 +135,18 @@ All state lives in `~/.claude/channels/slack/`:
 
 ## Diagnostics
 
+### Debug MCP (v0.4)
+
+A dedicated diagnostic server lives in `debug/server.ts` with 12 tools for full-stack inspection. Register it as `slack-eidos-debug` in your workspace `.mcp.json`.
+
+Key tools:
+- `slack_debug_check` — Full health check across all 7 layers (tokens, permissions, API, channels, process, server, config). Detects dual-start, permission friction, and missing scopes.
+- `slack_debug_channel_reg` — Verifies channel listener registration. Filters stale logs from previous sessions. Checks `--allowedTools` and detects duplicate bridge processes.
+- `slack_debug_scope_diff` — Token scopes vs bridge requirements in one output.
+- `slack_debug_roundtrip` — Send + read back test through Slack API.
+
+See [docs/known-limitations.md](docs/known-limitations.md) for known issues and workarounds.
+
 ### From the terminal (status tool)
 
 Claude can call the `status` tool anytime to see the server's internal state — log buffer, transport status, channels, access config. Just ask "check the slack bridge status" or call it directly.
@@ -181,8 +193,8 @@ If you see `deliver.ok` in the logs but no `<channel>` tag appears in your sessi
 # Install deps
 npm install
 
-# Run tests (82 tests across 18 suites)
-./node_modules/.bin/tsx --test server.test.ts
+# Run tests (108 tests across 23 suites)
+npm test
 
 # Dev mode (skip plugin allowlist)
 claude --plugin-dir . --dangerously-load-development-channels server:slack
