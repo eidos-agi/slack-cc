@@ -137,7 +137,7 @@ All state lives in `~/.claude/channels/slack/`:
 
 ### Debug MCP (v0.4)
 
-A dedicated diagnostic server lives in `debug/server.ts` with 12 tools for full-stack inspection. Register it as `slack-eidos-debug` in your workspace `.mcp.json`.
+A dedicated diagnostic server lives in `debug/server.ts` with 12 tools for full-stack inspection. Register it as `slack-cc-debug` in your workspace `.mcp.json`.
 
 Key tools:
 - `slack_debug_check` — Full health check across all 7 layers (tokens, permissions, API, channels, process, server, config). Detects dual-start, permission friction, and missing scopes.

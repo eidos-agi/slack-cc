@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * slack-eidos-debug — Full-stack diagnostic MCP for the Slack bridge
+ * slack-cc-debug — Full-stack diagnostic MCP for the Slack bridge
  *
  * Inspects every layer of the stack:
  *   1. Slack API (auth, scopes, channels, bot identity)
@@ -200,7 +200,7 @@ function checkAllowedTools(workspacePath: string): {
       const settings = JSON.parse(readFileSync(settingsPath, 'utf-8'))
       const allow = settings?.permissions?.allow
       if (Array.isArray(allow)) {
-        const slackTools = allow.filter((t: string) => t.startsWith('mcp__slack__'))
+        const slackTools = allow.filter((t: string) => t.startsWith('mcp__slack-cc__'))
         if (slackTools.length) {
           result.settingsFile.found = true
           result.settingsFile.tools = slackTools
@@ -211,8 +211,8 @@ function checkAllowedTools(workspacePath: string): {
 
   // Is reply specifically auto-approved?
   result.replyAutoApproved =
-    result.cliFlag.tools.includes('mcp__slack__reply') ||
-    result.settingsFile.tools.includes('mcp__slack__reply')
+    result.cliFlag.tools.includes('mcp__slack-cc__reply') ||
+    result.settingsFile.tools.includes('mcp__slack-cc__reply')
 
   return result
 }
@@ -246,7 +246,7 @@ function hintForError(error: string): string | null {
 // MCP Server
 // ---------------------------------------------------------------------------
 const mcp = new Server(
-  { name: 'slack-eidos-debug', version: '0.4.0' },
+  { name: 'slack-cc-debug', version: '0.5.0' },
   {
     capabilities: { tools: {} },
     instructions: [
@@ -497,7 +497,7 @@ async function toolCheck(_args: ToolArgs) {
   const allowedTools = checkAllowedTools(DEFAULT_WORKSPACE)
   report.outboundApproval = allowedTools.replyAutoApproved ? 'auto-approved' : 'terminal-prompt'
   if (!allowedTools.replyAutoApproved) {
-    issues.push('FRICTION: mcp__slack__reply not auto-approved — outbound replies prompt in terminal')
+    issues.push('FRICTION: mcp__slack-cc__reply not auto-approved — outbound replies prompt in terminal')
   }
 
   // --- Layer 7: Server integrity ---
@@ -722,10 +722,10 @@ async function toolMcpConfig(args: ToolArgs) {
       const wsMcp = JSON.parse(readFileSync(wsMcpPath, 'utf-8'))
       const servers = Object.keys(wsMcp.mcpServers || {})
       report.workspaceMcpJson = { path: wsMcpPath, servers }
-      if (!wsMcp.mcpServers?.['slack-eidos-debug']) {
-        report.issues.push('Workspace .mcp.json missing "slack-eidos-debug" entry')
+      if (!wsMcp.mcpServers?.['slack-cc-debug']) {
+        report.issues.push('Workspace .mcp.json missing "slack-cc-debug" entry')
       } else {
-        const entry = wsMcp.mcpServers['slack-eidos-debug']
+        const entry = wsMcp.mcpServers['slack-cc-debug']
         // Verify paths exist
         if (entry.command && !existsSync(entry.command)) {
           report.issues.push(`Debug MCP command not found: ${entry.command}`)
@@ -825,7 +825,7 @@ async function toolSendTest(args: ToolArgs) {
   const { botToken, errors } = loadEnvTokens()
   if (!botToken) return json({ ok: false, error: 'No valid bot token', tokenErrors: errors })
 
-  const text = (args?.text as string) || `[slack-eidos-debug] outbound test at ${new Date().toISOString()}`
+  const text = (args?.text as string) || `[slack-cc-debug] outbound test at ${new Date().toISOString()}`
   try {
     const web = new WebClient(botToken)
     const res = await web.chat.postMessage({ channel, text, unfurl_links: false, unfurl_media: false })
@@ -957,8 +957,8 @@ async function toolChannelReg(args: ToolArgs) {
   report.allowedTools = allowedTools
   if (!allowedTools.replyAutoApproved) {
     report.issues.push(
-      'PERMISSION FRICTION: mcp__slack__reply is not auto-approved. Outbound replies will prompt for terminal approval. ' +
-      'Add --allowedTools "mcp__slack__reply" to your launch command or add it to settings.local.json permissions.allow.'
+      'PERMISSION FRICTION: mcp__slack-cc__reply is not auto-approved. Outbound replies will prompt for terminal approval. ' +
+      'Add --allowedTools "mcp__slack-cc__reply" to your launch command or add it to settings.local.json permissions.allow.'
     )
   }
 

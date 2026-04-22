@@ -597,7 +597,7 @@ describe('Permission relay simulation (#14)', () => {
 
     // Step 1: Claude Code sends a permission request
     const requestId = 'abcde'
-    const toolName = 'mcp__slack__reply'
+    const toolName = 'mcp__slack-cc__reply'
     pendingPermissions.set(requestId, { requestId, channelId: 'C_DEV' })
 
     // Step 2: Bridge would post to Slack (simulated)

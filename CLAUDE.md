@@ -6,7 +6,7 @@ Two-way Slack channel plugin for Claude Code. Socket Mode + MCP stdio.
 
 - **`lib.ts`** — Pure shared logic: gate, access control, dedup, chunking, pairing, env parsing. No side effects. Tests and server both import from here.
 - **`server.ts`** — MCP server + Slack Socket Mode bridge. Self-contained runtime that imports lib.ts. Exposes `reply`, `react`, `edit_message`, `fetch_messages`, `status` tools.
-- **`debug/server.ts`** — Separate diagnostic MCP server (12 tools). Read-only. Registered as `slack-eidos-debug` in workspace `.mcp.json`.
+- **`debug/server.ts`** — Separate diagnostic MCP server (12 tools). Read-only. Registered as `slack-cc-debug` in workspace `.mcp.json`.
 
 ## Running
 

@@ -67,11 +67,11 @@ function checkSettingsAllowList(settingsPath: string): { found: boolean; tools: 
     const settings = JSON.parse(readFileSync(settingsPath, 'utf-8'))
     const allow = settings?.permissions?.allow
     if (!Array.isArray(allow)) return { found: false, tools: [], replyAutoApproved: false }
-    const slackTools = allow.filter((t: string) => t.startsWith('mcp__slack__'))
+    const slackTools = allow.filter((t: string) => t.startsWith('mcp__slack-cc__'))
     return {
       found: slackTools.length > 0,
       tools: slackTools,
-      replyAutoApproved: slackTools.includes('mcp__slack__reply'),
+      replyAutoApproved: slackTools.includes('mcp__slack-cc__reply'),
     }
   } catch {
     return { found: false, tools: [], replyAutoApproved: false }
@@ -199,12 +199,12 @@ describe('Settings allow list check (#10)', () => {
     assert.equal(result.replyAutoApproved, false)
   })
 
-  test('detects mcp__slack__reply in allow list', () => {
+  test('detects mcp__slack-cc__reply in allow list', () => {
     const settings = {
       permissions: {
         allow: [
-          'mcp__slack__reply',
-          'mcp__slack__react',
+          'mcp__slack-cc__reply',
+          'mcp__slack-cc__react',
           'Bash(git status:*)',
         ],
       },
@@ -215,13 +215,13 @@ describe('Settings allow list check (#10)', () => {
     const result = checkSettingsAllowList(path)
     assert.equal(result.found, true)
     assert.equal(result.replyAutoApproved, true)
-    assert.deepEqual(result.tools, ['mcp__slack__reply', 'mcp__slack__react'])
+    assert.deepEqual(result.tools, ['mcp__slack-cc__reply', 'mcp__slack-cc__react'])
   })
 
   test('reports not auto-approved when reply is missing', () => {
     const settings = {
       permissions: {
-        allow: ['mcp__slack__react', 'mcp__slack__fetch_messages'],
+        allow: ['mcp__slack-cc__react', 'mcp__slack-cc__fetch_messages'],
       },
     }
     const path = join(TEST_DIR, 'settings.local.json')
@@ -262,9 +262,9 @@ describe('Settings allow list check (#10)', () => {
 
 describe('--allowedTools CLI flag parsing (#10)', () => {
   test('parses comma-separated tools', () => {
-    const line = 'claude --allowedTools "mcp__slack__reply,mcp__slack__react" --debug'
+    const line = 'claude --allowedTools "mcp__slack-cc__reply,mcp__slack-cc__react" --debug'
     const result = parseAllowedToolsFromArgs(line)
-    assert.deepEqual(result, ['mcp__slack__reply', 'mcp__slack__react'])
+    assert.deepEqual(result, ['mcp__slack-cc__reply', 'mcp__slack-cc__react'])
   })
 
   test('returns empty for no flag', () => {
@@ -273,15 +273,15 @@ describe('--allowedTools CLI flag parsing (#10)', () => {
   })
 
   test('handles single tool', () => {
-    const line = 'claude --allowedTools "mcp__slack__reply"'
-    assert.deepEqual(parseAllowedToolsFromArgs(line), ['mcp__slack__reply'])
+    const line = 'claude --allowedTools "mcp__slack-cc__reply"'
+    assert.deepEqual(parseAllowedToolsFromArgs(line), ['mcp__slack-cc__reply'])
   })
 
   test('handles unquoted value', () => {
-    const line = 'claude --allowedTools mcp__slack__reply --debug'
+    const line = 'claude --allowedTools mcp__slack-cc__reply --debug'
     const result = parseAllowedToolsFromArgs(line)
     assert.ok(result.length > 0)
-    assert.ok(result[0].startsWith('mcp__slack__reply'))
+    assert.ok(result[0].startsWith('mcp__slack-cc__reply'))
   })
 })
 
