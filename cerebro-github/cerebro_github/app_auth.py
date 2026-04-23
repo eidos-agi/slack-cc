@@ -39,9 +39,10 @@ def _env(name: str) -> Optional[str]:
 
 def is_app_auth_configured() -> bool:
     """Check if GitHub App credentials are available."""
+    has_key = _env("CEREBRO_GITHUB_APP_PRIVATE_KEY") or _env("CEREBRO_GITHUB_APP_PRIVATE_KEY_FILE")
     return all([
         _env("CEREBRO_GITHUB_APP_ID"),
-        _env("CEREBRO_GITHUB_APP_PRIVATE_KEY"),
+        has_key,
         _env("CEREBRO_GITHUB_APP_INSTALLATION_ID"),
     ])
 
@@ -56,22 +57,30 @@ def _generate_jwt() -> str:
     import jwt  # PyJWT
 
     app_id = _env("CEREBRO_GITHUB_APP_ID")
-    private_key_b64 = _env("CEREBRO_GITHUB_APP_PRIVATE_KEY")
 
-    if not app_id or not private_key_b64:
-        raise RuntimeError(
-            "CEREBRO_GITHUB_APP_ID and CEREBRO_GITHUB_APP_PRIVATE_KEY "
-            "must be set for GitHub App auth"
-        )
+    if not app_id:
+        raise RuntimeError("CEREBRO_GITHUB_APP_ID must be set")
 
-    # Private key is base64-encoded PEM (safe for env vars / Railway)
-    private_key = base64.b64decode(private_key_b64).decode("utf-8")
+    # Try file path first (most reliable — no encoding issues),
+    # then fall back to base64 env var
+    key_file = _env("CEREBRO_GITHUB_APP_PRIVATE_KEY_FILE")
+    if key_file:
+        with open(key_file) as f:
+            private_key = f.read()
+    else:
+        private_key_b64 = _env("CEREBRO_GITHUB_APP_PRIVATE_KEY")
+        if not private_key_b64:
+            raise RuntimeError(
+                "Set CEREBRO_GITHUB_APP_PRIVATE_KEY_FILE (path to PEM) "
+                "or CEREBRO_GITHUB_APP_PRIVATE_KEY (base64-encoded PEM)"
+            )
+        private_key = base64.b64decode(private_key_b64).decode("utf-8")
 
     now = int(time.time())
     payload = {
         "iat": now - 60,       # issued at (60s in the past for clock drift)
         "exp": now + 600,      # expires in 10 minutes
-        "iss": int(app_id),    # GitHub App ID
+        "iss": app_id,          # GitHub App ID (string)
     }
 
     return jwt.encode(payload, private_key, algorithm="RS256")
