@@ -207,6 +207,97 @@ def stale() -> dict:
     return ceremony.stale()
 
 
+# ── Workflow / CI management ─────────────────────────────
+
+
+@mcp.tool()
+def rerun_ci(repo: str, run_id: int = 0) -> dict:
+    """Re-run a failed CI workflow.
+
+    If run_id is omitted, finds and re-runs the most recent failure
+    on the repo. Returns the run URL.
+
+    Args:
+        repo: Repository name (e.g., "data-daemon")
+        run_id: Specific workflow run ID. If 0, uses most recent failure.
+    """
+    from . import config
+    org = config.GH_ORG
+
+    if run_id == 0:
+        failures = gh.get_failed_runs(org, repo, limit=1)
+        if not failures:
+            return {"status": "no_failures", "message": f"No recent failures in {repo}"}
+        run_id = failures[0]["id"]
+        run_name = failures[0]["name"]
+    else:
+        run_name = f"run {run_id}"
+
+    gh.rerun_workflow(org, repo, run_id)
+    return {
+        "status": "rerun_triggered",
+        "run_id": run_id,
+        "workflow": run_name,
+        "repo": repo,
+    }
+
+
+@mcp.tool()
+def trigger_workflow(repo: str, workflow: str, ref: str = "main") -> dict:
+    """Trigger a workflow manually via workflow_dispatch.
+
+    Use for on-demand runs of scheduled workflows (sage-parity,
+    deploy, audit) without waiting for the cron.
+
+    Args:
+        repo: Repository name
+        workflow: Workflow filename (e.g., "sage-parity.yml", "deploy.yml")
+        ref: Branch to run against (default: main)
+    """
+    from . import config
+    gh.trigger_workflow(config.GH_ORG, repo, workflow, ref=ref)
+    return {
+        "status": "triggered",
+        "repo": repo,
+        "workflow": workflow,
+        "ref": ref,
+    }
+
+
+@mcp.tool()
+def create_release(
+    repo: str,
+    tag: str,
+    name: str = "",
+    body: str = "",
+    target: str = "main",
+    prerelease: bool = False,
+) -> dict:
+    """Create a GitHub release with a tag.
+
+    Use after promoting develop → main for production releases.
+    Generates a tagged release with notes.
+
+    Args:
+        repo: Repository name
+        tag: Version tag (e.g., "v1.5.0")
+        name: Release title (defaults to tag)
+        body: Release notes (markdown)
+        target: Branch to tag (default: main)
+        prerelease: Mark as pre-release (default: False)
+    """
+    from . import config
+    result = gh.create_release(
+        config.GH_ORG, repo,
+        tag=tag,
+        name=name or tag,
+        body=body,
+        target=target,
+        prerelease=prerelease,
+    )
+    return result
+
+
 # ── Mission tools — strategic coherence ──────────────────
 
 

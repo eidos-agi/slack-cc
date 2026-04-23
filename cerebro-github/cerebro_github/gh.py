@@ -308,6 +308,62 @@ def merge_pr(org: str, repo: str, pr_number: int, method: str = "squash", delete
     return _run(args)
 
 
+# ── Workflows / CI ─────────────────────────────────────
+
+def rerun_workflow(org: str, repo: str, run_id: int) -> str:
+    """Re-run a failed workflow run."""
+    return _run(["api", f"repos/{org}/{repo}/actions/runs/{run_id}/rerun",
+                 "--method", "POST"])
+
+
+def get_failed_runs(org: str, repo: str, limit: int = 5) -> list[dict]:
+    """Get recent failed workflow runs."""
+    return _run_json([
+        "api", f"repos/{org}/{repo}/actions/runs",
+        "--jq", f"[.workflow_runs[:20] | .[] | select(.conclusion==\"failure\") | {{id: .id, name: .name, branch: .head_branch, created: .created_at, url: .html_url}}][:{ limit }]",
+    ])
+
+
+def trigger_workflow(org: str, repo: str, workflow: str, ref: str = "main", inputs: dict | None = None) -> str:
+    """Trigger a workflow_dispatch event."""
+    args = ["api", f"repos/{org}/{repo}/actions/workflows/{workflow}/dispatches",
+            "--method", "POST",
+            "-f", f"ref={ref}"]
+    for k, v in (inputs or {}).items():
+        args.extend(["-f", f"inputs[{k}]={v}"])
+    return _run(args)
+
+
+# ── Releases ───────────────────────────────────────────
+
+def create_release(org: str, repo: str, tag: str, name: str, body: str,
+                   target: str = "main", draft: bool = False, prerelease: bool = False) -> dict:
+    """Create a GitHub release with a tag."""
+    args = [
+        "release", "create", tag,
+        "--repo", f"{org}/{repo}",
+        "--title", name,
+        "--notes", body,
+        "--target", target,
+    ]
+    if draft:
+        args.append("--draft")
+    if prerelease:
+        args.append("--prerelease")
+    url = _run(args)
+    return {"tag": tag, "url": url}
+
+
+def list_releases(org: str, repo: str, limit: int = 5) -> list[dict]:
+    """List recent releases."""
+    return _run_json([
+        "release", "list",
+        "--repo", f"{org}/{repo}",
+        "--limit", str(limit),
+        "--json", "tagName,name,publishedAt,isDraft,isPrerelease,url",
+    ])
+
+
 # ── Search ──────────────────────────────────────────────
 
 def list_open_prs(org: str) -> list[dict]:
