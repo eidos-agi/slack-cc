@@ -151,6 +151,25 @@ and locally.
 Legacy: `tools/tier-map.sh` is mostly emptied. Only `data-daemon` remains
 (deferred above). When data-daemon migrates, delete `tier-map.sh` entirely.
 
+## StepProof Governance — MANDATORY
+
+Every deploy to staging or production **must** go through StepProof. No exceptions, no ad-hoc merges.
+
+| Action | Runbook | When |
+|--------|---------|------|
+| Merge PR to `develop` (staging deploy) | `rb-ship-to-staging` | Before calling `merge_pr` |
+| Promote `develop` → `main` (production deploy) | `rb-promote-to-production` | Before calling `merge_pr` with gate |
+| Deploy data-daemon | `rb-data-daemon-deploy` | Before any pipeline deploy |
+| Apply Supabase migration | `rb-apply-migration` | Before running migration SQL |
+| Ship cerebro-mcp | `rb-ship-cerebro-mcp` | Before `wrangler deploy` |
+
+**Ceremony:**
+1. `stepproof_run_start(runbook_id=..., context=...)` — declare what you're doing
+2. Complete each step with `stepproof_step_complete(evidence=...)` — prove you did it
+3. Only execute the action (merge, deploy, migrate) when StepProof says go
+
+**Why this exists:** Agents follow directions when they know governance is real and enforced. StepProof is the mechanism that makes ceremony non-optional. Skipping it — even for "trivial" changes — proves the governance isn't real.
+
 ## Current State (as of 2026-04-13)
 
 ### What's Active
