@@ -32,7 +32,7 @@ steps:
     description: Merge PR to develop
     allowed_tools: [mcp__cerebro-github__merge_pr]
     required_evidence: [pr_url]
-    verification_method: verify_ci_green
+    verification_method: verify_pr_merged
     verification_tier: tier1
     timeout_seconds: 600
     on_fail: block

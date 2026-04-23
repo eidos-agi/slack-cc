@@ -1,0 +1,24 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-23T14:16:42.448381+00:00",
+  "evidence": {
+    "branch_name": "feat/chronicle-m03-newspaper-chrome",
+    "pr_url": "https://github.com/greenmark-waste-solutions/cerebro/pull/125"
+  },
+  "run_id": "be57ac2e-49fd-477d-af6a-7ecd4368f0f4",
+  "started_at": "2026-04-23T14:16:42.440928+00:00",
+  "status": "verified",
+  "step_id": "s1",
+  "verification_result": {
+    "artifacts": {
+      "branch": "feat/chronicle-m03-newspaper-chrome",
+      "pr_url": "https://github.com/greenmark-waste-solutions/cerebro/pull/125"
+    },
+    "confidence": 1.0,
+    "latency_ms": 1,
+    "reason": "PR https://github.com/greenmark-waste-solutions/cerebro/pull/125 opened on branch feat/chronicle-m03-newspaper-chrome.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_pr_opened"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "attempts": 2,
+  "ended_at": "2026-04-23T14:18:59.312941+00:00",
+  "evidence": {
+    "ci_run_id": "pr-125-merged-all-green",
+    "pr_url": "https://github.com/greenmark-waste-solutions/cerebro/pull/125"
+  },
+  "run_id": "be57ac2e-49fd-477d-af6a-7ecd4368f0f4",
+  "started_at": "2026-04-23T14:18:52.990116+00:00",
+  "status": "verified",
+  "step_id": "s3",
+  "verification_result": {
+    "artifacts": {
+      "ci_run_id": "pr-125-merged-all-green"
+    },
+    "confidence": 1.0,
+    "latency_ms": 0,
+    "reason": "CI run pr-125-merged-all-green SUCCESS.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_ci_green"
+  }
+}
