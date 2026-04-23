@@ -52,12 +52,18 @@ class _RateGovernor:
         self.graphql_floor = 500
 
     def _refresh(self) -> None:
-        """Fetch actual rate limits from GitHub. Costs 1 REST call."""
+        """Fetch actual rate limits from GitHub.
+
+        REST limits come from the rate_limit REST endpoint.
+        GraphQL limits come from a GraphQL introspection query
+        (the REST endpoint doesn't report GraphQL quota).
+        """
         now = time.time()
         if now - self.last_check < self.check_interval:
             return
 
         try:
+            # REST quota
             result = subprocess.run(
                 ["gh", "api", "rate_limit"],
                 capture_output=True, text=True, timeout=10,
@@ -65,14 +71,31 @@ class _RateGovernor:
             if result.returncode == 0:
                 data = json.loads(result.stdout)
                 rate = data.get("rate", {})
-                graphql = data.get("graphql", {})
                 self.rest_remaining = rate.get("remaining")
                 self.rest_reset = rate.get("reset", 0)
-                self.graphql_remaining = graphql.get("remaining")
-                self.graphql_reset = graphql.get("reset", 0)
-                self.last_check = now
         except (subprocess.TimeoutExpired, json.JSONDecodeError, KeyError):
-            pass  # If we can't check, allow the call — fail open
+            pass
+
+        try:
+            # GraphQL quota — must query via GraphQL itself
+            result = subprocess.run(
+                ["gh", "api", "graphql", "-f",
+                 "query={ rateLimit { remaining resetAt } }"],
+                capture_output=True, text=True, timeout=10,
+            )
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
+                rl = data.get("data", {}).get("rateLimit", {})
+                self.graphql_remaining = rl.get("remaining")
+                reset_at = rl.get("resetAt", "")
+                if reset_at:
+                    from datetime import datetime, timezone
+                    dt = datetime.fromisoformat(reset_at.replace("Z", "+00:00"))
+                    self.graphql_reset = int(dt.timestamp())
+        except (subprocess.TimeoutExpired, json.JSONDecodeError, KeyError):
+            pass
+
+        self.last_check = now
 
     def check_rest(self) -> None:
         self._refresh()
