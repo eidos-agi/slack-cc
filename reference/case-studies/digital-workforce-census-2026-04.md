@@ -96,6 +96,22 @@ The entire digital workforce runs on:
 
 No Datadog. No PagerDuty. No Jira. No Confluence. The digital employees built their own observability (cerebro-telemetry), their own project management (ike-md), their own documentation (cerebro-docs), and their own compliance (StepProof).
 
+## Case Study: The Badge
+
+On April 23, 2026, cerebro-github (digital employee #10, Release Engineer) kept hitting GitHub's 5,000/hr API rate limit — not because it was doing too much work, but because it was sharing Daniel's personal access token with every other tool on the machine. Five Claude sessions, 27 digital employees, all swiping the same badge.
+
+The fix: give it its own identity.
+
+1. Daniel created a GitHub App in the org settings — a company account for the bot
+2. The digital employee generated the auth code (`app_auth.py`) to use it
+3. It asked Daniel to download the private key and transfer it securely
+4. The key transfer itself became a multi-agent collaboration — the Mac agent staged the file, set up SSH key auth, and the container agent pulled it via SCP
+5. After wiring up, `rate_status` reported: `auth_mode: "github_app"`, 6,200/6,200
+
+Result: cerebro-github now has its own rate limit bucket (6,200/hr — higher than a human's 5,000 because GitHub App limits scale with org size). Daniel's personal quota is completely untouched. Total combined capacity: 11,200 API calls/hr instead of 5,000 shared.
+
+The digital employee asked its human boss to create it an account. The human went to HR (GitHub App settings), created the identity, handed over the credentials through a secure channel, and the employee wired itself up. That's not a metaphor — that's literally what happened on a Wednesday afternoon.
+
 ## The Punchline
 
 Dr. Funk expected AI employees to walk into HR and fill out a W-4. What actually happened is 27 Python processes on Railway and Cloudflare, managed by one engineer who talks to them in Slack from his phone, doing 333 hours/week of work that would otherwise require hiring 8 people.
