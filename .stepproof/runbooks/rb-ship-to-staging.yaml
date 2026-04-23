@@ -28,7 +28,7 @@ steps:
     on_fail: retry
 
   - step_id: s3
-    description: CI tests green on PR
+    description: "CI tests green on PR — use check_ci(wait=True) to block until resolved"
     allowed_tools: [mcp__cerebro-github__check_ci]
     required_evidence: [ci_run_id]
     verification_method: verify_ci_green

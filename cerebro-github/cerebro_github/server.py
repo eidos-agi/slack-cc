@@ -88,16 +88,24 @@ def open_pr(
 
 
 @mcp.tool()
-def check_ci(repo: str, pr_number: int) -> dict:
+def check_ci(repo: str, pr_number: int, wait: bool = False) -> dict:
     """Check CI status on a pull request.
 
     Returns which checks passed, failed, or are still pending.
 
+    With wait=True, blocks for up to 60 seconds polling every 15s.
+    If checks are still pending, returns with recall=True — call
+    check_ci(wait=True) again. This replaces rapid-fire polling
+    with 3-5 paced calls for a typical 3-minute CI run.
+
+    ALWAYS use wait=True after opening a PR. Never rapid-poll.
+
     Args:
         repo: Repository name
         pr_number: Pull request number
+        wait: If True, block up to 60s polling internally (default: False)
     """
-    return ceremony.check_ci(repo=repo, pr_number=pr_number)
+    return ceremony.check_ci(repo=repo, pr_number=pr_number, wait=wait)
 
 
 @mcp.tool()
