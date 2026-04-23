@@ -9,6 +9,8 @@ description = "MCP server encoding Greenmark engineering ceremony"
 requires-python = ">=3.10"
 dependencies = [
     "mcp>=1.0.0",
+    "PyJWT>=2.8.0",
+    "cryptography>=41.0.0",
 ]
 
 [project.scripts]

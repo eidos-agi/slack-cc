@@ -138,8 +138,13 @@ def rate_status() -> dict:
     Shows remaining REST and GraphQL quota, floors, and whether
     it's safe to continue. The governor blocks calls when quota
     drops below the floor — check this if you're getting RateLimitError.
+
+    Also reports auth mode: "github_app" (own bucket) or "pat" (Daniel's bucket).
     """
-    return gh.rate_status()
+    from . import app_auth
+    status = gh.rate_status()
+    status["auth_mode"] = "github_app" if app_auth.is_app_auth_configured() else "pat"
+    return status
 
 
 @mcp.tool()

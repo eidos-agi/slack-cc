@@ -4,11 +4,18 @@ Rate governor: checks actual remaining quota from GitHub's rate limit
 API before allowing calls. Works as middleware — every call flows
 through _run, every call is governed. Doesn't assume it's the only
 consumer; reads reality from GitHub's headers.
+
+Auth: if CEREBRO_GITHUB_APP_* env vars are set, all calls use a GitHub
+App installation token (separate rate limit bucket from Daniel's PAT).
+Otherwise falls back to gh CLI's default auth.
 """
 
 import json
+import os
 import subprocess
 import time
+
+from . import app_auth
 
 
 # ── Rate Governor ──────────────────────────────────────────
@@ -62,11 +69,14 @@ class _RateGovernor:
         if now - self.last_check < self.check_interval:
             return
 
+        env = _gh_env()
+
         try:
             # REST quota
             result = subprocess.run(
                 ["gh", "api", "rate_limit"],
                 capture_output=True, text=True, timeout=10,
+                env=env,
             )
             if result.returncode == 0:
                 data = json.loads(result.stdout)
@@ -82,6 +92,7 @@ class _RateGovernor:
                 ["gh", "api", "graphql", "-f",
                  "query={ rateLimit { remaining resetAt } }"],
                 capture_output=True, text=True, timeout=10,
+                env=env,
             )
             if result.returncode == 0:
                 data = json.loads(result.stdout)
@@ -135,12 +146,26 @@ def rate_status() -> dict:
 
 # ── Core runners ───────────────────────────────────────────
 
+def _gh_env() -> dict[str, str]:
+    """Build environment for gh subprocess.
+
+    If GitHub App auth is configured, injects GH_TOKEN so the gh CLI
+    uses the app's installation token (separate rate limit bucket).
+    """
+    env = os.environ.copy()
+    token = app_auth.get_token()
+    if token:
+        env["GH_TOKEN"] = token
+    return env
+
+
 def _run(args: list[str], check: bool = True) -> str:
     """Run a gh command and return stdout. Rate-governed."""
     _governor.check_rest()
     result = subprocess.run(
         ["gh"] + args,
         capture_output=True, text=True, timeout=30,
+        env=_gh_env(),
     )
     if check and result.returncode != 0:
         raise RuntimeError(f"gh {' '.join(args[:3])}... failed: {result.stderr.strip()}")
