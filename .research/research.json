@@ -1,35 +1,15 @@
 {
-  "id": "39622d8d-5c6d-4b44-8371-cd3f5ba79d05",
+  "id": "46ad70fa-ab2b-4e6e-9197-ac36eaa9c612",
   "version": "0.1.0",
-  "projectName": "Environment Isolation \u2014 Two Databases, Two Data-Daemons",
-  "created": "2026-04-20",
-  "phase": "decided",
+  "projectName": "GraphQL Rate Limit Drain Investigation",
+  "created": "2026-04-23",
+  "phase": "research",
   "transitions": [
     {
       "phase": "research",
-      "date": "2026-04-20"
-    },
-    {
-      "phase": "locked",
-      "date": "2026-04-20",
-      "note": "Criteria weights frozen"
-    },
-    {
-      "phase": "reviewed",
-      "date": "2026-04-20",
-      "note": "Peer review by Rhea (3-model Socratic debate)"
-    },
-    {
-      "phase": "scored",
-      "date": "2026-04-20",
-      "note": "Scored candidate: staging-branch"
-    },
-    {
-      "phase": "decided",
-      "date": "2026-04-20",
-      "note": "Approach B: Staging branch pattern \u2014 develop deploys to develop Railway (staging), main deploys to p"
+      "date": "2026-04-23"
     }
   ],
-  "question": "How should we properly isolate develop and production environments for data-daemon, including separate databases, deploy pipelines, and migration workflows, using our existing toolkit (Railway, Supabase, GitHub Actions, railguey, cerebro-migrations)?",
-  "context": "Greenmark Cerebro has two Supabase instances: production (wwmcgtyngnziepeynccz) and dev (izmuckuepryqneebwwol). Both exist but currently both Railway environments (develop + production) point to the production database. data-daemon deploys to production via GitHub Actions on push to develop branch. There is no automated deploy to the develop Railway environment. Session 34 proved the danger: setting develop's DATABASE_URL to production caused develop workers to steal and fail production extraction jobs. The team is one engineer (Daniel) plus AI agents. The toolkit includes: railguey (Railway MCP with multi-account support for develop/production), cerebro-migrations (Supabase CLI for DDL), cerebro-builder (session orchestration), cerebro-docs (deployment workflows). Guardrail GR-ENV-001 now requires environment isolation. This research should produce the concrete wiring plan."
+  "question": "What is consuming the GitHub GraphQL 5000/hour budget on dshanklin-bv's PAT, and how do we stop it?",
+  "context": "Session 33 hit GraphQL 0/5000 three times in one session while REST stayed at ~4900/5000. Only 13 visible events in the audit window. The drain is invisible \u2014 read-only GraphQL queries don't appear in the event log. Suspects: other Claude sessions on eidos-agi repos using the same PAT, GitHub Projects v2 automations, GitHub Apps, or cerebro-github MCP's check_ci rapid-polling (pre-recall-pattern fix). Need: (1) identify the consumer, (2) instrument visibility, (3) implement budget partitioning or rate coordination across sessions."
 }

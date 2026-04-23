@@ -1,0 +1,8 @@
+{
+  "allowed_tools": [
+    "mcp__cerebro-github__merge_pr"
+  ],
+  "current_step": "s3",
+  "run_id": "4111c252-a2df-4316-be6e-6b19fef8da9c",
+  "template_id": "rb-quick-fix"
+}

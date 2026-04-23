@@ -1,0 +1,15 @@
+{
+  "id": "5ec593d2-24e0-4fa5-86fb-efe567610a02",
+  "version": "0.1.0",
+  "projectName": "cerebro-ciso",
+  "created": "2026-04-23",
+  "phase": "research",
+  "transitions": [
+    {
+      "phase": "research",
+      "date": "2026-04-23"
+    }
+  ],
+  "question": "What should cerebro-ciso own, where should it run, and what's the minimum viable scope that delivers real security value without creating another surface to secure?",
+  "context": "Daniel wants a dedicated security MCP modeled on AIC's CISO program. Current security posture: 20+ security test files in cerebro/security/, RLS audit from April 6 (7/7 fixed), tier governance via settings.yml + Probot, RBAC system with tenant isolation. The risk: Greenmark has 3 entities, 15 vendor systems, private repos, and stakeholders who default to 'no' on new tooling cost. cerebro-ciso needs to earn trust by finding real issues (like the missing RLS policies we just found), not by adding ceremony. Must decide: local vs remote, read-only audit vs active remediation, Daniel-only vs stakeholder-facing."
+}

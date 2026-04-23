@@ -1,0 +1,12 @@
+{
+  "agent_id": "claude-code-worker",
+  "current_step": "s3",
+  "ended_at": null,
+  "environment": "staging",
+  "owner_id": "daniel-shanklin",
+  "run_id": "4111c252-a2df-4316-be6e-6b19fef8da9c",
+  "started_at": "2026-04-23T15:22:18.526322+00:00",
+  "status": "active",
+  "template_id": "rb-quick-fix",
+  "template_version": "1.0.0"
+}
