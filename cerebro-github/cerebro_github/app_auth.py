@@ -31,10 +31,19 @@ _cached_token_expires: float = 0
 _REFRESH_MARGIN = 300  # seconds before expiry to refresh
 
 
+# Defaults — App ID and Installation ID aren't secrets.
+# Only the private key needs external config.
+_DEFAULTS = {
+    "CEREBRO_GITHUB_APP_ID": "3479857",
+    "CEREBRO_GITHUB_APP_INSTALLATION_ID": "126482862",
+    "CEREBRO_GITHUB_APP_PRIVATE_KEY_FILE": "/home/dev/.claude/cerebro-github-app.pem",
+}
+
+
 def _env(name: str) -> Optional[str]:
-    """Read an env var, return None if empty."""
+    """Read an env var with fallback to defaults."""
     val = os.environ.get(name, "").strip()
-    return val or None
+    return val or _DEFAULTS.get(name)
 
 
 def is_app_auth_configured() -> bool:
