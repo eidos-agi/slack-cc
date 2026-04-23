@@ -1,11 +1,120 @@
-"""Thin wrapper around gh CLI — all GitHub operations go through here."""
+"""Thin wrapper around gh CLI — all GitHub operations go through here.
+
+Rate governor: checks actual remaining quota from GitHub's rate limit
+API before allowing calls. Works as middleware — every call flows
+through _run, every call is governed. Doesn't assume it's the only
+consumer; reads reality from GitHub's headers.
+"""
 
 import json
 import subprocess
+import time
 
+
+# ── Rate Governor ──────────────────────────────────────────
+
+class RateLimitError(RuntimeError):
+    """Raised when the rate governor blocks a call to protect quota."""
+    def __init__(self, kind: str, remaining: int, resets_at: int):
+        resets_in = max(0, resets_at - int(time.time()))
+        super().__init__(
+            f"Rate governor: {kind} quota too low "
+            f"({remaining} remaining, resets in {resets_in}s). "
+            "Back off and retry after the reset window."
+        )
+        self.kind = kind
+        self.remaining = remaining
+        self.resets_in = resets_in
+
+
+class _RateGovernor:
+    """Reads GitHub's actual rate limit before allowing calls.
+
+    Reserves a floor of remaining calls — if we're below the floor,
+    block. This protects against exhaustion regardless of what other
+    processes are consuming the API.
+
+    REST floor: 200 (keep headroom for CI, webhooks, other tools)
+    GraphQL floor: 500 (mutations cost variable points)
+
+    Rate limit is checked at most once per 30 seconds to avoid
+    burning calls just to check the limit.
+    """
+
+    def __init__(self):
+        self.rest_remaining: int | None = None
+        self.rest_reset: int = 0
+        self.graphql_remaining: int | None = None
+        self.graphql_reset: int = 0
+        self.last_check: float = 0
+        self.check_interval = 30  # seconds between limit checks
+        self.rest_floor = 200
+        self.graphql_floor = 500
+
+    def _refresh(self) -> None:
+        """Fetch actual rate limits from GitHub. Costs 1 REST call."""
+        now = time.time()
+        if now - self.last_check < self.check_interval:
+            return
+
+        try:
+            result = subprocess.run(
+                ["gh", "api", "rate_limit"],
+                capture_output=True, text=True, timeout=10,
+            )
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
+                rate = data.get("rate", {})
+                graphql = data.get("graphql", {})
+                self.rest_remaining = rate.get("remaining")
+                self.rest_reset = rate.get("reset", 0)
+                self.graphql_remaining = graphql.get("remaining")
+                self.graphql_reset = graphql.get("reset", 0)
+                self.last_check = now
+        except (subprocess.TimeoutExpired, json.JSONDecodeError, KeyError):
+            pass  # If we can't check, allow the call — fail open
+
+    def check_rest(self) -> None:
+        self._refresh()
+        if self.rest_remaining is not None and self.rest_remaining < self.rest_floor:
+            raise RateLimitError("REST", self.rest_remaining, self.rest_reset)
+
+    def check_graphql(self) -> None:
+        self._refresh()
+        if self.graphql_remaining is not None and self.graphql_remaining < self.graphql_floor:
+            raise RateLimitError("GraphQL", self.graphql_remaining, self.graphql_reset)
+
+    def status(self) -> dict:
+        self._refresh()
+        return {
+            "rest": {
+                "remaining": self.rest_remaining,
+                "floor": self.rest_floor,
+                "reset": self.rest_reset,
+                "safe": (self.rest_remaining or 0) >= self.rest_floor,
+            },
+            "graphql": {
+                "remaining": self.graphql_remaining,
+                "floor": self.graphql_floor,
+                "reset": self.graphql_reset,
+                "safe": (self.graphql_remaining or 0) >= self.graphql_floor,
+            },
+        }
+
+
+_governor = _RateGovernor()
+
+
+def rate_status() -> dict:
+    """Return current rate governor status. Exposed as a tool."""
+    return _governor.status()
+
+
+# ── Core runners ───────────────────────────────────────────
 
 def _run(args: list[str], check: bool = True) -> str:
-    """Run a gh command and return stdout."""
+    """Run a gh command and return stdout. Rate-governed."""
+    _governor.check_rest()
     result = subprocess.run(
         ["gh"] + args,
         capture_output=True, text=True, timeout=30,
@@ -21,7 +130,8 @@ def _run_json(args: list[str]) -> dict | list:
 
 
 def _graphql(query: str) -> dict:
-    """Run a GraphQL query against GitHub API."""
+    """Run a GraphQL query against GitHub API. Rate-governed (separate budget)."""
+    _governor.check_graphql()
     raw = _run(["api", "graphql", "-f", f"query={query}"])
     return json.loads(raw)
 
@@ -38,7 +148,6 @@ def create_issue(org: str, repo: str, title: str, body: str, assignee: str) -> d
         "--assignee", assignee,
     ])
     number = int(url.rstrip("/").split("/")[-1])
-    # --jq returns a raw string, not JSON — use _run not _run_json
     node_id = _run([
         "api", f"repos/{org}/{repo}/issues/{number}",
         "--jq", ".node_id",

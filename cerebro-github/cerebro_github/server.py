@@ -3,6 +3,7 @@
 from mcp.server.fastmcp import FastMCP
 
 from . import ceremony
+from . import gh
 from . import meta
 from . import mission
 
@@ -128,6 +129,17 @@ def merge_pr(repo: str, pr_number: int, gate_token: str = "", rhea_decision: str
         repo=repo, pr_number=pr_number,
         gate_token=gate_token, rhea_decision=rhea_decision,
     )
+
+
+@mcp.tool()
+def rate_status() -> dict:
+    """Check GitHub API rate limit budget.
+
+    Shows remaining REST and GraphQL quota, floors, and whether
+    it's safe to continue. The governor blocks calls when quota
+    drops below the floor — check this if you're getting RateLimitError.
+    """
+    return gh.rate_status()
 
 
 @mcp.tool()
