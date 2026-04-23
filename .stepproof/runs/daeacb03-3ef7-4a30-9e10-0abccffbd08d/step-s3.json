@@ -1,0 +1,30 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-23T03:34:00.623782+00:00",
+  "evidence": {
+    "checks_passed": [
+      "Type Check",
+      "Lint",
+      "Unit Tests",
+      "Security File Check",
+      "Build"
+    ],
+    "ci_run_id": "PR-121-all-green",
+    "recall_calls": 2
+  },
+  "run_id": "daeacb03-3ef7-4a30-9e10-0abccffbd08d",
+  "started_at": "2026-04-23T03:34:00.619970+00:00",
+  "status": "verified",
+  "step_id": "s3",
+  "verification_result": {
+    "artifacts": {
+      "ci_run_id": "PR-121-all-green"
+    },
+    "confidence": 1.0,
+    "latency_ms": 0,
+    "reason": "CI run PR-121-all-green SUCCESS.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_ci_green"
+  }
+}

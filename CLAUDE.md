@@ -158,6 +158,7 @@ Every deploy to staging or production **must** go through StepProof. No exceptio
 | Action | Runbook | When |
 |--------|---------|------|
 | Merge PR to `develop` (staging deploy) | `rb-ship-to-staging` | Before calling `merge_pr` |
+| Quick fix (one-liner, typo, parse bug) | `rb-quick-fix` | PR → CI → merge. No issue, no smoke. |
 | Promote `develop` → `main` (production deploy) | `rb-promote-to-production` | Before calling `merge_pr` with gate |
 | Deploy data-daemon | `rb-data-daemon-deploy` | Before any pipeline deploy |
 | Apply Supabase migration | `rb-apply-migration` | Before running migration SQL |

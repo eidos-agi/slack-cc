@@ -1,0 +1,38 @@
+# Quick fix — small bug fixes that don't need full ceremony.
+# Use for: one-line fixes, typos, parse bugs, CSS tweaks.
+# NOT for: features, refactors, migrations, anything that changes behavior.
+
+template_id: rb-quick-fix
+version: 1.0.0
+name: Quick fix
+description: PR, CI green, merge. No issue, no smoke test. For trivial fixes only.
+risk_level: low
+allowed_environments: [staging]
+
+steps:
+  - step_id: s1
+    description: "Open PR against develop — use check_ci(wait=True) after"
+    allowed_tools: [Edit, Write, Bash, mcp__cerebro-github__open_pr]
+    required_evidence: [pr_url, branch_name]
+    verification_method: verify_pr_opened
+    verification_tier: tier1
+    timeout_seconds: 3600
+    on_fail: retry
+
+  - step_id: s2
+    description: "CI green — use check_ci(wait=True)"
+    allowed_tools: [mcp__cerebro-github__check_ci]
+    required_evidence: [ci_run_id]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 1800
+    on_fail: block
+
+  - step_id: s3
+    description: Merge PR to develop
+    allowed_tools: [mcp__cerebro-github__merge_pr]
+    required_evidence: [pr_url]
+    verification_method: verify_ci_green
+    verification_tier: tier1
+    timeout_seconds: 600
+    on_fail: block

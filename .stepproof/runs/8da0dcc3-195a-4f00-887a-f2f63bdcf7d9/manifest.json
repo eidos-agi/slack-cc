@@ -1,0 +1,12 @@
+{
+  "agent_id": "claude-code-session-33",
+  "current_step": "s2",
+  "ended_at": null,
+  "environment": "staging",
+  "owner_id": "daniel-shanklin",
+  "run_id": "8da0dcc3-195a-4f00-887a-f2f63bdcf7d9",
+  "started_at": "2026-04-23T03:53:10.007305+00:00",
+  "status": "active",
+  "template_id": "rb-ship-to-staging",
+  "template_version": "1.0.0"
+}

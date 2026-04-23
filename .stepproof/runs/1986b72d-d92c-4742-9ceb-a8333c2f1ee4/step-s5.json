@@ -1,0 +1,22 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-23T03:00:02.324099+00:00",
+  "evidence": {
+    "deploy_id": "3d05f6eb-a51a-4b46-88e7-3365cf858b7f",
+    "status": "SUCCESS",
+    "url": "staging-cerebro-greenmark.jettaintelligence.com"
+  },
+  "run_id": "1986b72d-d92c-4742-9ceb-a8333c2f1ee4",
+  "started_at": "2026-04-23T03:00:02.322462+00:00",
+  "status": "verified",
+  "step_id": "s5",
+  "verification_result": {
+    "artifacts": {},
+    "confidence": 1.0,
+    "latency_ms": 0,
+    "reason": "Deploy 3d05f6eb-a51a-4b46-88e7-3365cf858b7f SUCCESS; health endpoints OK.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_deploy_and_health"
+  }
+}

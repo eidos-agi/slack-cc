@@ -1,0 +1,24 @@
+{
+  "attempts": 4,
+  "ended_at": "2026-04-23T02:48:14.255810+00:00",
+  "evidence": {
+    "commit_sha": "98339eceb36e4d4edbb36d0fc21c5146fd78ad70",
+    "issue_number": 119,
+    "issue_url": "https://github.com/greenmark-waste-solutions/cerebro/issues/119"
+  },
+  "run_id": "1986b72d-d92c-4742-9ceb-a8333c2f1ee4",
+  "started_at": "2026-04-23T02:47:13.179436+00:00",
+  "status": "verified",
+  "step_id": "s1",
+  "verification_result": {
+    "artifacts": {
+      "commit_sha": "98339eceb36e4d4edbb36d0fc21c5146fd78ad70"
+    },
+    "confidence": 1.0,
+    "latency_ms": 7,
+    "reason": "Commit 98339ece verified in '.'.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_git_commit"
+  }
+}

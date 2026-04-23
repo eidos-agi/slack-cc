@@ -1,0 +1,26 @@
+{
+  "attempts": 1,
+  "ended_at": "2026-04-23T02:48:35.170262+00:00",
+  "evidence": {
+    "branch_name": "feat/chronicle-m07-click-through",
+    "closes_issue": 119,
+    "pr_number": 120,
+    "pr_url": "https://github.com/greenmark-waste-solutions/cerebro/pull/120"
+  },
+  "run_id": "1986b72d-d92c-4742-9ceb-a8333c2f1ee4",
+  "started_at": "2026-04-23T02:48:35.167693+00:00",
+  "status": "verified",
+  "step_id": "s2",
+  "verification_result": {
+    "artifacts": {
+      "branch": "feat/chronicle-m07-click-through",
+      "pr_url": "https://github.com/greenmark-waste-solutions/cerebro/pull/120"
+    },
+    "confidence": 1.0,
+    "latency_ms": 0,
+    "reason": "PR https://github.com/greenmark-waste-solutions/cerebro/pull/120 opened on branch feat/chronicle-m07-click-through.",
+    "status": "pass",
+    "tier_used": "tier1",
+    "verifier_id": "verify_pr_opened"
+  }
+}
