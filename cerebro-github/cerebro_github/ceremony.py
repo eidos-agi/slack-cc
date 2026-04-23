@@ -1,8 +1,7 @@
 """Ceremony logic — the opinionated workflow that tools call."""
 
-import time
-
 from . import gh
+from .recall import poll_until_or_recall
 from .config import (
     GH_ORG, PROJECT_ID, ASSIGNEE, TIER_MAP, PROTECTED_BRANCHES,
     STATUS_FIELD_ID, STATUS_TODO, STATUS_IN_PROGRESS, STATUS_DONE,
@@ -161,44 +160,27 @@ def check_ci(repo: str, pr_number: int, wait: bool = False) -> dict:
     Returns {all_green, passed, failed, skipped, pending}.
     SKIPPED checks don't block merging.
 
-    If wait=True, polls internally (every 15s for up to 60 seconds)
-    before returning. If checks are still pending after 60s, returns
-    with recall=True — the agent should call check_ci(wait=True) again.
-    This gives real pauses between agent calls (3-5 calls total instead
-    of 15+ rapid-fire calls for a typical 3-minute CI run).
+    If wait=True, uses the recall pattern: blocks up to 60s polling
+    every 15s. If still pending, returns recall=True — call again.
+    3-5 paced calls replace 15+ rapid-fire polls.
     """
-    max_wait = 60  # seconds per call window
-    poll_interval = 15  # seconds between internal polls
-    deadline = time.time() + max_wait if wait else 0
-
-    while True:
+    def poll():
         checks = gh.get_pr_checks(GH_ORG, repo, pr_number)
         result = _classify_checks(checks)
+        result["resolved"] = result["all_green"] or bool(result["failed"])
+        return result
 
-        # Definitive result — always return immediately
-        if result["all_green"] or result["failed"]:
-            return result
-
-        # Not waiting — return snapshot with advisory
-        if not wait:
-            if result["pending"]:
-                result["wait_advisory"] = (
-                    f"{len(result['pending'])} check(s) still running. "
-                    "Use check_ci(wait=True) to block until resolved."
-                )
-            return result
-
-        # Waiting but window expired — tell agent to recall
-        if time.time() >= deadline:
-            result["recall"] = True
-            result["recall_advisory"] = (
-                f"{len(result['pending'])} check(s) still pending after 60s. "
-                "Call check_ci(wait=True) again to continue waiting."
+    if not wait:
+        result = poll()
+        result.pop("resolved", None)
+        if result["pending"] and not result["failed"]:
+            result["wait_advisory"] = (
+                f"{len(result['pending'])} check(s) still running. "
+                "Use check_ci(wait=True) to block until resolved."
             )
-            return result
+        return result
 
-        # Still within window — sleep and retry
-        time.sleep(poll_interval)
+    return poll_until_or_recall(poll)
 
 
 def merge_pr(repo: str, pr_number: int, gate_token: str = "", rhea_decision: str = "") -> dict:
