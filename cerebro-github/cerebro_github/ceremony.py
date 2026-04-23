@@ -136,13 +136,21 @@ def _classify_checks(checks: list[dict]) -> dict:
             pending.append(name)
 
     # all_green = no failures and no pending. Skipped checks are OK.
-    return {
-        "all_green": len(failed) == 0 and len(pending) == 0,
+    all_green = len(failed) == 0 and len(pending) == 0
+    result: dict = {
+        "all_green": all_green,
         "passed": passed,
         "failed": failed,
         "skipped": skipped,
         "pending": pending,
     }
+    if pending and not failed:
+        result["wait_advisory"] = (
+            f"{len(pending)} check(s) still running. "
+            "CI typically takes 2-3 minutes. "
+            "Wait at least 60 seconds before checking again."
+        )
+    return result
 
 
 def check_ci(repo: str, pr_number: int) -> dict:
