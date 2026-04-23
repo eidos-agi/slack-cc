@@ -3,11 +3,31 @@
   "version": "0.1.0",
   "projectName": "cerebro-ciso",
   "created": "2026-04-23",
-  "phase": "research",
+  "phase": "decided",
   "transitions": [
     {
       "phase": "research",
       "date": "2026-04-23"
+    },
+    {
+      "phase": "locked",
+      "date": "2026-04-23",
+      "note": "Criteria weights frozen"
+    },
+    {
+      "phase": "reviewed",
+      "date": "2026-04-23",
+      "note": "Peer review by claude-session-33"
+    },
+    {
+      "phase": "scored",
+      "date": "2026-04-23",
+      "note": "Scored candidate: local-audit-mcp"
+    },
+    {
+      "phase": "decided",
+      "date": "2026-04-23",
+      "note": "Local Python MCP \u2014 audit-only, 6 tools. Own repo (greenmark-waste-solutions/cerebro-ciso). FastMCP s"
     }
   ],
   "question": "What should cerebro-ciso own, where should it run, and what's the minimum viable scope that delivers real security value without creating another surface to secure?",
